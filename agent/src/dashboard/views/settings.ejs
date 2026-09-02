@@ -1,0 +1,37 @@
+<%- include('partials/head', { title: 'Réglages' }) %>
+
+<h1>Réglages</h1>
+<p class="subtitle">Le budget et la publication automatique sont désactivés par défaut. Deograce garde le contrôle.</p>
+
+<% if (flash) { %><div class="flash"><%= flash %></div><% } %>
+
+<div class="card">
+  <form method="post" action="/settings">
+    <label for="weekly_ad_budget_usd">Budget publicitaire hebdomadaire plafonné (USD)</label>
+    <input type="number" min="0" step="1" id="weekly_ad_budget_usd" name="weekly_ad_budget_usd" value="<%= settings.weekly_ad_budget_usd %>">
+
+    <label style="margin-top:18px;">
+      <input type="checkbox" name="auto_publish_facebook" <%= settings.auto_publish_facebook === 'true' ? 'checked' : '' %> style="width:auto; display:inline-block; margin-right:8px;">
+      Autoriser la publication automatique sur Facebook (après approbation humaine du brouillon)
+    </label>
+
+    <label for="minutes_saved_per_draft">Minutes gagnées estimées par brouillon généré (pour le rapport hebdo)</label>
+    <input type="number" min="0" step="1" id="minutes_saved_per_draft" name="minutes_saved_per_draft" value="<%= settings.minutes_saved_per_draft %>">
+
+    <div style="margin-top:20px;">
+      <button class="btn-approve" type="submit">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <strong>État des connexions API</strong>
+  <table style="margin-top:10px;">
+    <tr><td>Meta Graph API (Facebook)</td><td><%= metaConfigured ? '✅ token configuré' : '⚠️ non configuré — mode dry-run' %></td></tr>
+    <tr><td>Webhook Chariow</td><td><%= chariowConfigured ? '✅ secret configuré' : '⚠️ non configuré — webhook refusera les événements' %></td></tr>
+    <tr><td>TikTok API</td><td>⏳ phase 2</td></tr>
+    <tr><td>WhatsApp Business API</td><td>⏳ phase 2</td></tr>
+  </table>
+</div>
+
+<%- include('partials/foot') %>

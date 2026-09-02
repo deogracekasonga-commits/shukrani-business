@@ -1,0 +1,26 @@
+<%- include('partials/head', { title: 'Test A/B des accroches' }) %>
+
+<h1>Test A/B des accroches</h1>
+<p class="subtitle">Comparaison des variantes d'accroche (A/B/C) par catégorie. Alimenté une fois les insights Meta branchés (phase 3).</p>
+
+<% if (rows.length === 0) { %>
+  <p class="empty">Pas encore de données. Génère et publie des brouillons pour commencer à comparer.</p>
+<% } else { %>
+  <table>
+    <thead><tr><th>Catégorie</th><th>Variante</th><th>Publications</th><th>Impressions</th><th>Clics</th><th>CTR</th></tr></thead>
+    <tbody>
+      <% rows.forEach(function(r) { %>
+        <tr>
+          <td><%= r.category %></td>
+          <td><%= r.ab_group %></td>
+          <td><%= r.publications_count %></td>
+          <td><%= r.impressions %></td>
+          <td><%= r.clicks %></td>
+          <td><%= r.ctr %>%</td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,29 @@
+<%- include('partials/head', { title: 'Calendrier éditorial' }) %>
+
+<h1>Calendrier éditorial</h1>
+<p class="subtitle">Brouillons approuvés, programmés (dry-run tant que la publication auto est désactivée) et publiés.</p>
+
+<% ['approved', 'scheduled', 'published', 'rejected'].forEach(function(status) { %>
+  <h2 style="text-transform:capitalize; font-size:1.05rem; margin-top:24px;"><%= status %></h2>
+  <% const items = grouped[status] || []; %>
+  <% if (items.length === 0) { %>
+    <p class="empty">Aucun élément.</p>
+  <% } else { %>
+    <table>
+      <thead><tr><th>Produit</th><th>Canal</th><th>Variante</th><th>Accroche</th><th>Revu le</th></tr></thead>
+      <tbody>
+        <% items.forEach(function(d) { %>
+          <tr>
+            <td><%= d.product_title %></td>
+            <td><%= d.channel %></td>
+            <td><%= d.ab_group %></td>
+            <td><%= d.hook %></td>
+            <td><%= d.reviewed_at || '—' %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+<% }); %>
+
+<%- include('partials/foot') %>

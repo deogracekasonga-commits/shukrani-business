@@ -1,0 +1,26 @@
+{
+  "name": "shukrani-marketing-agent",
+  "version": "1.0.0",
+  "description": "Agent IA marketing pour Shukrani Business (Chariow)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "report": "node scripts/weekly-report.js",
+    "generate:drafts": "node -e \"import('./src/content/index.js').then(m=>console.log(m.generateWeeklyDrafts({channel:'facebook'})))\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "nanoid": "^6.0.1",
+    "node-cron": "^4.6.0"
+  }
+}
