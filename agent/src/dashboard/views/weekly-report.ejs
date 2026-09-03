@@ -1,0 +1,41 @@
+<%- include('partials/head', { title: 'Rapport hebdomadaire' }) %>
+
+<h1>Rapport hebdomadaire</h1>
+<p class="subtitle">Généré le <%= new Date(report.generatedAt).toLocaleString('fr-FR') %></p>
+
+<div class="card">
+  <div class="stat"><span class="value"><%= report.draftsCreatedThisWeek %></span><span class="label">brouillons générés</span></div>
+  <div class="stat"><span class="value"><%= report.ctr %>%</span><span class="label">CTR moyen</span></div>
+  <div class="stat"><span class="value"><%= report.totalRevenue.toFixed(2) %> $</span><span class="label">ventes attribuées (7j)</span></div>
+  <div class="stat"><span class="value">~<%= report.estimatedMinutesSaved %> min</span><span class="label">temps gagné estimé</span></div>
+</div>
+
+<h2 style="font-size:1.05rem;">Posts publiés par catégorie / canal</h2>
+<% if (report.postsByCategory.length === 0) { %>
+  <p class="empty">Aucune publication cette semaine.</p>
+<% } else { %>
+  <table>
+    <thead><tr><th>Catégorie</th><th>Canal</th><th>Posts</th></tr></thead>
+    <tbody>
+      <% report.postsByCategory.forEach(function(r) { %>
+        <tr><td><%= r.category %></td><td><%= r.channel %></td><td><%= r.count %></td></tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<h2 style="font-size:1.05rem; margin-top:24px;">Ventes attribuées par catégorie / canal</h2>
+<% if (report.salesByCategory.length === 0) { %>
+  <p class="empty">Aucune vente enregistrée cette semaine (webhook Chariow non déclenché ou non configuré).</p>
+<% } else { %>
+  <table>
+    <thead><tr><th>Catégorie</th><th>Canal</th><th>Commandes</th><th>Revenu</th></tr></thead>
+    <tbody>
+      <% report.salesByCategory.forEach(function(r) { %>
+        <tr><td><%= r.category || '—' %></td><td><%= r.channel || '—' %></td><td><%= r.orders %></td><td><%= (r.revenue || 0).toFixed(2) %> $</td></tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('partials/foot') %>

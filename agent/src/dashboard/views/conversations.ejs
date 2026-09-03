@@ -1,0 +1,32 @@
+<%- include('partials/head', { title: 'Service client' }) %>
+
+<h1>Service client — conversations récentes</h1>
+<p class="subtitle">Réponses proposées par l'agent (FAQ). Rien n'est envoyé automatiquement tant que les intégrations Meta/WhatsApp ne sont pas activées.</p>
+
+<div class="card">
+  <form method="post" action="/conversations/simulate">
+    <label for="channel">Canal</label>
+    <input type="text" id="channel" name="channel" value="whatsapp" style="width:200px; display:inline-block;">
+    <label for="message">Message reçu (test)</label>
+    <input type="text" id="message" name="message" placeholder="ex: combien coûte le livre business ?">
+    <div style="margin-top:14px;">
+      <button class="btn-secondary" type="submit">Tester la réponse de l'agent</button>
+    </div>
+  </form>
+</div>
+
+<% if (conversations.length === 0) { %>
+  <p class="empty">Aucune conversation pour le moment.</p>
+<% } %>
+
+<% conversations.forEach(function(c) { %>
+  <div class="card">
+    <div class="meta"><%= c.channel %> · intention détectée : <strong><%= c.intent %></strong> · <%= c.created_at %></div>
+    <div class="hook">Message reçu</div>
+    <pre class="caption"><%= c.message_in %></pre>
+    <div class="hook">Réponse proposée</div>
+    <pre class="caption"><%= c.message_out %></pre>
+  </div>
+<% }); %>
+
+<%- include('partials/foot') %>

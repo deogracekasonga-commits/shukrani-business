@@ -1,0 +1,40 @@
+<%- include('partials/head', { title: 'File de validation' }) %>
+
+<h1>Brouillons à valider</h1>
+<p class="subtitle">Rien n'est publié sans ton approbation. Catégorie active : <strong><%= activeCategoryName %></strong>.</p>
+
+<% if (flash) { %><div class="flash"><%= flash %></div><% } %>
+
+<form method="post" action="/drafts/generate" style="margin-bottom:20px;">
+  <button class="btn-secondary" type="submit">↻ Générer les brouillons de la semaine</button>
+</form>
+
+<% if (drafts.length === 0) { %>
+  <p class="empty">Aucun brouillon en attente. Clique sur « Générer » pour en créer.</p>
+<% } %>
+
+<% drafts.forEach(function(d) { %>
+  <div class="card">
+    <div class="meta">
+      <span class="badge draft">brouillon</span>
+      · <%= d.category_name %> · <%= d.channel %> · variante <%= d.ab_group %> · <%= d.product_title %>
+    </div>
+    <div class="hook"><%= d.hook %></div>
+    <pre class="caption"><%= d.caption %></pre>
+    <div class="meta">Hashtags : <%= d.hashtags %></div>
+    <div class="meta">Lien trackable : <a href="<%= d.cta_link %>" target="_blank"><%= d.cta_link %></a></div>
+    <% if (d.video_script) { %>
+      <details><summary>Script vidéo courte</summary><pre class="caption"><%= d.video_script %></pre></details>
+    <% } %>
+    <div class="actions" style="margin-top:12px;">
+      <form method="post" action="/drafts/<%= d.id %>/approve">
+        <button class="btn-approve" type="submit">✓ Approuver &amp; publier</button>
+      </form>
+      <form method="post" action="/drafts/<%= d.id %>/reject">
+        <button class="btn-reject" type="submit">✕ Rejeter</button>
+      </form>
+    </div>
+  </div>
+<% }); %>
+
+<%- include('partials/foot') %>
