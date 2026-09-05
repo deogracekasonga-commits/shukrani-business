@@ -62,10 +62,35 @@ Voir `.env.example`. Résumé :
 | `AD_BUDGET_WEEKLY_CAP` | Budget publicitaire hebdomadaire plafonné (0 = pas de pub payante) |
 | `AUTO_PUBLISH_INSTAGRAM` | `false` par défaut — mode brouillon obligatoire |
 
+## Étape 2 — Intégration Chariow
+
+- `src/integrations/chariow.js` : client API (`listProductsByCategory`,
+  `getSalesHistory`) + vérification de signature webhook HMAC-SHA256.
+  ⚠️ chariow.dev est inaccessible depuis cet environnement (bloqué par le
+  proxy réseau) : les noms de champs/endpoints n'ont pas pu être vérifiés
+  contre la doc réelle et sont ceux de la spec du projet, à confirmer avec
+  Deograce (voir commentaires en tête de fichier).
+- `src/app/api/webhooks/chariow/route.js` : endpoint qui écoute
+  `sale.completed` (alias `order.completed` accepté par précaution). Refuse
+  (401) toute requête sans signature valide — jamais de vente non
+  authentifiée enregistrée. Idempotent via `sales.chariow_event_id` (UNIQUE) :
+  un même événement rejoué est ignoré sans dupliquer la vente.
+- Sans `CHARIOW_API_KEY`, tout tourne en dry-run avec 2 produits de démo.
+
+Test de bout en bout :
+
+```bash
+npm run sync:products     # charge les produits (démo si pas de clé API) en base
+npm run dev                # démarre le serveur (autre terminal)
+npm run test:fake-sale     # construit + signe + envoie une vente factice au webhook
+```
+
+La page d'accueil (`/`) affiche les ventes récentes reçues.
+
 ## Roadmap (voir la demande initiale pour le détail de chaque étape)
 
 - [x] Étape 1 — Setup projet, base de données, variables d'environnement
-- [ ] Étape 2 — Intégration Chariow (API + webhook, test vente factice)
+- [x] Étape 2 — Intégration Chariow (API + webhook, test vente factice)
 - [ ] Étape 3 — Agent contenu (génération de brouillons)
 - [ ] Étape 4 — Dashboard de validation
 - [ ] Étape 5 — Intégration Instagram (publication test)

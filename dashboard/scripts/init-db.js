@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import './env.js';
 import { getDb } from '../src/db/client.js';
 
 const db = getDb();

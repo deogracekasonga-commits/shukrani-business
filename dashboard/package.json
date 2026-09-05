@@ -8,7 +8,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "db:init": "node scripts/init-db.js"
+    "db:init": "node scripts/init-db.js",
+    "sync:products": "node scripts/sync-products.js",
+    "test:fake-sale": "node scripts/test-fake-sale.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
