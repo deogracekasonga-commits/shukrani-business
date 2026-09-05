@@ -1,0 +1,21 @@
+{
+  "name": "shukrani-marketing-dashboard",
+  "version": "0.1.0",
+  "description": "Agent IA marketing (Next.js) pour Shukrani Business — Chariow + Instagram",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:init": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^17.4.2",
+    "nanoid": "^6.0.1",
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
