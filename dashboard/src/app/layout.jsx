@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/drafts', label: 'Brouillons à valider' },
   { href: '/calendar', label: 'Calendrier éditorial' },
   { href: '/sales', label: 'Ventes' },
+  { href: '/reports', label: 'Rapport hebdomadaire' },
 ];
 
 export default function RootLayout({ children }) {

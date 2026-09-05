@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS published_posts (
   draft_id TEXT NOT NULL REFERENCES content_drafts(id),
   url_instagram TEXT,                -- permalink renvoyé par Meta Graph API après publication
   date_publication TEXT NOT NULL DEFAULT (datetime('now')),
-  utm_link TEXT NOT NULL             -- lien Chariow + paramètres UTM propres à ce post
+  utm_link TEXT NOT NULL,            -- lien Chariow + paramètres UTM propres à ce post
+  external_post_id TEXT              -- id média Meta, requis pour lire les insights (Étape 6)
 );
 
 CREATE TABLE IF NOT EXISTS sales (

@@ -12,7 +12,8 @@
     "sync:products": "node scripts/sync-products.js",
     "generate:drafts": "node scripts/generate-drafts.js",
     "test:publish": "node scripts/test-publish.js",
-    "test:fake-sale": "node scripts/test-fake-sale.js"
+    "test:fake-sale": "node scripts/test-fake-sale.js",
+    "generate:report": "node scripts/generate-report.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

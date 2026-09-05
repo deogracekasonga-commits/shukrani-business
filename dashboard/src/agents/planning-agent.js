@@ -48,5 +48,6 @@ export async function publishApprovedDraft(draftId) {
     draftId: draft.id,
     urlInstagram: result.permalink,
     utmLink,
+    externalPostId: result.externalPostId,
   });
 }

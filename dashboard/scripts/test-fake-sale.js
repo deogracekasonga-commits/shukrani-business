@@ -20,11 +20,25 @@ if (!config.chariow.webhookSecret) {
 }
 
 const db = getDb();
-const product = db.prepare('SELECT * FROM products LIMIT 1').get();
+
+// S'il existe un post déjà publié, on simule l'achat via SON lien tracké
+// (comme le ferait un vrai acheteur cliquant depuis Instagram) pour tester
+// l'attribution vente ↔ post en plus de l'enregistrement de la vente.
+const publishedPost = db
+  .prepare(
+    `SELECT published_posts.*, products.* FROM published_posts
+     JOIN content_drafts ON content_drafts.id = published_posts.draft_id
+     JOIN products ON products.id = content_drafts.product_id
+     ORDER BY published_posts.date_publication DESC LIMIT 1`
+  )
+  .get();
+
+const product = publishedPost || db.prepare('SELECT * FROM products LIMIT 1').get();
 if (!product) {
   console.error('Aucun produit en base. Lance d\'abord `npm run sync:products`.');
   process.exit(1);
 }
+const productUrl = publishedPost ? publishedPost.utm_link : product.lien_chariow;
 
 const payload = {
   event: 'sale.completed',
@@ -37,7 +51,7 @@ const payload = {
     amount: product.prix,
     currency: 'USD',
     created_at: new Date().toISOString(),
-    product_url: product.lien_chariow,
+    product_url: productUrl,
   },
 };
 

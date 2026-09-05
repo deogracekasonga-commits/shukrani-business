@@ -143,6 +143,24 @@ pas pu être vérifiés depuis cet environnement réseau restreint — l'appel
 réel (2 étapes + lecture du permalink) suit la documentation Graph API
 standard, à tester avec un vrai token dès qu'il sera disponible.
 
+## Étape 6 — Agent analytics + rapport hebdomadaire
+
+- `src/agents/analytics-agent.js` : calcule, pour la semaine ISO courante
+  (lundi-dimanche) — ventes totales, CA par catégorie, top posts (ventes
+  attribuées via `sales.attributed_post_id` + ROI si un budget pub
+  hebdomadaire est configuré + insights Instagram si un token Meta existe)
+  et des recommandations simples (règles, pas d'appel IA pour le MVP).
+- `/reports` : bouton **« Générer le rapport de la semaine »** + historique
+  des rapports précédents. `npm run generate:report` fait la même chose en
+  CLI.
+- `published_posts.external_post_id` (nouveau champ technique) : id média
+  Meta, nécessaire pour lire les insights Instagram par post.
+- Testé de bout en bout : vente factice simulée en cliquant sur le **lien
+  tracké** d'un post publié (`test-fake-sale.js` réutilise
+  `published_posts.utm_link` s'il existe) → attribution vente↔post vérifiée
+  en base → rapport généré avec le bon total, la bonne catégorie et la
+  bonne recommandation.
+
 ## Roadmap (voir la demande initiale pour le détail de chaque étape)
 
 - [x] Étape 1 — Setup projet, base de données, variables d'environnement
@@ -150,4 +168,9 @@ standard, à tester avec un vrai token dès qu'il sera disponible.
 - [x] Étape 3 — Agent contenu (génération de brouillons)
 - [x] Étape 4 — Dashboard de validation
 - [x] Étape 5 — Intégration Instagram (publication test)
-- [ ] Étape 6 — Agent analytics + rapport hebdomadaire
+- [x] Étape 6 — Agent analytics + rapport hebdomadaire
+
+**Le MVP décrit dans la demande initiale est maintenant complet**, en mode
+dry-run (aucune clé API réelle configurée). Prochaine étape naturelle :
+brancher les vraies clés Chariow/Meta au fur et à mesure qu'elles sont
+disponibles, puis déployer le projet.

@@ -166,12 +166,13 @@ export function updateContentDraftText(id, texte) {
  * `urlInstagram` peut être `null` en dry-run (aucun token Meta configuré) —
  * le lien tracké (`utmLink`), lui, existe toujours.
  */
-export function insertPublishedPost({ draftId, urlInstagram, utmLink }) {
+export function insertPublishedPost({ draftId, urlInstagram, utmLink, externalPostId }) {
   const db = getDb();
   const id = nanoid();
   db.prepare(
-    `INSERT INTO published_posts (id, draft_id, url_instagram, utm_link) VALUES (?, ?, ?, ?)`
-  ).run(id, draftId, urlInstagram, utmLink);
+    `INSERT INTO published_posts (id, draft_id, url_instagram, utm_link, external_post_id)
+     VALUES (?, ?, ?, ?, ?)`
+  ).run(id, draftId, urlInstagram, utmLink, externalPostId ?? null);
   db.prepare(`UPDATE content_drafts SET statut = 'publie' WHERE id = ?`).run(draftId);
   return db.prepare('SELECT * FROM published_posts WHERE id = ?').get(id);
 }
@@ -203,4 +204,52 @@ export function listRecentSales(limit = 50) {
        ORDER BY sales.date DESC LIMIT ?`
     )
     .all(limit);
+}
+
+/** Ventes dont la date tombe dans [sinceIso, untilIso), produit + catégorie inclus. */
+export function listSalesBetween(sinceIso, untilIso) {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT sales.*, products.nom AS produit_nom, products.categorie
+       FROM sales LEFT JOIN products ON products.id = sales.product_id
+       WHERE sales.date >= ? AND sales.date < ?
+       ORDER BY sales.date`
+    )
+    .all(sinceIso, untilIso);
+}
+
+/** Posts publiés dans [sinceIso, untilIso), avec produit/catégorie associés. */
+export function listPublishedPostsBetween(sinceIso, untilIso) {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT published_posts.*, products.nom AS produit_nom, products.categorie
+       FROM published_posts
+       LEFT JOIN content_drafts ON content_drafts.id = published_posts.draft_id
+       LEFT JOIN products ON products.id = content_drafts.product_id
+       WHERE published_posts.date_publication >= ? AND published_posts.date_publication < ?
+       ORDER BY published_posts.date_publication`
+    )
+    .all(sinceIso, untilIso);
+}
+
+export function insertWeeklyReport({ semaine, ventesTotales, caParCategorie, topPosts }) {
+  const db = getDb();
+  const id = nanoid();
+  db.prepare(
+    `INSERT INTO weekly_reports (id, semaine, ventes_totales, ca_par_categorie, top_posts)
+     VALUES (?, ?, ?, ?, ?)`
+  ).run(id, semaine, ventesTotales, JSON.stringify(caParCategorie), JSON.stringify(topPosts));
+  return db.prepare('SELECT * FROM weekly_reports WHERE id = ?').get(id);
+}
+
+export function listWeeklyReports(limit = 20) {
+  const db = getDb();
+  return db.prepare('SELECT * FROM weekly_reports ORDER BY semaine DESC LIMIT ?').all(limit);
+}
+
+export function getWeeklyReport(semaine) {
+  const db = getDb();
+  return db.prepare('SELECT * FROM weekly_reports WHERE semaine = ?').get(semaine);
 }

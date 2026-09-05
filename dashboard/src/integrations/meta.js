@@ -61,3 +61,30 @@ export async function publishToInstagram({ imageUrl, caption }) {
 
   return { externalPostId: published.id, permalink: info.permalink ?? null, dryRun: false };
 }
+
+/**
+ * Lit les métriques (« insights ») d'un média Instagram déjà publié —
+ * utilisé par l'agent analytics pour le rapport hebdomadaire.
+ * Sans token configuré, ou pour un id de dry-run (`dryrun_...`), renvoie
+ * `null` plutôt que d'appeler l'API.
+ * @returns {{ impressions: number, reach: number, engagement: number }|null}
+ */
+export async function getMediaInsights(mediaId) {
+  if (!isConfigured() || !mediaId || mediaId.startsWith('dryrun_')) return null;
+
+  const res = await fetch(
+    `${GRAPH_API_BASE}/${mediaId}/insights?metric=impressions,reach,engagement&access_token=${config.meta.pageAccessToken}`
+  );
+  const data = await res.json();
+  if (!res.ok) {
+    console.warn(`[meta] insights indisponibles pour ${mediaId} :`, JSON.stringify(data));
+    return null;
+  }
+
+  const byName = Object.fromEntries((data.data || []).map((m) => [m.name, m.values?.[0]?.value ?? 0]));
+  return {
+    impressions: byName.impressions ?? 0,
+    reach: byName.reach ?? 0,
+    engagement: byName.engagement ?? 0,
+  };
+}
