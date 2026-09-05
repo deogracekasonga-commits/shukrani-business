@@ -122,6 +122,37 @@ export function listContentDrafts({ statut, limit = 50 } = {}) {
     .all(...params);
 }
 
+export function getContentDraft(id) {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT content_drafts.*, products.nom AS produit_nom, products.categorie, products.lien_chariow
+       FROM content_drafts LEFT JOIN products ON products.id = content_drafts.product_id
+       WHERE content_drafts.id = ?`
+    )
+    .get(id);
+}
+
+/** Approuve ou rejette un brouillon (statut : valide | rejete). */
+export function reviewContentDraft(id, statut, reviewedBy = 'Deograce') {
+  const db = getDb();
+  db.prepare(
+    `UPDATE content_drafts SET statut = ?, date_validation = datetime('now'), valide_par = ?
+     WHERE id = ?`
+  ).run(statut, reviewedBy, id);
+  return getContentDraft(id);
+}
+
+/** Modifie le texte d'un brouillon (repasse en statut brouillon s'il avait déjà été traité). */
+export function updateContentDraftText(id, texte) {
+  const db = getDb();
+  db.prepare(
+    `UPDATE content_drafts SET texte = ?, statut = 'brouillon', date_validation = NULL, valide_par = NULL
+     WHERE id = ?`
+  ).run(texte, id);
+  return getContentDraft(id);
+}
+
 export function listRecentSales(limit = 50) {
   const db = getDb();
   return db

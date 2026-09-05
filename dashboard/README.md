@@ -102,11 +102,27 @@ La page d'accueil (`/`) affiche les ventes récentes reçues.
   vidéo) pour la catégorie active et les enregistre en base (`brouillon`).
   Testé avec les 2 produits de démo → 4 brouillons cohérents.
 
+## Étape 4 — Dashboard de validation
+
+- `/drafts` : relire, modifier (textarea + « Enregistrer ») puis
+  **Approuver** ou **Rejeter** chaque brouillon. Rien n'est publié sans ce
+  passage humain. Historique des brouillons déjà traités affiché en dessous.
+- `/calendar` : calendrier éditorial (contenu par jour, statut de chacun).
+  La programmation d'un créneau de publication précis arrivera avec
+  l'Étape 5.
+- `/sales` : ventes en temps réel (alimentées par le webhook Chariow).
+- `/` : vue d'ensemble avec compteurs et liens vers les 3 pages ci-dessus.
+
+Testé de bout en bout avec Playwright : édition → sauvegarde, approbation,
+rejet — chaque action se reflète immédiatement (Server Actions Next.js,
+`revalidatePath`).
+
 ## Roadmap (voir la demande initiale pour le détail de chaque étape)
 
 - [x] Étape 1 — Setup projet, base de données, variables d'environnement
 - [x] Étape 2 — Intégration Chariow (API + webhook, test vente factice)
 - [x] Étape 3 — Agent contenu (génération de brouillons)
+- [x] Étape 4 — Dashboard de validation
 - [ ] Étape 4 — Dashboard de validation
 - [ ] Étape 5 — Intégration Instagram (publication test)
 - [ ] Étape 6 — Agent analytics + rapport hebdomadaire
