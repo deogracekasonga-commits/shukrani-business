@@ -1,6 +1,10 @@
-# Agents (à implémenter aux étapes suivantes)
+# Agents
 
-- `orchestrator.js` — reçoit les demandes de contenu, distribue aux sous-agents (Étape 3+).
-- `content-agent.js` — génère légendes, accroches, scripts vidéo courts (Étape 3).
-- `planning-agent.js` — programme les publications validées, génère les liens UTM (Étape 5).
-- `analytics-agent.js` — traite les webhooks Chariow + métriques Instagram, calcule le ROI, génère le rapport hebdomadaire (Étape 6).
+- `orchestrator.js` — point d'entrée unique, distribue aux sous-agents.
+- `content-agent.js` — génère légendes, accroches, scripts vidéo courts par
+  templates (catégorie `templates/<categorie>.js`, repli sur `generic.js`).
+- `planning-agent.js` — programme les publications validées, génère les
+  liens UTM (Étape 5, pas encore implémenté).
+- `analytics-agent.js` — traite les webhooks Chariow + métriques Instagram,
+  calcule le ROI, génère le rapport hebdomadaire (Étape 6, pas encore
+  implémenté).

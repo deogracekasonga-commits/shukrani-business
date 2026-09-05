@@ -10,6 +10,7 @@
     "start": "next start",
     "db:init": "node scripts/init-db.js",
     "sync:products": "node scripts/sync-products.js",
+    "generate:drafts": "node scripts/generate-drafts.js",
     "test:fake-sale": "node scripts/test-fake-sale.js"
   },
   "dependencies": {

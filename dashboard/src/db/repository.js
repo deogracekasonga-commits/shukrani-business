@@ -93,6 +93,35 @@ export function recordSaleFromWebhook(sale) {
   return { inserted: true, sale: db.prepare('SELECT * FROM sales WHERE id = ?').get(id) };
 }
 
+export function listProductsByCategoryLocal(categorie) {
+  const db = getDb();
+  return db.prepare('SELECT * FROM products WHERE categorie = ? ORDER BY created_at').all(categorie);
+}
+
+export function insertContentDraft({ productId, texte, format = 'post' }) {
+  const db = getDb();
+  const id = nanoid();
+  db.prepare(
+    `INSERT INTO content_drafts (id, product_id, texte, format, statut)
+     VALUES (?, ?, ?, ?, 'brouillon')`
+  ).run(id, productId, texte, format);
+  return db.prepare('SELECT * FROM content_drafts WHERE id = ?').get(id);
+}
+
+export function listContentDrafts({ statut, limit = 50 } = {}) {
+  const db = getDb();
+  const where = statut ? 'WHERE content_drafts.statut = ?' : '';
+  const params = statut ? [statut, limit] : [limit];
+  return db
+    .prepare(
+      `SELECT content_drafts.*, products.nom AS produit_nom, products.categorie
+       FROM content_drafts LEFT JOIN products ON products.id = content_drafts.product_id
+       ${where}
+       ORDER BY content_drafts.date_creation DESC LIMIT ?`
+    )
+    .all(...params);
+}
+
 export function listRecentSales(limit = 50) {
   const db = getDb();
   return db

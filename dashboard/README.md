@@ -87,11 +87,26 @@ npm run test:fake-sale     # construit + signe + envoie une vente factice au web
 
 La page d'accueil (`/`) affiche les ventes récentes reçues.
 
+## Étape 3 — Agent contenu
+
+- `src/agents/content-agent.js` : génère légendes (`format: 'post'`) et
+  scripts vidéo courts (`format: 'reel_script'`) à partir de templates par
+  catégorie (`src/agents/templates/`). MVP sans coût API — aucune clé
+  requise. `generateCaptionText`/`generateVideoScriptText` sont isolées pour
+  brancher l'API Claude plus tard (`ANTHROPIC_API_KEY`) sans changer
+  l'appelant.
+- `src/agents/orchestrator.js` : point d'entrée unique (`requestWeeklyContent`),
+  futur point de distribution vers planification (Étape 5) et analytics
+  (Étape 6).
+- `npm run generate:drafts` : génère 3-5 brouillons (mix légendes + script
+  vidéo) pour la catégorie active et les enregistre en base (`brouillon`).
+  Testé avec les 2 produits de démo → 4 brouillons cohérents.
+
 ## Roadmap (voir la demande initiale pour le détail de chaque étape)
 
 - [x] Étape 1 — Setup projet, base de données, variables d'environnement
 - [x] Étape 2 — Intégration Chariow (API + webhook, test vente factice)
-- [ ] Étape 3 — Agent contenu (génération de brouillons)
+- [x] Étape 3 — Agent contenu (génération de brouillons)
 - [ ] Étape 4 — Dashboard de validation
 - [ ] Étape 5 — Intégration Instagram (publication test)
 - [ ] Étape 6 — Agent analytics + rapport hebdomadaire

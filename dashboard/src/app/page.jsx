@@ -1,25 +1,46 @@
 import { getDb } from '../db/client.js';
 import { config } from '../lib/config.js';
-import { listRecentSales } from '../db/repository.js';
+import { listRecentSales, listContentDrafts } from '../db/repository.js';
 
 export default function HomePage() {
   const db = getDb();
   const productCount = db.prepare('SELECT COUNT(*) AS n FROM products').get().n;
-  const draftCount = db.prepare('SELECT COUNT(*) AS n FROM content_drafts').get().n;
+  const drafts = listContentDrafts({ limit: 10 });
   const sales = listRecentSales(10);
 
   return (
     <main style={{ maxWidth: 720, margin: '4rem auto', padding: '0 1.5rem' }}>
       <h1>Agent IA Marketing — Shukrani Business</h1>
       <p>
-        Étape 2 (intégration Chariow) en place. Catégorie active :{' '}
+        Étape 3 (agent contenu) en place. Catégorie active :{' '}
         <strong>{config.activeCategory}</strong>.
       </p>
       <ul>
         <li>Produits en base : {productCount}</li>
-        <li>Brouillons de contenu : {draftCount}</li>
+        <li>Brouillons de contenu : {drafts.length}</li>
         <li>Ventes enregistrées : {sales.length}</li>
       </ul>
+
+      <h2>Brouillons de contenu</h2>
+      {drafts.length === 0 ? (
+        <p style={{ color: '#666' }}>
+          Aucun brouillon pour l&apos;instant. Lance <code>npm run generate:drafts</code>.
+        </p>
+      ) : (
+        <ul style={{ padding: 0, listStyle: 'none' }}>
+          {drafts.map((draft) => (
+            <li
+              key={draft.id}
+              style={{ border: '1px solid #ddd', borderRadius: 6, padding: '0.75rem', marginBottom: '0.75rem' }}
+            >
+              <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.4rem' }}>
+                {draft.produit_nom} · {draft.format} · statut : {draft.statut}
+              </div>
+              <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{draft.texte}</pre>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <h2>Ventes récentes</h2>
       {sales.length === 0 ? (
@@ -51,8 +72,8 @@ export default function HomePage() {
       )}
 
       <p style={{ color: '#666', marginTop: '2rem' }}>
-        Prochaines étapes : agent contenu, dashboard de validation, publication
-        Instagram, agent analytics.
+        Prochaines étapes : dashboard de validation, publication Instagram,
+        agent analytics.
       </p>
     </main>
   );
