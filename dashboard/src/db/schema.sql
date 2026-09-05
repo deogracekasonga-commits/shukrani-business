@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS products (
   prix REAL NOT NULL,
   lien_chariow TEXT NOT NULL,       -- URL produit publique sur Chariow
   chariow_product_id TEXT,          -- id produit côté API Chariow (GET /v1/products)
+  image_url TEXT,                   -- visuel de couverture, requis par Instagram pour publier
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

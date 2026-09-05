@@ -13,16 +13,24 @@ export function upsertProductFromChariow(product) {
 
   if (existing) {
     db.prepare(
-      'UPDATE products SET nom = ?, categorie = ?, prix = ?, lien_chariow = ? WHERE id = ?'
-    ).run(product.nom, product.categorie, product.prix, product.lien_chariow, existing.id);
+      'UPDATE products SET nom = ?, categorie = ?, prix = ?, lien_chariow = ?, image_url = ? WHERE id = ?'
+    ).run(product.nom, product.categorie, product.prix, product.lien_chariow, product.image_url ?? null, existing.id);
     return existing.id;
   }
 
   const id = nanoid();
   db.prepare(
-    `INSERT INTO products (id, nom, categorie, prix, lien_chariow, chariow_product_id)
-     VALUES (?, ?, ?, ?, ?, ?)`
-  ).run(id, product.nom, product.categorie, product.prix, product.lien_chariow, product.chariow_product_id ?? product.id ?? null);
+    `INSERT INTO products (id, nom, categorie, prix, lien_chariow, chariow_product_id, image_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
+  ).run(
+    id,
+    product.nom,
+    product.categorie,
+    product.prix,
+    product.lien_chariow,
+    product.chariow_product_id ?? product.id ?? null,
+    product.image_url ?? null
+  );
   return id;
 }
 
@@ -126,7 +134,7 @@ export function getContentDraft(id) {
   const db = getDb();
   return db
     .prepare(
-      `SELECT content_drafts.*, products.nom AS produit_nom, products.categorie, products.lien_chariow
+      `SELECT content_drafts.*, products.nom AS produit_nom, products.categorie, products.lien_chariow, products.image_url
        FROM content_drafts LEFT JOIN products ON products.id = content_drafts.product_id
        WHERE content_drafts.id = ?`
     )
@@ -151,6 +159,39 @@ export function updateContentDraftText(id, texte) {
      WHERE id = ?`
   ).run(texte, id);
   return getContentDraft(id);
+}
+
+/**
+ * Enregistre une publication Instagram et marque le brouillon comme publié.
+ * `urlInstagram` peut être `null` en dry-run (aucun token Meta configuré) —
+ * le lien tracké (`utmLink`), lui, existe toujours.
+ */
+export function insertPublishedPost({ draftId, urlInstagram, utmLink }) {
+  const db = getDb();
+  const id = nanoid();
+  db.prepare(
+    `INSERT INTO published_posts (id, draft_id, url_instagram, utm_link) VALUES (?, ?, ?, ?)`
+  ).run(id, draftId, urlInstagram, utmLink);
+  db.prepare(`UPDATE content_drafts SET statut = 'publie' WHERE id = ?`).run(draftId);
+  return db.prepare('SELECT * FROM published_posts WHERE id = ?').get(id);
+}
+
+export function getPublishedPostForDraft(draftId) {
+  const db = getDb();
+  return db.prepare('SELECT * FROM published_posts WHERE draft_id = ?').get(draftId);
+}
+
+export function listPublishedPosts(limit = 50) {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT published_posts.*, content_drafts.format, products.nom AS produit_nom, products.categorie
+       FROM published_posts
+       LEFT JOIN content_drafts ON content_drafts.id = published_posts.draft_id
+       LEFT JOIN products ON products.id = content_drafts.product_id
+       ORDER BY published_posts.date_publication DESC LIMIT ?`
+    )
+    .all(limit);
 }
 
 export function listRecentSales(limit = 50) {

@@ -17,6 +17,7 @@ const DRY_RUN_PRODUCTS = [
     categorie: 'developpement-personnel',
     prix: 9,
     lien_chariow: 'https://chariow.com/shukrani-business/construire-une-confiance-solide',
+    image_url: 'https://placehold.co/1080x1080/1a2b4c/ffffff.png?text=Confiance+Solide',
   },
   {
     id: 'sample-discipline-quotidienne',
@@ -24,6 +25,7 @@ const DRY_RUN_PRODUCTS = [
     categorie: 'developpement-personnel',
     prix: 7,
     lien_chariow: 'https://chariow.com/shukrani-business/discipline-quotidienne',
+    image_url: 'https://placehold.co/1080x1080/1a2b4c/ffffff.png?text=Discipline+Quotidienne',
   },
 ];
 
@@ -86,6 +88,7 @@ function normalizeProduct(raw) {
     categorie: raw.category || raw.categorie,
     prix: Number(raw.price ?? raw.prix ?? 0),
     lien_chariow: raw.url || raw.lien_chariow || raw.product_url,
+    image_url: raw.image_url || raw.cover_image_url || raw.image || raw.thumbnail_url || null,
   };
 }
 

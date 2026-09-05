@@ -117,12 +117,37 @@ Testé de bout en bout avec Playwright : édition → sauvegarde, approbation,
 rejet — chaque action se reflète immédiatement (Server Actions Next.js,
 `revalidatePath`).
 
+## Étape 5 — Publication Instagram
+
+- `src/integrations/meta.js` : publication Instagram (Meta Graph API,
+  2 étapes : créer le conteneur média puis le publier). Sans
+  `META_PAGE_ACCESS_TOKEN`/`META_IG_USER_ID`, dry-run complet (rien n'est
+  envoyé à Meta, tout est loggé en console).
+- `src/agents/planning-agent.js` : génère le lien Chariow tracké (UTM :
+  `utm_source=instagram&utm_medium=social&utm_campaign=<categorie>&utm_content=<draft_id>`)
+  et remplace le lien brut par ce lien tracké dans la légende avant
+  publication. Refuse de publier un brouillon qui n'est pas `valide`.
+- Dashboard `/drafts` : nouvelle section **« Approuvés — prêts à publier »**
+  avec bouton **📤 Publier sur Instagram**. Une fois publié, affiche le
+  lien Instagram (ou la mention dry-run) et le lien tracké.
+- `AUTO_PUBLISH_INSTAGRAM=true` publie automatiquement dès l'approbation
+  (toujours après validation humaine explicite) — `false` par défaut,
+  publication manuelle via le bouton.
+- `products.image_url` (+ `META_DEFAULT_IMAGE_URL` en repli) : Instagram
+  exige une image pour tout post.
+- Testé de bout en bout (`npm run test:publish` + Playwright sur le
+  dashboard) : approbation → publication → lien tracké visible.
+
+⚠️ Comme pour Chariow, `developers.facebook.com`/`graph.facebook.com` n'ont
+pas pu être vérifiés depuis cet environnement réseau restreint — l'appel
+réel (2 étapes + lecture du permalink) suit la documentation Graph API
+standard, à tester avec un vrai token dès qu'il sera disponible.
+
 ## Roadmap (voir la demande initiale pour le détail de chaque étape)
 
 - [x] Étape 1 — Setup projet, base de données, variables d'environnement
 - [x] Étape 2 — Intégration Chariow (API + webhook, test vente factice)
 - [x] Étape 3 — Agent contenu (génération de brouillons)
 - [x] Étape 4 — Dashboard de validation
-- [ ] Étape 4 — Dashboard de validation
-- [ ] Étape 5 — Intégration Instagram (publication test)
+- [x] Étape 5 — Intégration Instagram (publication test)
 - [ ] Étape 6 — Agent analytics + rapport hebdomadaire

@@ -13,6 +13,11 @@ export const config = {
     appSecret: process.env.META_APP_SECRET || '',
     pageAccessToken: process.env.META_PAGE_ACCESS_TOKEN || '',
     igUserId: process.env.META_IG_USER_ID || '',
+    // Image utilisée quand un produit n'a pas encore de visuel propre
+    // (products.image_url) — Instagram exige une image pour tout post.
+    defaultImageUrl:
+      process.env.META_DEFAULT_IMAGE_URL ||
+      'https://placehold.co/1080x1080/1a2b4c/ffffff.png?text=Shukrani+Business',
   },
   anthropic: {
     apiKey: process.env.ANTHROPIC_API_KEY || '',
