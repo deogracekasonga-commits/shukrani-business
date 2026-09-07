@@ -170,7 +170,51 @@ standard, à tester avec un vrai token dès qu'il sera disponible.
 - [x] Étape 5 — Intégration Instagram (publication test)
 - [x] Étape 6 — Agent analytics + rapport hebdomadaire
 
-**Le MVP décrit dans la demande initiale est maintenant complet**, en mode
-dry-run (aucune clé API réelle configurée). Prochaine étape naturelle :
-brancher les vraies clés Chariow/Meta au fur et à mesure qu'elles sont
-disponibles, puis déployer le projet.
+**Le MVP décrit dans la demande initiale est maintenant complet.**
+`CHARIOW_API_KEY` est configurée (le test réel est bloqué depuis cet
+environnement de développement par une restriction réseau — voir
+« Déploiement » ci-dessous) ; Meta reste en attente de la liaison
+Instagram↔Page Facebook.
+
+## Déploiement
+
+Le dry-run local ne prouve pas tout : la connexion réseau de cet
+environnement de développement est volontairement restreinte (elle bloque
+`api.chariow.com` et bloquerait aussi `graph.facebook.com`). Le vrai test
+avec les clés réelles se fera une fois le projet déployé sur un
+hébergeur avec accès internet normal.
+
+**Point important avant de choisir un hébergeur** : ce projet stocke ses
+données dans un fichier SQLite local (`data/agent.db`, via
+`better-sqlite3`). Ça fonctionne très bien sur un serveur classique à
+disque persistant, mais **pas** sur une plateforme serverless/edge dont le
+système de fichiers est éphémère à chaque exécution (ex. Vercel en usage
+par défaut) — les données seraient perdues entre deux requêtes.
+
+Options d'hébergement adaptées :
+- **VPS classique** (ex. un petit serveur chez un hébergeur africain ou
+  international) : `npm run build && npm start`, disque persistant garanti.
+- **Railway / Render / Fly.io** (ou équivalent avec disque persistant
+  attachable) : adaptés à Next.js + SQLite, plans gratuits/pas chers
+  suffisants pour ce volume.
+- Si un jour le volume de données grossit significativement, migrer vers
+  une base hébergée (Postgres via Supabase, par ex.) reste simple — le
+  code d'accès aux données est isolé dans `src/db/`.
+
+**Checklist de mise en production :**
+1. Déployer le code de ce dossier (`dashboard/`) sur l'hébergeur choisi.
+2. Configurer les variables d'environnement de production (voir
+   `.env.example`) : `CHARIOW_API_KEY`, `CHARIOW_WEBHOOK_SECRET`,
+   `META_PAGE_ACCESS_TOKEN`, `META_IG_USER_ID`, `ANTHROPIC_API_KEY` (si
+   utilisée), `ACTIVE_CATEGORY`, `AD_BUDGET_WEEKLY_CAP`.
+3. Une fois en ligne, retourner dans le dashboard Chariow → Webhooks et
+   pointer vers `https://<ton-domaine>/api/webhooks/chariow` avec
+   l'événement vente réussie — Chariow y génère alors le vrai
+   `CHARIOW_WEBHOOK_SECRET` à reporter dans les variables d'environnement.
+4. Lancer `npm run sync:products` (ou le bouton équivalent une fois
+   ajouté au dashboard) pour vérifier que les vrais produits Chariow
+   remontent avec les bons champs — ajuster `normalizeProduct()` dans
+   `src/integrations/chariow.js` si Chariow utilise des noms de champs
+   différents de ceux supposés ici.
+5. Garder `AUTO_PUBLISH_INSTAGRAM=false` tant que Deograce n'a pas
+   validé manuellement plusieurs publications réelles.
