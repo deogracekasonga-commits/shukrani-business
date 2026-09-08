@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { query, initDb } from '../db/client.js';
 import { config } from '../lib/config.js';
 import { listContentDrafts, listRecentSales } from '../db/repository.js';
+import { syncProducts, generateDrafts } from './actions.js';
 
 // Toujours rendu à la demande (jamais prérendu au build) — les données
 // viennent d'une base Postgres externe, pas d'un fichier local.
@@ -29,6 +30,19 @@ export default async function HomePage() {
         <StatCard label="Ventes enregistrées" value={salesCount} href="/sales" />
       </div>
 
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', margin: '1.5rem 0' }}>
+        <form action={syncProducts}>
+          <button type="submit" style={buttonStyle}>
+            🔄 Synchroniser les produits Chariow
+          </button>
+        </form>
+        <form action={generateDrafts}>
+          <button type="submit" style={buttonStyle}>
+            ✨ Générer de nouveaux brouillons
+          </button>
+        </form>
+      </div>
+
       <p style={{ color: '#666' }}>
         Prochaines étapes : publication Instagram (Étape 5), agent analytics et
         rapport hebdomadaire (Étape 6).
@@ -36,6 +50,15 @@ export default async function HomePage() {
     </main>
   );
 }
+
+const buttonStyle = {
+  background: '#0a66c2',
+  color: 'white',
+  border: 'none',
+  borderRadius: 6,
+  padding: '0.6rem 1.1rem',
+  cursor: 'pointer',
+};
 
 function StatCard({ label, value, href, highlight }) {
   const content = (
