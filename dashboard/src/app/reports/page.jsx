@@ -2,8 +2,10 @@ import { listWeeklyReports } from '../../db/repository.js';
 import { buildRecommendations, getIsoWeekInfo } from '../../agents/analytics-agent.js';
 import { generateReport } from './actions.js';
 
-export default function ReportsPage() {
-  const reports = listWeeklyReports(20);
+export const dynamic = 'force-dynamic';
+
+export default async function ReportsPage() {
+  const reports = await listWeeklyReports(20);
   const currentWeek = getIsoWeekInfo().label;
   const latest = reports[0];
 

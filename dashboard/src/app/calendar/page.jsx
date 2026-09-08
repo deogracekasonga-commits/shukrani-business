@@ -11,8 +11,10 @@ function dayKey(dateCreation) {
   return dateCreation.slice(0, 10); // "2026-09-05 10:12:00" → "2026-09-05"
 }
 
-export default function CalendarPage() {
-  const drafts = listContentDrafts({ limit: 200 }).filter((d) => d.statut !== 'rejete');
+export const dynamic = 'force-dynamic';
+
+export default async function CalendarPage() {
+  const drafts = (await listContentDrafts({ limit: 200 })).filter((d) => d.statut !== 'rejete');
 
   const byDay = new Map();
   for (const draft of drafts) {

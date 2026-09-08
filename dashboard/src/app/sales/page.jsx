@@ -1,7 +1,9 @@
 import { listRecentSales } from '../../db/repository.js';
 
-export default function SalesPage() {
-  const sales = listRecentSales(100);
+export const dynamic = 'force-dynamic';
+
+export default async function SalesPage() {
+  const sales = await listRecentSales(100);
 
   return (
     <main style={{ maxWidth: 760, margin: '2.5rem auto', padding: '0 1.5rem' }}>

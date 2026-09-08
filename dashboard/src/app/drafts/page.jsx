@@ -8,11 +8,16 @@ const STATUT_LABEL = {
   publie: 'Publié',
 };
 
-export default function DraftsPage() {
-  const pending = listContentDrafts({ statut: 'brouillon', limit: 50 });
-  const approved = listContentDrafts({ statut: 'valide', limit: 50 });
-  const done = listContentDrafts({ limit: 50 }).filter(
+export const dynamic = 'force-dynamic';
+
+export default async function DraftsPage() {
+  const pending = await listContentDrafts({ statut: 'brouillon', limit: 50 });
+  const approved = await listContentDrafts({ statut: 'valide', limit: 50 });
+  const done = (await listContentDrafts({ limit: 50 })).filter(
     (d) => d.statut === 'rejete' || d.statut === 'publie'
+  );
+  const donePosts = await Promise.all(
+    done.map((d) => (d.statut === 'publie' ? getPublishedPostForDraft(d.id) : null))
   );
 
   return (
@@ -81,8 +86,8 @@ export default function DraftsPage() {
       {done.length > 0 && (
         <>
           <h2 style={{ marginTop: '2.5rem' }}>Déjà traités</h2>
-          {done.map((draft) => {
-            const post = draft.statut === 'publie' ? getPublishedPostForDraft(draft.id) : null;
+          {done.map((draft, i) => {
+            const post = donePosts[i];
             return (
               <div key={draft.id} style={{ ...cardStyle, opacity: 0.75 }}>
                 <div style={metaStyle}>

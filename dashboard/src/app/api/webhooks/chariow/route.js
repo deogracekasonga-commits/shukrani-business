@@ -32,7 +32,7 @@ export async function POST(request) {
     return NextResponse.json({ ignored: true, event: sale.event ?? null });
   }
 
-  const { inserted, sale: stored } = recordSaleFromWebhook(sale);
+  const { inserted, sale: stored } = await recordSaleFromWebhook(sale);
 
   return NextResponse.json({ ok: true, inserted, sale_id: stored.id });
 }

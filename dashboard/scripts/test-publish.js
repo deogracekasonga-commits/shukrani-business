@@ -3,22 +3,21 @@
 // pour tester le pipeline sans passer par le dashboard.
 // Usage : npm run test:publish
 import './env.js';
-import { getDb } from '../src/db/client.js';
+import { query, closePool } from '../src/db/client.js';
 import { reviewContentDraft } from '../src/db/repository.js';
 import { requestPublish } from '../src/agents/orchestrator.js';
 import { config } from '../src/lib/config.js';
 
-const db = getDb();
-
-let draft = db.prepare(`SELECT * FROM content_drafts WHERE statut = 'valide' LIMIT 1`).get();
+let [draft] = await query(`SELECT * FROM content_drafts WHERE statut = 'valide' LIMIT 1`);
 
 if (!draft) {
-  const pending = db.prepare(`SELECT * FROM content_drafts WHERE statut = 'brouillon' LIMIT 1`).get();
+  const [pending] = await query(`SELECT * FROM content_drafts WHERE statut = 'brouillon' LIMIT 1`);
   if (!pending) {
     console.error('Aucun brouillon disponible. Lance d\'abord `npm run generate:drafts`.');
+    await closePool();
     process.exit(1);
   }
-  draft = reviewContentDraft(pending.id, 'valide', 'test-publish.js');
+  draft = await reviewContentDraft(pending.id, 'valide', 'test-publish.js');
   console.log(`Brouillon ${draft.id} approuvé automatiquement pour ce test.`);
 }
 
@@ -32,3 +31,5 @@ if (!config.meta.pageAccessToken) {
     '\n(mode dry-run — configure META_PAGE_ACCESS_TOKEN et META_IG_USER_ID pour publier réellement)'
   );
 }
+
+await closePool();

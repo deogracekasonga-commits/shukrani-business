@@ -32,7 +32,7 @@ function captionWithTrackedLink(draft, trackedLink) {
  * sans validation humaine préalable.
  */
 export async function publishApprovedDraft(draftId) {
-  const draft = getContentDraft(draftId);
+  const draft = await getContentDraft(draftId);
   if (!draft) throw new Error(`Brouillon introuvable : ${draftId}`);
   if (draft.statut !== 'valide') {
     throw new Error('Seul un brouillon approuvé (statut "valide") peut être publié.');
@@ -44,7 +44,7 @@ export async function publishApprovedDraft(draftId) {
 
   const result = await publishToInstagram({ imageUrl, caption });
 
-  return insertPublishedPost({
+  return await insertPublishedPost({
     draftId: draft.id,
     urlInstagram: result.permalink,
     utmLink,

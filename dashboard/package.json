@@ -16,10 +16,10 @@
     "generate:report": "node scripts/generate-report.js"
   },
   "dependencies": {
-    "better-sqlite3": "^13.0.3",
     "dotenv": "^17.4.2",
     "nanoid": "^6.0.1",
     "next": "^15.1.6",
+    "pg": "^8.13.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }

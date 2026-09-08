@@ -1,14 +1,18 @@
 import Link from 'next/link';
-import { getDb } from '../db/client.js';
+import { query, initDb } from '../db/client.js';
 import { config } from '../lib/config.js';
 import { listContentDrafts, listRecentSales } from '../db/repository.js';
 
-export default function HomePage() {
-  const db = getDb();
-  const productCount = db.prepare('SELECT COUNT(*) AS n FROM products').get().n;
-  const pendingCount = listContentDrafts({ statut: 'brouillon', limit: 1000 }).length;
-  const approvedCount = listContentDrafts({ statut: 'valide', limit: 1000 }).length;
-  const salesCount = listRecentSales(1000).length;
+// Toujours rendu à la demande (jamais prérendu au build) — les données
+// viennent d'une base Postgres externe, pas d'un fichier local.
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  await initDb();
+  const [{ n: productCount }] = await query('SELECT COUNT(*)::int AS n FROM products');
+  const pendingCount = (await listContentDrafts({ statut: 'brouillon', limit: 1000 })).length;
+  const approvedCount = (await listContentDrafts({ statut: 'valide', limit: 1000 })).length;
+  const salesCount = (await listRecentSales(1000)).length;
 
   return (
     <main style={{ maxWidth: 720, margin: '2.5rem auto', padding: '0 1.5rem' }}>

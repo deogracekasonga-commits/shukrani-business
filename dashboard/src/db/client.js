@@ -1,17 +1,34 @@
-import Database from 'better-sqlite3';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+// Connexion PostgreSQL (Supabase). Le schéma est créé par migration
+// (voir schema.sql, appliqué via Supabase) — ce module se contente de la
+// connexion et de l'amorçage des réglages par défaut.
+import pg from 'pg';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const { Pool } = pg;
 
-const DB_PATH = process.env.DATABASE_PATH || path.join(process.cwd(), 'data', 'agent.db');
+let pool;
 
-let dbInstance;
+function getPool() {
+  if (pool) return pool;
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error(
+      'DATABASE_URL manquante — voir .env.example (chaîne de connexion Postgres Supabase, ' +
+        'idéalement le pooler port 6543 pour un environnement serverless).'
+    );
+  }
+  pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
+  return pool;
+}
 
-function loadSchema(db) {
-  const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-  db.exec(schema);
+/** Exécute une requête paramétrée ($1, $2, ...) et renvoie les lignes. */
+export async function query(text, params = []) {
+  const result = await getPool().query(text, params);
+  return result.rows;
+}
+
+/** Ferme le pool de connexions — utile en fin de script CLI pour que le process se termine. */
+export async function closePool() {
+  if (pool) await pool.end();
 }
 
 const DEFAULT_SETTINGS = {
@@ -20,22 +37,16 @@ const DEFAULT_SETTINGS = {
   auto_publish_instagram: process.env.AUTO_PUBLISH_INSTAGRAM || 'false',
 };
 
-function seedDefaultSettings(db) {
-  const insert = db.prepare(
-    'INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)'
-  );
-  for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
-    insert.run(key, value);
-  }
-}
+let seeded = false;
 
-export function getDb() {
-  if (dbInstance) return dbInstance;
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  dbInstance = new Database(DB_PATH);
-  dbInstance.pragma('journal_mode = WAL');
-  dbInstance.pragma('foreign_keys = ON');
-  loadSchema(dbInstance);
-  seedDefaultSettings(dbInstance);
-  return dbInstance;
+/** Amorce les réglages par défaut (idempotent, une seule fois par process). */
+export async function initDb() {
+  if (seeded) return;
+  for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
+    await query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [
+      key,
+      value,
+    ]);
+  }
+  seeded = true;
 }

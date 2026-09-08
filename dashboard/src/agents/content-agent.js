@@ -34,11 +34,11 @@ export function generateVideoScriptText(product) {
  * produit au minimum, puis des variantes d'accroche et un script vidéo pour
  * compléter jusqu'à `targetCount`.
  */
-export function generateWeeklyDrafts({
+export async function generateWeeklyDrafts({
   categorie = config.activeCategory,
   targetCount = 4,
 } = {}) {
-  const products = listProductsByCategoryLocal(categorie);
+  const products = await listProductsByCategoryLocal(categorie);
   if (products.length === 0) {
     throw new Error(
       `Aucun produit en base pour la catégorie "${categorie}". Lance d'abord ` +
@@ -51,7 +51,7 @@ export function generateWeeklyDrafts({
   // 1 légende par produit (couvre tout le catalogue de la catégorie).
   for (const product of products) {
     drafts.push(
-      insertContentDraft({
+      await insertContentDraft({
         productId: product.id,
         texte: generateCaptionText(product, 0),
         format: 'post',
@@ -69,12 +69,12 @@ export function generateWeeklyDrafts({
 
     drafts.push(
       useVideo
-        ? insertContentDraft({
+        ? await insertContentDraft({
             productId: product.id,
             texte: generateVideoScriptText(product),
             format: 'reel_script',
           })
-        : insertContentDraft({
+        : await insertContentDraft({
             productId: product.id,
             texte: generateCaptionText(product, hookVariant++),
             format: 'post',

@@ -40,8 +40,8 @@ export function getIsoWeekInfo(date = new Date()) {
 export async function generateWeeklyReport(referenceDate = new Date()) {
   const { label, startIso, endIso } = getIsoWeekInfo(referenceDate);
 
-  const sales = listSalesBetween(startIso, endIso);
-  const posts = listPublishedPostsBetween(startIso, endIso);
+  const sales = await listSalesBetween(startIso, endIso);
+  const posts = await listPublishedPostsBetween(startIso, endIso);
 
   const ventesTotales = round2(sales.reduce((sum, s) => sum + s.montant, 0));
 
@@ -88,7 +88,7 @@ export async function generateWeeklyReport(referenceDate = new Date()) {
   }
   topPosts.sort((a, b) => b.ventes - a.ventes);
 
-  return insertWeeklyReport({
+  return await insertWeeklyReport({
     semaine: label,
     ventesTotales,
     caParCategorie,

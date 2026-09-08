@@ -11,7 +11,7 @@ officiels).
 cd dashboard
 npm install
 cp .env.example .env.local   # remplir les clés disponibles (voir commentaires)
-npm run db:init               # crée data/agent.db et charge le schéma
+npm run db:init               # vérifie la connexion Postgres et amorce les réglages
 npm run dev                    # http://localhost:3000
 ```
 
@@ -28,18 +28,23 @@ dashboard/
     app/            Next.js App Router — dashboard + routes API (webhooks, actions)
     agents/          orchestrateur + 3 sous-agents (contenu, planification, analytics)
     integrations/    clients Chariow (API + webhook) et Meta Graph API (Instagram)
-    db/              schéma SQLite (schema.sql) + connexion (client.js)
+    db/              schéma PostgreSQL (schema.sql) + connexion (client.js)
     lib/             config centralisée (lecture des variables d'environnement)
   scripts/           scripts utilitaires (init-db.js)
-  data/              base SQLite locale (gitignored)
 ```
 
 ## Base de données (schéma de départ)
 
-Voir `src/db/schema.sql`. Tables : `products`, `content_drafts`,
+PostgreSQL, hébergé sur **Supabase** (palier gratuit). Voir
+`src/db/schema.sql`. Tables : `products`, `content_drafts`,
 `published_posts`, `sales`, `weekly_reports`, `settings` (réglages
 modifiables depuis le dashboard : catégorie active, budget pub plafonné,
 activation de la publication automatique).
+
+Le schéma est appliqué via une migration Supabase (pas au démarrage de
+l'app comme le ferait un fichier SQLite) — pour un nouveau projet Supabase,
+exécuter le contenu de `src/db/schema.sql` une fois (SQL Editor du
+dashboard Supabase, ou `apply_migration` si tu as accès au MCP Supabase).
 
 Point clé pour l'attribution des ventes : chaque `published_posts.utm_link`
 est le lien Chariow avec des paramètres UTM propres au post ; `sales` peut
@@ -61,6 +66,7 @@ Voir `.env.example`. Résumé :
 | `ACTIVE_CATEGORY` | Catégorie de produits ciblée par le MVP |
 | `AD_BUDGET_WEEKLY_CAP` | Budget publicitaire hebdomadaire plafonné (0 = pas de pub payante) |
 | `AUTO_PUBLISH_INSTAGRAM` | `false` par défaut — mode brouillon obligatoire |
+| `DATABASE_URL` | Chaîne de connexion Postgres (Supabase, de préférence le pooler port 6543) |
 
 ## Étape 2 — Intégration Chariow
 
@@ -171,50 +177,56 @@ standard, à tester avec un vrai token dès qu'il sera disponible.
 - [x] Étape 6 — Agent analytics + rapport hebdomadaire
 
 **Le MVP décrit dans la demande initiale est maintenant complet.**
-`CHARIOW_API_KEY` est configurée (le test réel est bloqué depuis cet
-environnement de développement par une restriction réseau — voir
-« Déploiement » ci-dessous) ; Meta reste en attente de la liaison
-Instagram↔Page Facebook.
+`CHARIOW_API_KEY` est configurée. La base de données a été migrée de
+SQLite vers **PostgreSQL (Supabase, palier gratuit)** pour permettre un
+hébergement gratuit sur une plateforme serverless (Vercel). Le test réel
+Chariow/Meta est bloqué depuis cet environnement de développement par une
+restriction réseau — voir « Déploiement » ci-dessous.
 
 ## Déploiement
 
-Le dry-run local ne prouve pas tout : la connexion réseau de cet
-environnement de développement est volontairement restreinte (elle bloque
-`api.chariow.com` et bloquerait aussi `graph.facebook.com`). Le vrai test
-avec les clés réelles se fera une fois le projet déployé sur un
-hébergeur avec accès internet normal.
-
-**Point important avant de choisir un hébergeur** : ce projet stocke ses
-données dans un fichier SQLite local (`data/agent.db`, via
-`better-sqlite3`). Ça fonctionne très bien sur un serveur classique à
-disque persistant, mais **pas** sur une plateforme serverless/edge dont le
-système de fichiers est éphémère à chaque exécution (ex. Vercel en usage
-par défaut) — les données seraient perdues entre deux requêtes.
-
-Options d'hébergement adaptées :
-- **VPS classique** (ex. un petit serveur chez un hébergeur africain ou
-  international) : `npm run build && npm start`, disque persistant garanti.
-- **Railway / Render / Fly.io** (ou équivalent avec disque persistant
-  attachable) : adaptés à Next.js + SQLite, plans gratuits/pas chers
-  suffisants pour ce volume.
-- Si un jour le volume de données grossit significativement, migrer vers
-  une base hébergée (Postgres via Supabase, par ex.) reste simple — le
-  code d'accès aux données est isolé dans `src/db/`.
+Recommandé : **Vercel** (gratuit pour ce volume) + **Supabase** (gratuit,
+déjà provisionné — projet `shukrani-marketing-agent`, région `eu-west-3`).
+Comme la base de données vit maintenant sur Supabase (pas dans un fichier
+local), Vercel convient très bien malgré son système de fichiers éphémère.
 
 **Checklist de mise en production :**
-1. Déployer le code de ce dossier (`dashboard/`) sur l'hébergeur choisi.
-2. Configurer les variables d'environnement de production (voir
-   `.env.example`) : `CHARIOW_API_KEY`, `CHARIOW_WEBHOOK_SECRET`,
-   `META_PAGE_ACCESS_TOKEN`, `META_IG_USER_ID`, `ANTHROPIC_API_KEY` (si
-   utilisée), `ACTIVE_CATEGORY`, `AD_BUDGET_WEEKLY_CAP`.
-3. Une fois en ligne, retourner dans le dashboard Chariow → Webhooks et
+1. Récupère la chaîne de connexion Postgres dans le dashboard Supabase
+   (Project Settings → Database → Connection string → **Transaction
+   pooler**, port 6543 — adapté au serverless) → `DATABASE_URL`.
+2. Déploie le dossier `dashboard/` sur Vercel (connecter le repo GitHub,
+   Root Directory = `dashboard`).
+3. Configure les variables d'environnement de production (voir
+   `.env.example`) : `DATABASE_URL`, `CHARIOW_API_KEY`,
+   `CHARIOW_WEBHOOK_SECRET`, `META_PAGE_ACCESS_TOKEN`, `META_IG_USER_ID`,
+   `ANTHROPIC_API_KEY` (si utilisée), `ACTIVE_CATEGORY`,
+   `AD_BUDGET_WEEKLY_CAP`.
+4. Une fois en ligne, retourner dans le dashboard Chariow → Webhooks et
    pointer vers `https://<ton-domaine>/api/webhooks/chariow` avec
    l'événement vente réussie — Chariow y génère alors le vrai
    `CHARIOW_WEBHOOK_SECRET` à reporter dans les variables d'environnement.
-4. Lancer `npm run sync:products` (ou le bouton équivalent une fois
-   ajouté au dashboard) pour vérifier que les vrais produits Chariow
-   remontent avec les bons champs — ajuster `normalizeProduct()` dans
-   `src/integrations/chariow.js` si Chariow utilise des noms de champs
-   différents de ceux supposés ici.
-5. Garder `AUTO_PUBLISH_INSTAGRAM=false` tant que Deograce n'a pas
-   validé manuellement plusieurs publications réelles.
+5. Lancer `npm run sync:products` (depuis ta machine, avec le `.env.local`
+   pointant vers `DATABASE_URL` et `CHARIOW_API_KEY` de production) pour
+   vérifier que les vrais produits Chariow remontent avec les bons champs —
+   ajuster `normalizeProduct()` dans `src/integrations/chariow.js` si
+   Chariow utilise des noms de champs différents de ceux supposés ici.
+6. Garder `AUTO_PUBLISH_INSTAGRAM=false` tant que Deograce n'a pas validé
+   manuellement plusieurs publications réelles.
+
+**Sécurité base de données (Supabase)** : les tables sont créées sans Row
+Level Security (RLS) — sans risque tant que `DATABASE_URL` reste un secret
+serveur (jamais exposé au client, ce qui est le cas ici). Si tu veux une
+couche de sécurité supplémentaire malgré tout, exécute dans le SQL Editor
+Supabase :
+```sql
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.content_drafts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.published_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sales ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.weekly_reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
+```
+Le rôle `postgres` utilisé par `DATABASE_URL` (connexion directe, pas
+`supabase-js`) n'est pas concerné par le RLS — ça n'aura donc aucun effet
+sur le fonctionnement de l'app, juste une sécurité en plus si un jour
+d'autres outils accèdent à ces tables via l'API Supabase (anon/authenticated).

@@ -1,6 +1,7 @@
 import './env.js';
 import { requestWeeklyReport } from '../src/agents/orchestrator.js';
 import { buildRecommendations } from '../src/agents/analytics-agent.js';
+import { closePool } from '../src/db/client.js';
 
 const report = await requestWeeklyReport();
 
@@ -12,3 +13,5 @@ console.log('- Recommandations :');
 for (const reco of buildRecommendations(report)) {
   console.log(`  · ${reco}`);
 }
+
+await closePool();

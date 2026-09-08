@@ -1,14 +1,14 @@
 import './env.js';
-import { getDb } from '../src/db/client.js';
+import { query, initDb, closePool } from '../src/db/client.js';
 
-const db = getDb();
+await initDb();
 
-const counts = {
-  products: db.prepare('SELECT COUNT(*) AS n FROM products').get().n,
-  content_drafts: db.prepare('SELECT COUNT(*) AS n FROM content_drafts').get().n,
-  sales: db.prepare('SELECT COUNT(*) AS n FROM sales').get().n,
-};
+const [{ n: products }] = await query('SELECT COUNT(*)::int AS n FROM products');
+const [{ n: contentDrafts }] = await query('SELECT COUNT(*)::int AS n FROM content_drafts');
+const [{ n: sales }] = await query('SELECT COUNT(*)::int AS n FROM sales');
 
-console.log('Base de données initialisée:', process.env.DATABASE_PATH || './data/agent.db');
-console.log('Tables prêtes:', Object.keys(counts).join(', '), '...');
-console.log('Réglages actifs:', db.prepare('SELECT key, value FROM settings').all());
+console.log('Connexion Postgres (Supabase) OK.');
+console.log('Lignes actuelles — products:', products, '· content_drafts:', contentDrafts, '· sales:', sales);
+console.log('Réglages actifs:', await query('SELECT key, value FROM settings'));
+
+await closePool();
