@@ -1,12 +1,16 @@
 // Client API Chariow (REST) + vérification de signature webhook.
 //
-// ⚠️ Le format exact des réponses API et du payload webhook n'a pas pu être
-// vérifié depuis cet environnement (chariow.dev est bloqué par le proxy
-// réseau de la session). Les noms de champs ci-dessous sont ceux annoncés
-// dans la spec du projet ; à ajuster dès que Deograce confirme le format
-// exact renvoyé par /v1/products, /v1/sales et le webhook depuis son
-// dashboard Chariow. Toutes les lectures de champs passent par de petites
-// fonctions `extractX()` isolées pour limiter l'impact d'un ajustement.
+// Confirmé via chariow.dev/api-reference (capture d'écran Deograce, 09/2026) :
+// - Base URL : https://api.chariow.com/v1, auth Bearer token
+// - Enveloppe de réponse : { message, data, errors }
+// - `price` est un objet imbriqué { value, ... }, pas un nombre brut
+// - Pagination par curseur (cursor/per_page → { next_cursor, prev_cursor,
+//   has_more }) — non géré ici (MVP : un seul appel, catalogue restreint) ;
+//   à ajouter si le nombre de produits dépasse une page.
+// Le nom exact de l'événement webhook de vente ("sale.completed") et le
+// header de signature restent à confirmer depuis le dashboard Chariow.
+// Toutes les lectures de champs passent par de petites fonctions
+// `extractX()`/`normalizeX()` isolées pour limiter l'impact d'un ajustement.
 import crypto from 'node:crypto';
 import { config } from '../lib/config.js';
 
@@ -34,7 +38,12 @@ function isConfigured() {
 }
 
 async function chariowFetch(path, { searchParams } = {}) {
-  const url = new URL(path, config.chariow.apiBaseUrl.replace(/\/?$/, '/'));
+  // ⚠️ path ne doit JAMAIS commencer par "/" : avec new URL(path, base), un
+  // chemin absolu (commençant par "/") remplace tout le chemin de la base
+  // (donc "/products" + base ".../v1/" → ".../products", en perdant le
+  // "/v1" — c'était le bug à l'origine du 404 "route products could not be
+  // found"). On force donc un chemin relatif ici.
+  const url = new URL(path.replace(/^\/+/, ''), config.chariow.apiBaseUrl.replace(/\/?$/, '/'));
   if (searchParams) {
     for (const [key, value] of Object.entries(searchParams)) {
       if (value !== undefined && value !== null) url.searchParams.set(key, value);
@@ -82,11 +91,19 @@ export async function getSalesHistory({ since } = {}) {
 }
 
 function normalizeProduct(raw) {
+  // Le prix Chariow est un objet imbriqué ({ value, ... }), pas un nombre brut
+  // (confirmé via la doc chariow.dev/api-reference) — on gère aussi le cas
+  // d'un nombre brut par sécurité si l'API renvoie autre chose selon les
+  // endpoints.
+  const rawPrice = raw.price ?? raw.prix;
+  const prix =
+    rawPrice && typeof rawPrice === 'object' ? Number(rawPrice.value ?? 0) : Number(rawPrice ?? 0);
+
   return {
     id: raw.id || raw.product_id,
     nom: raw.name || raw.nom || raw.title,
     categorie: raw.category || raw.categorie,
-    prix: Number(raw.price ?? raw.prix ?? 0),
+    prix,
     lien_chariow: raw.url || raw.lien_chariow || raw.product_url,
     image_url: raw.image_url || raw.cover_image_url || raw.image || raw.thumbnail_url || null,
   };
