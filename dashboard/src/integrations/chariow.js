@@ -63,18 +63,34 @@ async function chariowFetch(path, { searchParams } = {}) {
 }
 
 /**
- * Liste les produits d'une catégorie via GET /v1/products?category=...
+ * Liste les produits d'une catégorie via GET /v1/products.
  * Sans CHARIOW_API_KEY configurée, renvoie un jeu de données de démo
  * (dry-run) pour permettre de développer/tester le reste du pipeline.
+ *
+ * ⚠️ On ne filtre PAS côté serveur avec ?category=... : le nom exact du
+ * paramètre attendu par Chariow (et s'il prend un slug ou un ID) n'a pas pu
+ * être confirmé. On récupère donc tous les produits (première page, 100 max
+ * — le catalogue MVP est petit) et on filtre nous-mêmes sur `categorie`.
  */
 export async function listProductsByCategory(categorie = config.activeCategory) {
   if (!isConfigured()) {
     console.warn('[chariow] CHARIOW_API_KEY absente → dry-run (produits de démo)');
     return DRY_RUN_PRODUCTS.filter((p) => p.categorie === categorie);
   }
-  const data = await chariowFetch('/products', { searchParams: { category: categorie } });
-  const items = data.data || data.products || data.results || [];
-  return items.map(normalizeProduct);
+  const { normalized } = await fetchAllProductsRaw();
+  return normalized.filter((p) => p.categorie === categorie);
+}
+
+/**
+ * Récupère tous les produits (sans filtre de catégorie), pour lister le
+ * catalogue et diagnostiquer les écarts de nommage de catégorie côté
+ * Chariow (utilisé par le bandeau de diagnostic du dashboard).
+ */
+export async function fetchAllProductsRaw() {
+  const data = await chariowFetch('products', { searchParams: { per_page: 100 } });
+  const rawItems = data.data || data.products || data.results || [];
+  const normalized = rawItems.map(normalizeProduct);
+  return { rawItems, normalized };
 }
 
 /**

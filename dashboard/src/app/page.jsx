@@ -86,6 +86,16 @@ function StatusBanner({ label, status }) {
       ) : (
         <span>❌ Erreur : {status.error}</span>
       )}
+      {status.diagnostic && (
+        <div style={{ marginTop: '0.5rem', color: '#555' }}>
+          ℹ️ {status.diagnostic.totalProduitsChariow} produit(s) au total chez Chariow.
+          {status.diagnostic.categoriesVues.length > 0 ? (
+            <> Catégories vues : {status.diagnostic.categoriesVues.map((c) => `"${c}"`).join(', ')}.</>
+          ) : (
+            <> Aucune catégorie détectée sur ces produits.</>
+          )}
+        </div>
+      )}
     </div>
   );
 }
