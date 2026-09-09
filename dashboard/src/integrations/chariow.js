@@ -115,10 +115,19 @@ function normalizeProduct(raw) {
   const prix =
     rawPrice && typeof rawPrice === 'object' ? Number(rawPrice.value ?? 0) : Number(rawPrice ?? 0);
 
+  // Comme `price`, `category` est probablement un objet imbriqué
+  // ({ slug, name, ... }) plutôt qu'une chaîne — on essaie les champs les
+  // plus probables, `slug` en priorité (format attendu dans ACTIVE_CATEGORY).
+  const rawCategory = raw.category ?? raw.categorie;
+  const categorie =
+    rawCategory && typeof rawCategory === 'object'
+      ? rawCategory.slug || rawCategory.name || rawCategory.title || rawCategory.value || null
+      : rawCategory || null;
+
   return {
     id: raw.id || raw.product_id,
     nom: raw.name || raw.nom || raw.title,
-    categorie: raw.category || raw.categorie,
+    categorie,
     prix,
     lien_chariow: raw.url || raw.lien_chariow || raw.product_url,
     image_url: raw.image_url || raw.cover_image_url || raw.image || raw.thumbnail_url || null,

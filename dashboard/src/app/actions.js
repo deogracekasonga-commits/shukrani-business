@@ -25,13 +25,14 @@ export async function syncProducts() {
     let diagnostic;
     if (products.length === 0) {
       // Aucun produit dans la catégorie active : on remonte le nombre total
-      // de produits vus côté Chariow et les catégories qu'ils portent, pour
-      // repérer un écart de nommage (ex. "Développement personnel" vs
-      // "developpement-personnel") sans aller-retour supplémentaire.
+      // de produits vus côté Chariow, les catégories qu'ils portent, et un
+      // échantillon brut du 1er produit — pour repérer un écart de nommage
+      // ou un champ mal deviné sans aller-retour supplémentaire.
       const { rawItems, normalized } = await fetchAllProductsRaw();
       diagnostic = {
         totalProduitsChariow: rawItems.length,
         categoriesVues: [...new Set(normalized.map((p) => p.categorie).filter(Boolean))],
+        premierProduitBrut: rawItems[0] ? JSON.stringify(rawItems[0]).slice(0, 600) : null,
       };
     }
 
