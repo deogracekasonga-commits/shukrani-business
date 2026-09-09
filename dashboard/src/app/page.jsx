@@ -100,26 +100,32 @@ function StatusBanner({ label, status }) {
               🔗 Champs ressemblant à une URL : {status.diagnostic.champsUrlDetectes}
             </>
           )}
-          {status.diagnostic.premierProduitBrut && (
-            <pre
-              style={{
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-                background: '#f6f6f6',
-                padding: '0.5rem',
-                borderRadius: 6,
-                marginTop: '0.5rem',
-                fontSize: '0.75rem',
-              }}
-            >
-              {status.diagnostic.premierProduitBrut}
-            </pre>
+          {status.diagnostic.premierProduitResume && (
+            <>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>1er produit :</div>
+              <pre style={preStyle}>{status.diagnostic.premierProduitResume}</pre>
+            </>
+          )}
+          {status.diagnostic.deuxiemeProduitResume && (
+            <>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>2e produit :</div>
+              <pre style={preStyle}>{status.diagnostic.deuxiemeProduitResume}</pre>
+            </>
           )}
         </div>
       )}
     </div>
   );
 }
+
+const preStyle = {
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+  background: '#f6f6f6',
+  padding: '0.5rem',
+  borderRadius: 6,
+  fontSize: '0.75rem',
+};
 
 const buttonStyle = {
   background: '#0a66c2',

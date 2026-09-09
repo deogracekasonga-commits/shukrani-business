@@ -21,13 +21,31 @@ function urlishFields(obj) {
   return matches.length ? matches.map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(', ') : 'aucun';
 }
 
+// Aperçu ligne par ligne de chaque champ (valeur tronquée) — un long champ
+// comme `description` (HTML) ne doit pas manger tout le budget d'affichage
+// et masquer les champs utiles (url, slug, price...) qui le suivent.
+function summarizeProduct(raw, maxFieldLen = 50) {
+  if (!raw) return null;
+  return Object.entries(raw)
+    .map(([k, v]) => {
+      const asString = typeof v === 'string' ? v : JSON.stringify(v);
+      const truncated = asString && asString.length > maxFieldLen ? `${asString.slice(0, maxFieldLen)}…` : asString;
+      return `${k}: ${truncated}`;
+    })
+    .join('\n');
+}
+
 async function buildRawDiagnostic() {
   const { rawItems, normalized } = await fetchAllProductsRaw();
+  // La "Pack Complet" (1er produit vu jusqu'ici) a un slug null — c'est
+  // peut-être spécifique aux bundles. On montre aussi un 2e produit pour
+  // comparer.
   return {
     totalProduitsChariow: rawItems.length,
     categoriesVues: [...new Set(normalized.map((p) => p.categorie).filter(Boolean))],
     champsUrlDetectes: urlishFields(rawItems[0]),
-    premierProduitBrut: rawItems[0] ? JSON.stringify(rawItems[0]).slice(0, 1200) : null,
+    premierProduitResume: summarizeProduct(rawItems[0]),
+    deuxiemeProduitResume: summarizeProduct(rawItems[1]),
   };
 }
 
