@@ -7,6 +7,11 @@ export const config = {
     apiBaseUrl: process.env.CHARIOW_API_BASE_URL || 'https://api.chariow.com/v1',
     apiKey: process.env.CHARIOW_API_KEY || '', // Bearer token — jamais exposé côté client
     webhookSecret: process.env.CHARIOW_WEBHOOK_SECRET || '',
+    // Sous-domaine de la boutique (ex. "jjahbngp" → jjahbngp.mychariow.com).
+    // L'API produits ne renvoie aucun champ URL — le lien de vente se
+    // reconstruit en boutique.mychariow.com/{id_produit} (confirmé par
+    // Deograce avec un lien réel copié depuis son dashboard Chariow).
+    storeSubdomain: process.env.CHARIOW_STORE_SUBDOMAIN || '',
   },
   meta: {
     appId: process.env.META_APP_ID || '',

@@ -107,30 +107,29 @@ export async function getSalesHistory({ since } = {}) {
 }
 
 function normalizeProduct(raw) {
-  // Le prix Chariow est un objet imbriqué ({ value, ... }), pas un nombre brut
-  // (confirmé via la doc chariow.dev/api-reference) — on gère aussi le cas
-  // d'un nombre brut par sécurité si l'API renvoie autre chose selon les
-  // endpoints.
-  const rawPrice = raw.price ?? raw.prix;
-  const prix =
-    rawPrice && typeof rawPrice === 'object' ? Number(rawPrice.value ?? 0) : Number(rawPrice ?? 0);
+  // Structure réelle confirmée via un produit synchronisé (09/2026) :
+  // price sous pricing.current_price.value, category sous category.value,
+  // et AUCUN champ URL — le lien de vente se reconstruit à partir de l'id
+  // (voir lien_chariow ci-dessous).
+  const prix = Number(raw.pricing?.current_price?.value ?? raw.price?.value ?? raw.price ?? 0);
+  const categorie = raw.category?.value ?? raw.category?.slug ?? raw.category ?? null;
 
-  // Comme `price`, `category` est probablement un objet imbriqué
-  // ({ slug, name, ... }) plutôt qu'une chaîne — on essaie les champs les
-  // plus probables, `slug` en priorité (format attendu dans ACTIVE_CATEGORY).
-  const rawCategory = raw.category ?? raw.categorie;
-  const categorie =
-    rawCategory && typeof rawCategory === 'object'
-      ? rawCategory.slug || rawCategory.name || rawCategory.title || rawCategory.value || null
-      : rawCategory || null;
+  const productId = raw.id || raw.product_id;
+  const lienChariow =
+    raw.url ||
+    raw.lien_chariow ||
+    raw.product_url ||
+    (config.chariow.storeSubdomain && productId
+      ? `https://${config.chariow.storeSubdomain}.mychariow.com/${productId}`
+      : null);
 
   return {
-    id: raw.id || raw.product_id,
+    id: productId,
     nom: raw.name || raw.nom || raw.title,
     categorie,
     prix,
-    lien_chariow: raw.url || raw.lien_chariow || raw.product_url,
-    image_url: raw.image_url || raw.cover_image_url || raw.image || raw.thumbnail_url || null,
+    lien_chariow: lienChariow,
+    image_url: raw.pictures?.thumbnail || raw.image_url || raw.cover_image_url || raw.image || null,
   };
 }
 
