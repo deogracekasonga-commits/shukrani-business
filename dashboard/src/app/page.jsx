@@ -94,6 +94,12 @@ function StatusBanner({ label, status }) {
           ) : (
             <> Aucune catégorie détectée sur ces produits.</>
           )}
+          {status.diagnostic.champsUrlDetectes && (
+            <>
+              <br />
+              🔗 Champs ressemblant à une URL : {status.diagnostic.champsUrlDetectes}
+            </>
+          )}
           {status.diagnostic.premierProduitBrut && (
             <pre
               style={{
