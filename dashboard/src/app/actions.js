@@ -2,15 +2,28 @@
 
 import { revalidatePath } from 'next/cache';
 import { listProductsByCategory } from '../integrations/chariow.js';
-import { upsertProductFromChariow } from '../db/repository.js';
+import { upsertProductFromChariow, setSetting } from '../db/repository.js';
 import { requestWeeklyContent } from '../agents/orchestrator.js';
 import { config } from '../lib/config.js';
 
+// Les erreurs des Server Actions ne s'affichent pas clairement dans le
+// navigateur (surtout en production, sur mobile). On enregistre donc le
+// résultat de chaque action dans `settings` pour l'afficher directement sur
+// le dashboard, sans avoir besoin de consulter les logs Vercel.
+async function recordActionResult(key, result) {
+  await setSetting(key, JSON.stringify({ ...result, at: new Date().toISOString() }));
+}
+
 /** Synchronise les produits Chariow de la catégorie active (dry-run sans CHARIOW_API_KEY). */
 export async function syncProducts() {
-  const products = await listProductsByCategory(config.activeCategory);
-  for (const product of products) {
-    await upsertProductFromChariow(product);
+  try {
+    const products = await listProductsByCategory(config.activeCategory);
+    for (const product of products) {
+      await upsertProductFromChariow(product);
+    }
+    await recordActionResult('last_sync_status', { ok: true, count: products.length });
+  } catch (err) {
+    await recordActionResult('last_sync_status', { ok: false, error: String(err?.message || err) });
   }
   revalidatePath('/');
   revalidatePath('/drafts');
@@ -19,7 +32,12 @@ export async function syncProducts() {
 
 /** Génère 3-5 nouveaux brouillons pour la catégorie active. */
 export async function generateDrafts() {
-  await requestWeeklyContent({ targetCount: 4 });
+  try {
+    await requestWeeklyContent({ targetCount: 4 });
+    await recordActionResult('last_drafts_status', { ok: true });
+  } catch (err) {
+    await recordActionResult('last_drafts_status', { ok: false, error: String(err?.message || err) });
+  }
   revalidatePath('/');
   revalidatePath('/drafts');
   revalidatePath('/calendar');
