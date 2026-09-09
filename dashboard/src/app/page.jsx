@@ -94,6 +94,21 @@ function StatusBanner({ label, status }) {
           ) : (
             <> Aucune catégorie détectée sur ces produits.</>
           )}
+          {status.diagnostic.premierProduitBrut && (
+            <pre
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                background: '#f6f6f6',
+                padding: '0.5rem',
+                borderRadius: 6,
+                marginTop: '0.5rem',
+                fontSize: '0.75rem',
+              }}
+            >
+              {status.diagnostic.premierProduitBrut}
+            </pre>
+          )}
         </div>
       )}
     </div>
