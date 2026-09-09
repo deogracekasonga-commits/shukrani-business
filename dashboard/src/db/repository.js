@@ -236,3 +236,16 @@ export async function getWeeklyReport(semaine) {
   const [report] = await query('SELECT * FROM weekly_reports WHERE semaine = $1', [semaine]);
   return report ?? null;
 }
+
+export async function getSetting(key) {
+  const [row] = await query('SELECT value FROM settings WHERE key = $1', [key]);
+  return row?.value ?? null;
+}
+
+export async function setSetting(key, value) {
+  await query(
+    `INSERT INTO settings (key, value) VALUES ($1, $2)
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
+    [key, value]
+  );
+}
