@@ -22,7 +22,9 @@ export const config = {
   anthropic: {
     apiKey: process.env.ANTHROPIC_API_KEY || '',
   },
-  activeCategory: process.env.ACTIVE_CATEGORY || 'developpement-personnel',
+  // Slug réel côté Chariow (confirmé via un produit synchronisé, 09/2026) :
+  // personal_development, business_and_finance, literature_and_publishing.
+  activeCategory: process.env.ACTIVE_CATEGORY || 'personal_development',
   adBudgetWeeklyCap: Number(process.env.AD_BUDGET_WEEKLY_CAP || 0),
   autoPublishInstagram: process.env.AUTO_PUBLISH_INSTAGRAM === 'true',
 };
