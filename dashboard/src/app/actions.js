@@ -14,6 +14,23 @@ async function recordActionResult(key, result) {
   await setSetting(key, JSON.stringify({ ...result, at: new Date().toISOString() }));
 }
 
+/** Repère les champs dont le nom évoque une URL, pour deviner le bon champ sans aller-retour. */
+function urlishFields(obj) {
+  if (!obj) return 'aucun';
+  const matches = Object.entries(obj).filter(([k]) => /url|link|href|slug/i.test(k));
+  return matches.length ? matches.map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(', ') : 'aucun';
+}
+
+async function buildRawDiagnostic() {
+  const { rawItems, normalized } = await fetchAllProductsRaw();
+  return {
+    totalProduitsChariow: rawItems.length,
+    categoriesVues: [...new Set(normalized.map((p) => p.categorie).filter(Boolean))],
+    champsUrlDetectes: urlishFields(rawItems[0]),
+    premierProduitBrut: rawItems[0] ? JSON.stringify(rawItems[0]).slice(0, 1200) : null,
+  };
+}
+
 /** Synchronise les produits Chariow de la catégorie active (dry-run sans CHARIOW_API_KEY). */
 export async function syncProducts() {
   try {
@@ -22,23 +39,15 @@ export async function syncProducts() {
       await upsertProductFromChariow(product);
     }
 
-    let diagnostic;
-    if (products.length === 0) {
-      // Aucun produit dans la catégorie active : on remonte le nombre total
-      // de produits vus côté Chariow, les catégories qu'ils portent, et un
-      // échantillon brut du 1er produit — pour repérer un écart de nommage
-      // ou un champ mal deviné sans aller-retour supplémentaire.
-      const { rawItems, normalized } = await fetchAllProductsRaw();
-      diagnostic = {
-        totalProduitsChariow: rawItems.length,
-        categoriesVues: [...new Set(normalized.map((p) => p.categorie).filter(Boolean))],
-        premierProduitBrut: rawItems[0] ? JSON.stringify(rawItems[0]).slice(0, 600) : null,
-      };
-    }
-
+    // Diagnostic si 0 produit matché (écart de nommage de catégorie) — pour
+    // ajuster sans aller-retour supplémentaire.
+    const diagnostic = products.length === 0 ? await buildRawDiagnostic() : undefined;
     await recordActionResult('last_sync_status', { ok: true, count: products.length, diagnostic });
   } catch (err) {
-    await recordActionResult('last_sync_status', { ok: false, error: String(err?.message || err) });
+    // Diagnostic aussi en cas d'erreur (ex. champ mal deviné qui viole une
+    // contrainte NOT NULL en base) — même logique.
+    const diagnostic = await buildRawDiagnostic().catch(() => undefined);
+    await recordActionResult('last_sync_status', { ok: false, error: String(err?.message || err), diagnostic });
   }
   revalidatePath('/');
   revalidatePath('/drafts');
