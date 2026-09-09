@@ -32,7 +32,7 @@ export async function closePool() {
 }
 
 const DEFAULT_SETTINGS = {
-  active_category: process.env.ACTIVE_CATEGORY || 'developpement-personnel',
+  active_category: process.env.ACTIVE_CATEGORY || 'personal_development',
   ad_budget_weekly_cap: process.env.AD_BUDGET_WEEKLY_CAP || '0',
   auto_publish_instagram: process.env.AUTO_PUBLISH_INSTAGRAM || 'false',
 };

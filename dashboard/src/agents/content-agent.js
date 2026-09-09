@@ -13,6 +13,8 @@ import { config } from '../lib/config.js';
 
 const TEMPLATES_BY_CATEGORY = {
   'developpement-personnel': developpementPersonnel,
+  // Slug réel côté Chariow pour cette catégorie (voir ACTIVE_CATEGORY).
+  personal_development: developpementPersonnel,
 };
 
 function templatesFor(categorie) {
