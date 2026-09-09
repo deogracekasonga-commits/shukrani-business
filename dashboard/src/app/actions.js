@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { listProductsByCategory } from '../integrations/chariow.js';
+import { listProductsByCategory, fetchAllProductsRaw } from '../integrations/chariow.js';
 import { upsertProductFromChariow, setSetting } from '../db/repository.js';
 import { requestWeeklyContent } from '../agents/orchestrator.js';
 import { config } from '../lib/config.js';
@@ -21,7 +21,21 @@ export async function syncProducts() {
     for (const product of products) {
       await upsertProductFromChariow(product);
     }
-    await recordActionResult('last_sync_status', { ok: true, count: products.length });
+
+    let diagnostic;
+    if (products.length === 0) {
+      // Aucun produit dans la catégorie active : on remonte le nombre total
+      // de produits vus côté Chariow et les catégories qu'ils portent, pour
+      // repérer un écart de nommage (ex. "Développement personnel" vs
+      // "developpement-personnel") sans aller-retour supplémentaire.
+      const { rawItems, normalized } = await fetchAllProductsRaw();
+      diagnostic = {
+        totalProduitsChariow: rawItems.length,
+        categoriesVues: [...new Set(normalized.map((p) => p.categorie).filter(Boolean))],
+      };
+    }
+
+    await recordActionResult('last_sync_status', { ok: true, count: products.length, diagnostic });
   } catch (err) {
     await recordActionResult('last_sync_status', { ok: false, error: String(err?.message || err) });
   }
