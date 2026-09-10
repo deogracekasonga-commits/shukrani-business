@@ -58,8 +58,9 @@ export default async function HomePage() {
       <StatusBanner label="Dernière génération de brouillons" status={draftsStatus} />
 
       <p style={{ color: '#666' }}>
-        Prochaines étapes : publication Instagram (Étape 5), agent analytics et
-        rapport hebdomadaire (Étape 6).
+        Rapport hebdomadaire (ventes, ROI par post, recommandations) disponible sur la page{' '}
+        <Link href="/reports">Rapport hebdomadaire</Link>. Publication automatique Instagram en
+        attente de la configuration Meta.
       </p>
     </main>
   );
