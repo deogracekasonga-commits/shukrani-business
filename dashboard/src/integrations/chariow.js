@@ -7,8 +7,10 @@
 // - Pagination par curseur (cursor/per_page → { next_cursor, prev_cursor,
 //   has_more }) — non géré ici (MVP : un seul appel, catalogue restreint) ;
 //   à ajouter si le nombre de produits dépasse une page.
-// Le nom exact de l'événement webhook de vente ("sale.completed") et le
-// header de signature restent à confirmer depuis le dashboard Chariow.
+// Webhook (Chariow les appelle "Pulses", menu Automatisations > Pulses) :
+// événement de vente confirmé = "successful.sale", header de signature
+// `X-Chariow-Signature: sha256=<hex>` confirmé fonctionnel via un Pulse de
+// test (2 livraisons "Réussie" reçues, 09/2026).
 // Toutes les lectures de champs passent par de petites fonctions
 // `extractX()`/`normalizeX()` isolées pour limiter l'impact d'un ajustement.
 import crypto from 'node:crypto';
