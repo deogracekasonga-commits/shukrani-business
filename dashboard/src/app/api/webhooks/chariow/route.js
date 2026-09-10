@@ -5,10 +5,10 @@ import {
 } from '../../../../integrations/chariow.js';
 import { recordSaleFromWebhook } from '../../../../db/repository.js';
 
-// Événement écouté : "sale.completed" (nom à confirmer dans le dashboard
-// Chariow — accepté avec un alias "order.completed" par précaution, sans
-// certitude que ce soit le nom réel).
-const HANDLED_EVENTS = new Set(['sale.completed', 'order.completed']);
+// Événement réel confirmé via un Pulse de test envoyé depuis le dashboard
+// Chariow (Automatisations > Pulses > "Vente réussie") : "successful.sale".
+// On garde les anciens noms devinés en alias par sécurité.
+const HANDLED_EVENTS = new Set(['successful.sale', 'sale.completed', 'order.completed']);
 
 export async function POST(request) {
   const rawBody = await request.text();
