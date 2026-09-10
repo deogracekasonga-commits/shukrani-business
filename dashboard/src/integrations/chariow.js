@@ -159,23 +159,34 @@ export function verifyWebhookSignature(rawBody, signatureHeader) {
 }
 
 /**
- * Normalise le payload de l'événement "sale.completed" (ou équivalent) en
- * un objet plat prêt à insérer dans la table `sales`.
+ * Normalise le payload de l'événement "successful.sale" en un objet plat
+ * prêt à insérer dans la table `sales`.
+ *
+ * Structure réelle confirmée via un Pulse de test (09/2026) :
+ * { event, sale: { id, amount: { value, ... }, created_at, ... },
+ *   product: { id, name, url, price: { value, ... } }, customer, store }
+ * — `product` est un frère de `sale`, PAS imbriqué dedans ; `amount` est un
+ * objet imbriqué comme `price` ailleurs dans l'API.
  */
 export function extractSaleFromWebhookPayload(payload) {
   const event = payload.event || payload.type;
   const sale = payload.data || payload.sale || payload;
+  const product = payload.product || sale.product || {};
+
+  const rawAmount = sale.amount ?? sale.montant ?? sale.total;
+  const montant =
+    rawAmount && typeof rawAmount === 'object' ? Number(rawAmount.value ?? 0) : Number(rawAmount ?? 0);
 
   return {
     event,
     chariow_event_id: payload.id || payload.event_id || sale.id || sale.order_id,
-    chariow_product_id: sale.product_id || sale.product?.id,
-    nom_produit: sale.product_name || sale.product?.name,
-    montant: Number(sale.amount ?? sale.montant ?? sale.total ?? 0),
+    chariow_product_id: product.id || sale.product_id,
+    nom_produit: product.name || sale.product_name,
+    montant,
     date: sale.created_at || sale.paid_at || sale.date || new Date().toISOString(),
-    categorie: sale.category || sale.product?.category,
+    categorie: product.category || sale.category,
     // lien cliqué par l'acheteur, porte le paramètre UTM du post d'origine
-    product_url: sale.product_url || sale.url,
+    product_url: product.url || sale.product_url || sale.url,
     raw: payload,
   };
 }
