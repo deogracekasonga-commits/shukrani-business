@@ -109,12 +109,12 @@ export async function listAllProductsLocal() {
   return query('SELECT * FROM products ORDER BY created_at');
 }
 
-export async function insertContentDraft({ productId, texte, format = 'post' }) {
+export async function insertContentDraft({ productId, texte, format = 'post', plateforme = 'instagram_facebook' }) {
   const id = nanoid();
   await query(
-    `INSERT INTO content_drafts (id, product_id, texte, format, statut, date_creation)
-     VALUES ($1, $2, $3, $4, 'brouillon', $5)`,
-    [id, productId, texte, format, nowIso()]
+    `INSERT INTO content_drafts (id, product_id, texte, format, plateforme, statut, date_creation)
+     VALUES ($1, $2, $3, $4, $5, 'brouillon', $6)`,
+    [id, productId, texte, format, plateforme, nowIso()]
   );
   const [draft] = await query('SELECT * FROM content_drafts WHERE id = $1', [id]);
   return draft;

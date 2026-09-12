@@ -8,6 +8,7 @@
 // (orchestrateur, dashboard) ni le format stocké en base.
 import * as developpementPersonnel from './templates/developpement-personnel.js';
 import * as generic from './templates/generic.js';
+import * as linkedin from './templates/linkedin.js';
 import { listAllProductsLocal, insertContentDraft } from '../db/repository.js';
 
 const TEMPLATES_BY_CATEGORY = {
@@ -39,6 +40,12 @@ export function generateVideoScriptText(product) {
   return templatesFor(product.categorie).videoScript(product);
 }
 
+// LinkedIn : un seul ton (professionnel), pas de variante par catégorie —
+// le lien Chariow est cliquable directement dans le texte sur ce réseau.
+export function generateLinkedInCaptionText(product) {
+  return `${linkedin.caption(product)}\n\n${COMMUNITY_FOOTER}`;
+}
+
 /**
  * Génère un lot de brouillons (3 à 5, cible par défaut) pour TOUT le
  * catalogue (tous produits, toutes catégories confondues) et les enregistre
@@ -62,6 +69,20 @@ export async function generateWeeklyDrafts({ targetCount = 4 } = {}) {
         productId: product.id,
         texte: generateCaptionText(product, 0),
         format: 'post',
+        plateforme: 'instagram_facebook',
+      })
+    );
+  }
+
+  // 1 légende LinkedIn par produit — réseau séparé, ton et lien différents,
+  // donc pas comptée dans targetCount (cadence propre à ce réseau).
+  for (const product of products) {
+    drafts.push(
+      await insertContentDraft({
+        productId: product.id,
+        texte: generateLinkedInCaptionText(product),
+        format: 'post',
+        plateforme: 'linkedin',
       })
     );
   }

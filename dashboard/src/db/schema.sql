@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS content_drafts (
   product_id TEXT NOT NULL REFERENCES products(id),
   texte TEXT NOT NULL,              -- légende / accroche générée par l'agent contenu
   format TEXT NOT NULL DEFAULT 'post', -- post | reel_script | story
+  plateforme TEXT NOT NULL DEFAULT 'instagram_facebook', -- instagram_facebook | linkedin (réseau visé, ton/lien adaptés)
   statut TEXT NOT NULL DEFAULT 'brouillon', -- brouillon | valide | rejete | publie
   date_creation TEXT NOT NULL,
   date_validation TEXT,
