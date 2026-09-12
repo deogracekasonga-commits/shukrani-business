@@ -25,7 +25,7 @@ function templatesFor(categorie) {
 // Deograce pour développer la chaîne WhatsApp et la page Facebook depuis
 // chaque post produit.
 const COMMUNITY_FOOTER = [
-  '👉 Rejoins la chaîne WhatsApp pour les recevoir : https://whatsapp.com/channel/0029VbDdAe2JuyA4SYd9vs1m',
+  '👉 Rejoins la chaîne WhatsApp pour ne rien rater : https://whatsapp.com/channel/0029VbDdAe2JuyA4SYd9vs1m',
   '👉 Aime la page Facebook : https://www.facebook.com/profile.php?id=61590639694843',
   '',
   '#Productivité #Entrepreneuriat #DéveloppementPersonnel',
