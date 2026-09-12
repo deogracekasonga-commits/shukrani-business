@@ -1,10 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { listProductsByCategory, fetchAllProductsRaw } from '../integrations/chariow.js';
+import { listAllProducts, fetchAllProductsRaw } from '../integrations/chariow.js';
 import { upsertProductFromChariow, setSetting } from '../db/repository.js';
 import { requestWeeklyContent } from '../agents/orchestrator.js';
-import { config } from '../lib/config.js';
 
 // Les erreurs des Server Actions ne s'affichent pas clairement dans le
 // navigateur (surtout en production, sur mobile). On enregistre donc le
@@ -49,15 +48,15 @@ async function buildRawDiagnostic() {
   };
 }
 
-/** Synchronise les produits Chariow de la catégorie active (dry-run sans CHARIOW_API_KEY). */
+/** Synchronise TOUS les produits Chariow, peu importe leur catégorie (dry-run sans CHARIOW_API_KEY). */
 export async function syncProducts() {
   try {
-    const products = await listProductsByCategory(config.activeCategory);
+    const products = await listAllProducts();
     for (const product of products) {
       await upsertProductFromChariow(product);
     }
 
-    // Diagnostic si 0 produit matché (écart de nommage de catégorie) — pour
+    // Diagnostic si 0 produit (boutique vide ou souci d'accès) — pour
     // ajuster sans aller-retour supplémentaire.
     const diagnostic = products.length === 0 ? await buildRawDiagnostic() : undefined;
     await recordActionResult('last_sync_status', { ok: true, count: products.length, diagnostic });
