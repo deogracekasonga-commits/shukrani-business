@@ -20,8 +20,19 @@ function templatesFor(categorie) {
   return TEMPLATES_BY_CATEGORY[categorie] || generic;
 }
 
+// Ajouté à la fin de chaque légende (pas des scripts vidéo) — demande de
+// Deograce pour développer la chaîne WhatsApp et la page Facebook depuis
+// chaque post produit.
+const COMMUNITY_FOOTER = [
+  '👉 Rejoins la chaîne WhatsApp pour les recevoir : https://whatsapp.com/channel/0029VbDdAe2JuyA4SYd9vs1m',
+  '👉 Aime la page Facebook : https://www.facebook.com/profile.php?id=61590639694843',
+  '',
+  '#Productivité #Entrepreneuriat #DéveloppementPersonnel',
+].join('\n');
+
 export function generateCaptionText(product, hookIndex = 0) {
-  return templatesFor(product.categorie).caption(product, hookIndex);
+  const caption = templatesFor(product.categorie).caption(product, hookIndex);
+  return `${caption}\n\n${COMMUNITY_FOOTER}`;
 }
 
 export function generateVideoScriptText(product) {
