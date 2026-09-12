@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import './globals.css';
 
 export const metadata = {
   title: 'Shukrani Business — Agent Marketing',
@@ -16,22 +17,22 @@ const NAV_LINKS = [
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body style={{ fontFamily: 'system-ui, sans-serif', margin: 0, color: '#1a1a1a' }}>
-        <nav
-          style={{
-            display: 'flex',
-            gap: '1.25rem',
-            padding: '1rem 1.5rem',
-            borderBottom: '1px solid #e2e2e2',
-          }}
-        >
-          <strong>Shukrani Business</strong>
-          {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} style={{ color: '#1a1a1a' }}>
-              {link.label}
+      <body>
+        <header className="sb-header">
+          <nav className="sb-header-inner">
+            <Link href="/" className="sb-brand">
+              <span className="sb-logo-badge">SB</span>
+              <span className="sb-brand-text">Shukrani Business</span>
             </Link>
-          ))}
-        </nav>
+            <div className="sb-nav-links">
+              {NAV_LINKS.map((link) => (
+                <Link key={link.href} href={link.href} className="sb-nav-link">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </header>
         {children}
       </body>
     </html>
