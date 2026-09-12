@@ -84,6 +84,19 @@ export async function listProductsByCategory(categorie = config.activeCategory) 
 }
 
 /**
+ * Liste TOUS les produits de la boutique, sans filtre de catégorie (Deograce
+ * veut synchroniser tout son catalogue, pas juste ACTIVE_CATEGORY).
+ */
+export async function listAllProducts() {
+  if (!isConfigured()) {
+    console.warn('[chariow] CHARIOW_API_KEY absente → dry-run (produits de démo)');
+    return DRY_RUN_PRODUCTS;
+  }
+  const { normalized } = await fetchAllProductsRaw();
+  return normalized;
+}
+
+/**
  * Récupère tous les produits (sans filtre de catégorie), pour lister le
  * catalogue et diagnostiquer les écarts de nommage de catégorie côté
  * Chariow (utilisé par le bandeau de diagnostic du dashboard).
