@@ -7,8 +7,14 @@ import { query } from './client.js';
 const nowIso = () => new Date().toISOString();
 
 export async function upsertProductFromChariow(product) {
-  const existing = product.chariow_product_id
-    ? (await query('SELECT id FROM products WHERE chariow_product_id = $1', [product.chariow_product_id]))[0]
+  // `product` vient de normalizeProduct() côté intégration Chariow, qui
+  // renvoie l'identifiant Chariow dans `id` (pas `chariow_product_id` — ce
+  // dernier n'existe que côté colonne DB). Sans ce fallback, cette recherche
+  // ne trouvait jamais de ligne existante et chaque synchronisation
+  // insérait un nouveau doublon au lieu de mettre à jour le produit.
+  const chariowProductId = product.chariow_product_id ?? product.id ?? null;
+  const existing = chariowProductId
+    ? (await query('SELECT id FROM products WHERE chariow_product_id = $1', [chariowProductId]))[0]
     : null;
 
   if (existing) {
@@ -29,7 +35,7 @@ export async function upsertProductFromChariow(product) {
       product.categorie,
       product.prix,
       product.lien_chariow,
-      product.chariow_product_id ?? product.id ?? null,
+      chariowProductId,
       product.image_url ?? null,
       nowIso(),
     ]
