@@ -8,8 +8,7 @@
 // (orchestrateur, dashboard) ni le format stocké en base.
 import * as developpementPersonnel from './templates/developpement-personnel.js';
 import * as generic from './templates/generic.js';
-import { listProductsByCategoryLocal, insertContentDraft } from '../db/repository.js';
-import { config } from '../lib/config.js';
+import { listAllProductsLocal, insertContentDraft } from '../db/repository.js';
 
 const TEMPLATES_BY_CATEGORY = {
   'developpement-personnel': developpementPersonnel,
@@ -30,22 +29,17 @@ export function generateVideoScriptText(product) {
 }
 
 /**
- * Génère un lot de brouillons (3 à 5, cible par défaut) pour la catégorie
- * active et les enregistre en base avec le statut `brouillon`.
+ * Génère un lot de brouillons (3 à 5, cible par défaut) pour TOUT le
+ * catalogue (tous produits, toutes catégories confondues) et les enregistre
+ * en base avec le statut `brouillon`.
  * Répartit les variantes entre les produits disponibles : 1 légende par
  * produit au minimum, puis des variantes d'accroche et un script vidéo pour
  * compléter jusqu'à `targetCount`.
  */
-export async function generateWeeklyDrafts({
-  categorie = config.activeCategory,
-  targetCount = 4,
-} = {}) {
-  const products = await listProductsByCategoryLocal(categorie);
+export async function generateWeeklyDrafts({ targetCount = 4 } = {}) {
+  const products = await listAllProductsLocal();
   if (products.length === 0) {
-    throw new Error(
-      `Aucun produit en base pour la catégorie "${categorie}". Lance d'abord ` +
-        `npm run sync:products.`
-    );
+    throw new Error('Aucun produit en base. Lance d\'abord la synchronisation Chariow.');
   }
 
   const drafts = [];

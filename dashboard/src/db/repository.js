@@ -99,6 +99,10 @@ export async function listProductsByCategoryLocal(categorie) {
   return query('SELECT * FROM products WHERE categorie = $1 ORDER BY created_at', [categorie]);
 }
 
+export async function listAllProductsLocal() {
+  return query('SELECT * FROM products ORDER BY created_at');
+}
+
 export async function insertContentDraft({ productId, texte, format = 'post' }) {
   const id = nanoid();
   await query(
