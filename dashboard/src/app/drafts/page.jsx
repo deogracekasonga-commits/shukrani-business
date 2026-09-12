@@ -8,6 +8,11 @@ const STATUT_LABEL = {
   publie: 'Publié',
 };
 
+const PLATEFORME_LABEL = {
+  instagram_facebook: '📷 Instagram / Facebook',
+  linkedin: '💼 LinkedIn',
+};
+
 export const dynamic = 'force-dynamic';
 
 export default async function DraftsPage() {
@@ -34,7 +39,8 @@ export default async function DraftsPage() {
         pending.map((draft) => (
           <div key={draft.id} style={cardStyle}>
             <div style={metaStyle}>
-              {draft.produit_nom} · {draft.format} · {draft.date_creation}
+              {PLATEFORME_LABEL[draft.plateforme] ?? draft.plateforme} · {draft.produit_nom} · {draft.format} ·{' '}
+              {draft.date_creation}
             </div>
             <form action={saveDraftText.bind(null, draft.id)}>
               <textarea
@@ -69,15 +75,22 @@ export default async function DraftsPage() {
           {approved.map((draft) => (
             <div key={draft.id} style={cardStyle}>
               <div style={metaStyle}>
-                {draft.produit_nom} · {draft.format} · approuvé par {draft.valide_par} le{' '}
-                {draft.date_validation}
+                {PLATEFORME_LABEL[draft.plateforme] ?? draft.plateforme} · {draft.produit_nom} · {draft.format} ·
+                approuvé par {draft.valide_par} le {draft.date_validation}
               </div>
               <pre style={{ whiteSpace: 'pre-wrap', margin: '0 0 0.5rem' }}>{draft.texte}</pre>
-              <form action={publishDraft.bind(null, draft.id)}>
-                <button type="submit" style={publishButtonStyle}>
-                  📤 Publier sur Instagram
-                </button>
-              </form>
+              {draft.plateforme === 'linkedin' ? (
+                <p style={{ fontSize: '0.85rem', color: '#666', margin: 0 }}>
+                  📋 Copie ce texte dans Buffer (canal LinkedIn) — pas de publication automatique pour ce
+                  réseau.
+                </p>
+              ) : (
+                <form action={publishDraft.bind(null, draft.id)}>
+                  <button type="submit" style={publishButtonStyle}>
+                    📤 Publier sur Instagram
+                  </button>
+                </form>
+              )}
             </div>
           ))}
         </>
@@ -91,7 +104,8 @@ export default async function DraftsPage() {
             return (
               <div key={draft.id} style={{ ...cardStyle, opacity: 0.75 }}>
                 <div style={metaStyle}>
-                  {draft.produit_nom} · {draft.format} · {STATUT_LABEL[draft.statut] ?? draft.statut}
+                  {PLATEFORME_LABEL[draft.plateforme] ?? draft.plateforme} · {draft.produit_nom} · {draft.format} ·{' '}
+                  {STATUT_LABEL[draft.statut] ?? draft.statut}
                   {draft.valide_par ? ` par ${draft.valide_par}` : ''} le {draft.date_validation}
                 </div>
                 <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{draft.texte}</pre>
