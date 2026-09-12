@@ -129,4 +129,4 @@ const textareaStyle = { width: '100%', boxSizing: 'border-box', fontFamily: 'inh
 const secondaryButtonStyle = { marginTop: '0.5rem' };
 const approveButtonStyle = { background: '#1a7f37', color: 'white', border: 'none', borderRadius: 6, padding: '0.5rem 1rem', cursor: 'pointer' };
 const rejectButtonStyle = { background: '#b3261e', color: 'white', border: 'none', borderRadius: 6, padding: '0.5rem 1rem', cursor: 'pointer' };
-const publishButtonStyle = { background: '#0a66c2', color: 'white', border: 'none', borderRadius: 6, padding: '0.5rem 1rem', cursor: 'pointer' };
+const publishButtonStyle = { background: '#0f2540', color: 'white', border: 'none', borderRadius: 6, padding: '0.5rem 1rem', cursor: 'pointer' };

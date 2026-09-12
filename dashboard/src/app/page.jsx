@@ -129,7 +129,7 @@ const preStyle = {
 };
 
 const buttonStyle = {
-  background: '#0a66c2',
+  background: '#0f2540',
   color: 'white',
   border: 'none',
   borderRadius: 6,

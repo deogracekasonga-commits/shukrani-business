@@ -49,7 +49,7 @@ function ReportCard({ report, highlight }) {
   const recommandations = buildRecommendations(report);
 
   return (
-    <div style={{ ...cardStyle, borderColor: highlight ? '#0a66c2' : '#ddd' }}>
+    <div style={{ ...cardStyle, borderColor: highlight ? '#0f2540' : '#ddd' }}>
       <h3 style={{ marginTop: 0 }}>Semaine {report.semaine}</h3>
       <p>
         <strong>{report.ventes_totales} $</strong> de ventes totales
@@ -118,7 +118,7 @@ const cardStyle = {
 };
 const cellStyle = { textAlign: 'left', borderBottom: '1px solid #ddd', padding: '0.4rem 0.6rem' };
 const generateButtonStyle = {
-  background: '#0a66c2',
+  background: '#0f2540',
   color: 'white',
   border: 'none',
   borderRadius: 6,
