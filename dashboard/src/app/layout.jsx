@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
         <header className="sb-header">
           <nav className="sb-header-inner">
             <Link href="/" className="sb-brand">
-              <span className="sb-logo-badge">SB</span>
+              <img src="/logo-icon.png" alt="Shukrani Business" className="sb-logo-badge" />
               <span className="sb-brand-text">Shukrani Business</span>
             </Link>
             <div className="sb-nav-links">

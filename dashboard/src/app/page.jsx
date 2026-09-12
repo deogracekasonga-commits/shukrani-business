@@ -141,7 +141,7 @@ function StatCard({ label, value, href, highlight }) {
   const content = (
     <div
       style={{
-        border: `1px solid ${highlight ? '#1a7f37' : '#ddd'}`,
+        border: `1px solid ${highlight ? '#ea5d1f' : '#ddd'}`,
         borderRadius: 8,
         padding: '1rem',
         color: 'inherit',

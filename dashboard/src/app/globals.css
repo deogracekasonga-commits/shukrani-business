@@ -1,7 +1,7 @@
 :root {
-  --sb-navy: #0f2540;
-  --sb-navy-light: #16324f;
-  --sb-gold: #d4a13d;
+  --sb-navy: #161d2b;
+  --sb-navy-light: #202a40;
+  --sb-orange: #ea5d1f;
   --sb-bg: #f6f7f9;
   --sb-text: #1a1a1a;
   --sb-border: #e2e2e2;
@@ -20,11 +20,16 @@ body {
 }
 
 .sb-header {
-  background: linear-gradient(135deg, var(--sb-navy) 0%, var(--sb-navy-light) 100%);
-  color: white;
   position: sticky;
   top: 0;
   z-index: 10;
+  color: white;
+  background:
+    linear-gradient(135deg, rgba(22, 29, 43, 0.94) 0%, rgba(32, 42, 64, 0.94) 100%),
+    url('/logo.png');
+  background-size: auto, 340px 340px;
+  background-position: left center, right -70px center;
+  background-repeat: no-repeat, no-repeat;
 }
 
 .sb-header-inner {
@@ -44,24 +49,18 @@ body {
 .sb-brand {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.6rem;
   flex-shrink: 0;
   text-decoration: none;
   color: white;
 }
 
 .sb-logo-badge {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--sb-gold), #b9852a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--sb-navy);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   flex-shrink: 0;
+  display: block;
 }
 
 .sb-brand-text {
