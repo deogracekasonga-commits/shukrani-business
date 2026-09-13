@@ -1,4 +1,85 @@
 <resources>
     <string name="app_name">Shukrani Business</string>
     <string name="welcome_message">Bienvenue sur Shukrani Business</string>
+
+    <string name="login_subtitle">Caisse et gestion de stock</string>
+    <string name="first_run_title">Créez le compte du gérant pour commencer</string>
+    <string name="hint_manager_name">Nom du gérant</string>
+    <string name="hint_pin">Code PIN (4 à 6 chiffres)</string>
+    <string name="hint_pin_confirm">Confirmer le PIN</string>
+    <string name="action_create_manager">Créer le compte gérant</string>
+    <string name="action_login">Se connecter</string>
+
+    <string name="error_fill_all_fields">Veuillez remplir tous les champs</string>
+    <string name="error_pin_mismatch">Les PIN ne correspondent pas</string>
+    <string name="error_pin_too_short">Le PIN doit contenir au moins 4 chiffres</string>
+    <string name="error_invalid_pin">PIN incorrect</string>
+    <string name="error_select_employee">Sélectionnez un employé</string>
+
+    <string name="nav_pos">Vente</string>
+    <string name="nav_stock">Stock</string>
+    <string name="nav_reports">Rapports</string>
+    <string name="nav_more">Réglages</string>
+
+    <string name="action_switch_user">Changer d\'utilisateur</string>
+    <string name="action_add_to_cart">Ajouter</string>
+    <string name="action_checkout">Valider la vente</string>
+    <string name="cart_empty">Le panier est vide</string>
+    <string name="label_total">Total</string>
+    <string name="label_currency_cdf">CDF</string>
+    <string name="label_currency_usd">USD</string>
+
+    <string name="action_add_product">Ajouter un produit</string>
+    <string name="action_restock">Réapprovisionner</string>
+    <string name="action_edit">Modifier</string>
+    <string name="label_low_stock">Stock bas</string>
+
+    <string name="dialog_product_title_add">Nouveau produit</string>
+    <string name="dialog_product_title_edit">Modifier le produit</string>
+    <string name="hint_product_name">Nom du produit</string>
+    <string name="hint_product_category">Catégorie</string>
+    <string name="hint_price_cdf">Prix (CDF)</string>
+    <string name="hint_price_usd">Prix (USD)</string>
+    <string name="hint_quantity">Quantité en stock</string>
+    <string name="hint_low_stock_threshold">Seuil de stock bas</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_delete">Supprimer</string>
+
+    <string name="dialog_restock_title">Réapprovisionner</string>
+    <string name="hint_restock_quantity">Quantité ajoutée</string>
+    <string name="hint_restock_note">Note (optionnel)</string>
+
+    <string name="action_export_csv">Exporter en Excel/CSV</string>
+    <string name="action_export_pdf">Exporter en PDF</string>
+
+    <string name="title_employees">Employés</string>
+    <string name="action_add_employee">Ajouter un employé</string>
+    <string name="role_manager">Gérant</string>
+    <string name="role_seller">Vendeur</string>
+    <string name="error_last_manager">Impossible : il doit rester au moins un gérant actif</string>
+
+    <string name="period_today">Aujourd\'hui</string>
+    <string name="period_week">7 jours</string>
+    <string name="period_month">30 jours</string>
+    <string name="period_all">Tout</string>
+    <string name="label_sales_count">Nombre de ventes : %d</string>
+    <string name="no_data_to_export">Aucune vente sur cette période</string>
+
+    <string name="action_pair_printer">Choisir l\'imprimante Bluetooth</string>
+    <string name="action_print_receipt">Imprimer le reçu</string>
+    <string name="action_save_settings">Enregistrer</string>
+
+    <string name="error_stock_max">Stock disponible : %d</string>
+    <string name="sale_recorded">Vente enregistrée</string>
+    <string name="all_categories">Tous</string>
+
+    <string name="hint_shop_name">Nom de la boutique</string>
+    <string name="hint_exchange_rate">Taux de change (CDF pour 1 USD)</string>
+    <string name="action_manage_employees">Gérer les employés</string>
+    <string name="settings_saved">Réglages enregistrés</string>
+    <string name="printer_none_selected">Aucune imprimante sélectionnée</string>
+    <string name="printer_selected">Imprimante : %s</string>
+    <string name="error_bluetooth_permission">Permission Bluetooth requise pour choisir l\'imprimante</string>
+    <string name="error_no_paired_devices">Aucun appareil Bluetooth appairé. Associez d\'abord l\'imprimante dans les réglages Bluetooth du téléphone.</string>
 </resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <EditText
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_product_name"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/categoryInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_product_category"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/priceCdfInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_price_cdf"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/priceUsdInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_price_usd"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/quantityInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_quantity"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/thresholdInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_low_stock_threshold"
+            android:inputType="number" />
+    </LinearLayout>
+</ScrollView>
