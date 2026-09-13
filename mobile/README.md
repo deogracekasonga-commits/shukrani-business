@@ -130,12 +130,24 @@ produit existant pour ajouter des quantités reçues.
 - Le taux de change CDF/USD est saisi manuellement dans Réglages (pas de
   mise à jour automatique en ligne, cohérent avec le fonctionnement
   hors-ligne).
-- Remplacer les icônes vectorielles placeholder (`ic_pos`, `ic_stock`,
-  `ic_reports`, `ic_settings`) par des icônes cohérentes avec le logo
-  officiel de l'app.
-- **Logo officiel** : un logo "Shukra POS" a été conçu avec Canva (badge
-  bleu + wordmark "Shukra" / "POS") et validé — design Canva :
-  https://www.canva.com/d/agCwOqCegcpt50Z. Reste à intégrer le fichier
-  exporté comme icône de lancement (`mipmap/ic_launcher*`) et logo de
-  l'écran de connexion, une fois le fichier récupéré (téléchargement direct
-  impossible depuis cet environnement).
+- Les icônes de navigation (`ic_pos`, `ic_stock`, `ic_reports`,
+  `ic_settings`) restent des vecteurs placeholder simples ; à harmoniser
+  avec le style du logo si besoin.
+
+## Identité visuelle
+
+Logo officiel conçu avec Canva (design : https://www.canva.com/d/agCwOqCegcpt50Z) :
+badge circulaire bleu (globe + document coché) et wordmark « Shukra ».
+
+- **Icône de l'application** : `mipmap-xxxhdpi/ic_launcher_foreground.png`
+  (juste le badge, recadré et centré) + `@color/ic_launcher_background`
+  (bleu marine `#030E24`), assemblés via l'icône adaptative
+  `mipmap-anydpi-v26/ic_launcher.xml`. Une seule densité est fournie —
+  Android Studio peut régénérer les autres tailles depuis ce fichier
+  (clic droit sur `res` → New → Image Asset).
+- **Écran de connexion** : bannière `drawable-nodpi/logo_shukra_pos.png`
+  (badge + « Shukra ») suivie du texte « POS » (le mot « POS » n'était pas
+  inclus dans l'export Canva, il est donc ajouté par l'app en texte stylé).
+- **Couleurs de marque** (`values/colors.xml`) : `brand_navy` (#030E24),
+  `brand_blue` (#2E6FF2), `brand_blue_dark` (#1B4FC4) — appliquées au thème
+  (`Theme.ShukraPOS`) comme couleurs primaire/secondaire de l'app.

@@ -12,19 +12,30 @@
         android:gravity="center_horizontal"
         android:padding="32dp">
 
+        <ImageView
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/logo_shukra_pos"
+            android:contentDescription="@string/app_name" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="26sp"
+            android:text="@string/app_pos_label"
+            android:textColor="#7C93BD"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textSize="15sp"
+            android:letterSpacing="0.15"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/login_subtitle"
             android:textSize="14sp"
+            android:gravity="center"
             android:layout_marginBottom="24dp" />
 
         <LinearLayout
