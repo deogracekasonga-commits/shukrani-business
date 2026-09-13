@@ -1,4 +1,6 @@
-# Shukrani Business — Caisse & Stock (Android)
+# Shukra POS (Android)
+
+**Shukra POS** — *Simplifiez vos ventes, maîtrisez vos stocks.*
 
 Application Android de **caisse (POS) et gestion de stock en temps réel**
 pour la boutique physique Shukrani Business (biscuits, boudin, pampers,
@@ -129,5 +131,11 @@ produit existant pour ajouter des quantités reçues.
   mise à jour automatique en ligne, cohérent avec le fonctionnement
   hors-ligne).
 - Remplacer les icônes vectorielles placeholder (`ic_pos`, `ic_stock`,
-  `ic_reports`, `ic_settings`, icône de l'app) par le vrai logo Shukrani
-  Business (`dashboard/public/logo.png`).
+  `ic_reports`, `ic_settings`) par des icônes cohérentes avec le logo
+  officiel de l'app.
+- **Logo officiel** : un logo "Shukra POS" a été conçu avec Canva (badge
+  bleu + wordmark "Shukra" / "POS") et validé — design Canva :
+  https://www.canva.com/d/agCwOqCegcpt50Z. Reste à intégrer le fichier
+  exporté comme icône de lancement (`mipmap/ic_launcher*`) et logo de
+  l'écran de connexion, une fois le fichier récupéré (téléchargement direct
+  impossible depuis cet environnement).

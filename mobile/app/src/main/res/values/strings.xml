@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">Shukrani Business</string>
-    <string name="welcome_message">Bienvenue sur Shukrani Business</string>
+    <string name="app_name">Shukra POS</string>
 
-    <string name="login_subtitle">Caisse et gestion de stock</string>
+    <string name="login_subtitle">Simplifiez vos ventes, maîtrisez vos stocks.</string>
     <string name="first_run_title">Créez le compte du gérant pour commencer</string>
     <string name="hint_manager_name">Nom du gérant</string>
     <string name="hint_pin">Code PIN (4 à 6 chiffres)</string>
