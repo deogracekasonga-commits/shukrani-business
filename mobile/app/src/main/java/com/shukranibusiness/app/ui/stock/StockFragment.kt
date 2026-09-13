@@ -38,7 +38,8 @@ class StockFragment : Fragment() {
 
         adapter = StockAdapter(
             onEdit = { product -> showProductDialog(product) },
-            onRestock = { product -> showRestockDialog(product) }
+            onRestock = { product -> showRestockDialog(product) },
+            onDelete = { product -> confirmDelete(product) }
         )
         binding.stockList.layoutManager = LinearLayoutManager(requireContext())
         binding.stockList.adapter = adapter
@@ -67,6 +68,17 @@ class StockFragment : Fragment() {
                     val note = dialogBinding.restockNoteInput.text.toString().ifBlank { null }
                     lifecycleScope.launch { repository.restock(product.id, quantity, note) }
                 }
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    private fun confirmDelete(product: Product) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(product.name)
+            .setMessage(R.string.confirm_delete_product)
+            .setPositiveButton(R.string.action_delete) { _, _ ->
+                lifecycleScope.launch { repository.deactivateProduct(product.id) }
             }
             .setNegativeButton(R.string.action_cancel, null)
             .show()

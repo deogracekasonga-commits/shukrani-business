@@ -7,6 +7,7 @@ import com.shukranibusiness.app.data.entities.EmployeeRole
 import com.shukranibusiness.app.data.entities.Product
 import com.shukranibusiness.app.data.entities.Sale
 import com.shukranibusiness.app.data.entities.SaleItem
+import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.data.entities.StockMovement
 import com.shukranibusiness.app.data.entities.StockMovementType
 import com.shukranibusiness.app.util.PinHasher
@@ -91,6 +92,39 @@ class ShopRepository(context: Context) {
 
     suspend fun getSaleItemsBetween(startMillis: Long, endMillis: Long): List<SaleItem> =
         saleDao.getItemsBetween(startMillis, endMillis)
+
+    suspend fun getSale(saleId: Long): Sale? = saleDao.getById(saleId)
+
+    /**
+     * Annule une vente (note de crédit) : remet les quantités vendues en stock, journalise
+     * chaque remise en stock, et marque la vente "CANCELED" sans la supprimer (traçabilité).
+     * Réservé au gérant côté UI. Ne fait rien si la vente n'existe plus ou est déjà annulée.
+     */
+    suspend fun cancelSale(saleId: Long, canceledBy: Employee): Sale? {
+        return db.withTransaction {
+            val sale = saleDao.getById(saleId) ?: return@withTransaction null
+            if (sale.status == SaleStatus.CANCELED) return@withTransaction sale
+
+            val items = saleDao.getItemsForSale(saleId)
+            val now = System.currentTimeMillis()
+            for (item in items) {
+                productDao.adjustQuantity(item.productId, item.quantity)
+                stockMovementDao.insert(
+                    StockMovement(
+                        productId = item.productId,
+                        productName = item.productName,
+                        type = StockMovementType.ANNULATION,
+                        quantityChange = item.quantity,
+                        dateTimeMillis = now,
+                        note = "Annulation vente #$saleId (note de crédit) par ${canceledBy.name}"
+                    )
+                )
+            }
+
+            saleDao.updateStatus(saleId, SaleStatus.CANCELED, canceledBy.name, now)
+            sale.copy(status = SaleStatus.CANCELED, canceledByEmployeeName = canceledBy.name, canceledAtMillis = now)
+        }
+    }
 
     /**
      * Enregistre une vente : vérifie le stock, décrémente les quantités, journalise le

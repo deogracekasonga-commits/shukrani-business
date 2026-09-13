@@ -3,6 +3,7 @@ package com.shukranibusiness.app.util
 import android.content.Context
 import com.shukranibusiness.app.data.entities.Sale
 import com.shukranibusiness.app.data.entities.SaleItem
+import com.shukranibusiness.app.data.entities.SaleStatus
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,9 +19,10 @@ object CsvExporter {
         file.bufferedWriter().use { writer ->
             writer.write(
                 "Date,Employé,Produit,Quantité,Prix unitaire CDF,Prix unitaire USD," +
-                    "Sous-total CDF,Sous-total USD,Devise payée\n"
+                    "Sous-total CDF,Sous-total USD,Devise payée,Statut\n"
             )
             for (sale in sales) {
+                val statusLabel = if (sale.status == SaleStatus.CANCELED) "ANNULÉE" else "VALIDÉE"
                 for (item in itemsBySale[sale.id].orEmpty()) {
                     val row = listOf(
                         sdf.format(Date(sale.dateTimeMillis)),
@@ -31,7 +33,8 @@ object CsvExporter {
                         item.unitPriceUsd.toString(),
                         item.subtotalCdf.toString(),
                         item.subtotalUsd.toString(),
-                        sale.currencyPaid
+                        sale.currencyPaid,
+                        statusLabel
                     ).joinToString(",") { escape(it) }
                     writer.write(row)
                     writer.write("\n")

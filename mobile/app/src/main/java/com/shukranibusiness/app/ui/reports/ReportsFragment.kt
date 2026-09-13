@@ -11,7 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.Prefs
 import com.shukranibusiness.app.data.ShopRepository
+import com.shukranibusiness.app.data.entities.Employee
+import com.shukranibusiness.app.data.entities.EmployeeRole
 import com.shukranibusiness.app.data.entities.Sale
+import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.databinding.FragmentReportsBinding
 import com.shukranibusiness.app.util.CsvExporter
 import com.shukranibusiness.app.util.CurrencyFormatter
@@ -35,6 +38,7 @@ class ReportsFragment : Fragment() {
     private var currentPeriodLabel: String = ""
     private var periodStart: Long = 0L
     private var periodEnd: Long = System.currentTimeMillis()
+    private var currentEmployee: Employee? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,9 +53,14 @@ class ReportsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         repository = ShopRepository(requireContext())
         prefs = Prefs(requireContext())
-        adapter = SaleAdapter()
+        adapter = SaleAdapter(onClick = { sale -> onSaleClicked(sale) })
         binding.salesList.layoutManager = LinearLayoutManager(requireContext())
         binding.salesList.adapter = adapter
+
+        lifecycleScope.launch {
+            val employeeId = prefs.loggedInEmployeeId
+            currentEmployee = if (employeeId != -1L) repository.getEmployee(employeeId) else null
+        }
 
         binding.periodTodayButton.setOnClickListener {
             selectPeriod(periodToday(), getString(R.string.period_today))
@@ -82,10 +91,11 @@ class ReportsFragment : Fragment() {
             repository.observeSalesBetween(periodStart, periodEnd).collect { sales ->
                 currentSales = sales
                 adapter.submit(sales)
-                val totalCdf = sales.sumOf { it.totalCdf }
-                val totalUsd = sales.sumOf { it.totalUsd }
+                val completed = sales.filter { it.status == SaleStatus.COMPLETED }
+                val totalCdf = completed.sumOf { it.totalCdf }
+                val totalUsd = completed.sumOf { it.totalUsd }
                 binding.summaryTotal.text = CurrencyFormatter.formatBoth(totalCdf, totalUsd)
-                binding.summaryCount.text = getString(R.string.label_sales_count, sales.size)
+                binding.summaryCount.text = getString(R.string.label_sales_count, completed.size)
             }
         }
     }
@@ -108,13 +118,28 @@ class ReportsFragment : Fragment() {
             Toast.makeText(requireContext(), getString(R.string.no_data_to_export), Toast.LENGTH_SHORT).show()
             return
         }
-        val totalCdf = currentSales.sumOf { it.totalCdf }
-        val totalUsd = currentSales.sumOf { it.totalUsd }
+        val completed = currentSales.filter { it.status == SaleStatus.COMPLETED }
+        val totalCdf = completed.sumOf { it.totalCdf }
+        val totalUsd = completed.sumOf { it.totalUsd }
         lifecycleScope.launch {
             val file = PdfExporter.exportSalesSummary(
                 requireContext(), currentPeriodLabel, currentSales, totalCdf, totalUsd, prefs.shopName
             )
             FileSharer.share(requireContext(), file, "application/pdf")
+        }
+    }
+
+    private fun onSaleClicked(sale: Sale) {
+        lifecycleScope.launch {
+            val items = repository.getSaleItems(sale.id)
+            val canCancel = currentEmployee?.role == EmployeeRole.MANAGER
+            SaleDetailDialog(sale, items, canCancel) { toCancel ->
+                lifecycleScope.launch {
+                    val employee = currentEmployee ?: return@launch
+                    repository.cancelSale(toCancel.id, employee)
+                    Toast.makeText(requireContext(), getString(R.string.sale_canceled_confirmation), Toast.LENGTH_SHORT).show()
+                }
+            }.show(childFragmentManager, "sale_detail")
         }
     }
 

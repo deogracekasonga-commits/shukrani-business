@@ -3,6 +3,11 @@ package com.shukranibusiness.app.data.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+enum class SaleStatus {
+    COMPLETED,
+    CANCELED
+}
+
 @Entity(tableName = "sales")
 data class Sale(
     @PrimaryKey(autoGenerate = true)
@@ -13,5 +18,8 @@ data class Sale(
     val totalCdf: Double,
     val totalUsd: Double,
     val currencyPaid: String,
-    val exchangeRateUsed: Double
+    val exchangeRateUsed: Double,
+    val status: SaleStatus = SaleStatus.COMPLETED,
+    val canceledByEmployeeName: String? = null,
+    val canceledAtMillis: Long? = null
 )

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import com.shukranibusiness.app.data.entities.Sale
+import com.shukranibusiness.app.data.entities.SaleStatus
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -49,7 +50,14 @@ object PdfExporter {
             boldPaint
         )
         y += LINE_HEIGHT
-        canvas.drawText("Nombre de ventes : ${sales.size}", MARGIN_LEFT, y, textPaint)
+        val completedCount = sales.count { it.status == SaleStatus.COMPLETED }
+        canvas.drawText(
+            "Nombre de ventes validées : $completedCount" +
+                if (sales.size > completedCount) " (+ ${sales.size - completedCount} annulée(s) listée(s) ci-dessous, non comptée(s))" else "",
+            MARGIN_LEFT,
+            y,
+            textPaint
+        )
         y += LINE_HEIGHT * 1.5f
 
         canvas.drawText("Date", MARGIN_LEFT, y, boldPaint)
@@ -67,8 +75,13 @@ object PdfExporter {
                 canvas = page.canvas
                 y = 60f
             }
+            val employeeLabel = if (sale.status == SaleStatus.CANCELED) {
+                "${sale.employeeName} (ANNULÉE)"
+            } else {
+                sale.employeeName
+            }
             canvas.drawText(sdf.format(Date(sale.dateTimeMillis)), MARGIN_LEFT, y, textPaint)
-            canvas.drawText(sale.employeeName, MARGIN_LEFT + 140, y, textPaint)
+            canvas.drawText(employeeLabel, MARGIN_LEFT + 140, y, textPaint)
             canvas.drawText(String.format(Locale.FRANCE, "%.0f", sale.totalCdf), MARGIN_LEFT + 300, y, textPaint)
             canvas.drawText(String.format(Locale.FRANCE, "%.2f", sale.totalUsd), MARGIN_LEFT + 420, y, textPaint)
             y += LINE_HEIGHT

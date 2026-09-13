@@ -20,9 +20,12 @@ imprimante Bluetooth.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
   choix de la devise (CDF ou USD), décrément du stock à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
-  modification de produit, réapprovisionnement journalisé.
+  modification/**suppression** de produit, réapprovisionnement journalisé.
 - **Rapports** : historique des ventes filtrable par période (jour/semaine/
-  mois/tout), totaux CDF et USD, export **CSV** (Excel) et **PDF**.
+  mois/tout), totaux CDF et USD, export **CSV** (Excel) et **PDF**. Toucher
+  une vente ouvre son détail ; le **gérant** peut l'**annuler** (note de
+  crédit) — les articles sont remis en stock, la vente reste visible dans
+  l'historique mais marquée « annulée » et exclue des totaux.
 - **Employés** (gérant) : création/modification/désactivation des comptes,
   attribution du rôle.
 - **Réglages** : nom de la boutique, taux de change CDF ↔ USD, sélection de

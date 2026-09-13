@@ -64,6 +64,16 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:text="@string/action_restock" />
+
+            <Button
+                android:id="@+id/deleteButton"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:textColor="#D32F2F"
+                android:text="@string/action_delete" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

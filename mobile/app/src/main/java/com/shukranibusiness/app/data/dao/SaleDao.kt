@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.shukranibusiness.app.data.entities.Sale
 import com.shukranibusiness.app.data.entities.SaleItem
+import com.shukranibusiness.app.data.entities.SaleStatus
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -15,6 +16,20 @@ interface SaleDao {
 
     @Insert
     suspend fun insertSaleItems(items: List<SaleItem>)
+
+    @Query("SELECT * FROM sales WHERE id = :saleId LIMIT 1")
+    suspend fun getById(saleId: Long): Sale?
+
+    @Query(
+        "UPDATE sales SET status = :status, canceledByEmployeeName = :canceledByEmployeeName, " +
+            "canceledAtMillis = :canceledAtMillis WHERE id = :saleId"
+    )
+    suspend fun updateStatus(
+        saleId: Long,
+        status: SaleStatus,
+        canceledByEmployeeName: String?,
+        canceledAtMillis: Long?
+    )
 
     @Query("SELECT * FROM sales WHERE dateTimeMillis BETWEEN :startMillis AND :endMillis ORDER BY dateTimeMillis DESC")
     fun observeSalesBetween(startMillis: Long, endMillis: Long): Flow<List<Sale>>

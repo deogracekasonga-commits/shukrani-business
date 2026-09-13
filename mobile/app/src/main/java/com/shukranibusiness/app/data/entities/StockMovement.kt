@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 enum class StockMovementType {
     VENTE,
     REAPPRO,
-    AJUSTEMENT
+    AJUSTEMENT,
+    ANNULATION
 }
 
 @Entity(tableName = "stock_movements")

@@ -10,7 +10,8 @@ import com.shukranibusiness.app.util.CurrencyFormatter
 
 class StockAdapter(
     private val onEdit: (Product) -> Unit,
-    private val onRestock: (Product) -> Unit
+    private val onRestock: (Product) -> Unit,
+    private val onDelete: (Product) -> Unit
 ) : RecyclerView.Adapter<StockAdapter.ViewHolder>() {
 
     private var products: List<Product> = emptyList()
@@ -42,6 +43,7 @@ class StockAdapter(
         )
         holder.binding.editButton.setOnClickListener { onEdit(product) }
         holder.binding.restockButton.setOnClickListener { onRestock(product) }
+        holder.binding.deleteButton.setOnClickListener { onDelete(product) }
     }
 
     override fun getItemCount(): Int = products.size

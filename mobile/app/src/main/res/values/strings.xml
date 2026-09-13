@@ -58,6 +58,7 @@
     <string name="role_manager">Gérant</string>
     <string name="role_seller">Vendeur</string>
     <string name="error_last_manager">Impossible : il doit rester au moins un gérant actif</string>
+    <string name="confirm_delete_product">Supprimer ce produit ? Il n\'apparaîtra plus dans la vente ni le stock, mais les ventes déjà enregistrées le concernant restent conservées.</string>
 
     <string name="period_today">Aujourd\'hui</string>
     <string name="period_week">7 jours</string>
@@ -65,6 +66,13 @@
     <string name="period_all">Tout</string>
     <string name="label_sales_count">Nombre de ventes : %d</string>
     <string name="no_data_to_export">Aucune vente sur cette période</string>
+
+    <string name="sale_detail_title">Détail de la vente</string>
+    <string name="sale_status_canceled">Vente annulée le %1$s par %2$s (note de crédit) — non comptée dans les totaux</string>
+    <string name="action_cancel_sale">Annuler la vente (note de crédit)</string>
+    <string name="confirm_cancel_sale">Annuler cette vente ? Les articles seront remis en stock et la vente sera marquée annulée (une note de crédit). Cette action est réservée au gérant.</string>
+    <string name="sale_canceled_confirmation">Vente annulée — stock remis à jour</string>
+    <string name="action_close">Fermer</string>
 
     <string name="action_pair_printer">Choisir l\'imprimante Bluetooth</string>
     <string name="action_print_receipt">Imprimer le reçu</string>
