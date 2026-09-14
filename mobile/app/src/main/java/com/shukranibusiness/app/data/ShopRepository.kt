@@ -10,10 +10,11 @@ import com.shukranibusiness.app.data.entities.SaleItem
 import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.data.entities.StockMovement
 import com.shukranibusiness.app.data.entities.StockMovementType
+import com.shukranibusiness.app.sync.SyncScheduler
 import com.shukranibusiness.app.util.PinHasher
 import kotlinx.coroutines.flow.Flow
 
-class ShopRepository(context: Context) {
+class ShopRepository(private val context: Context) {
 
     private val db = AppDatabase.getInstance(context)
     private val employeeDao = db.employeeDao()
@@ -95,6 +96,10 @@ class ShopRepository(context: Context) {
 
     suspend fun getSale(saleId: Long): Sale? = saleDao.getById(saleId)
 
+    suspend fun getPendingSyncSales(): List<Sale> = saleDao.getPendingSync()
+
+    suspend fun markSynced(saleId: Long) = saleDao.markSynced(saleId)
+
     /**
      * Annule une vente (note de crédit) : remet les quantités vendues en stock, journalise
      * chaque remise en stock, et marque la vente "CANCELED" sans la supprimer (traçabilité).
@@ -123,7 +128,7 @@ class ShopRepository(context: Context) {
 
             saleDao.updateStatus(saleId, SaleStatus.CANCELED, canceledBy.name, now)
             sale.copy(status = SaleStatus.CANCELED, canceledByEmployeeName = canceledBy.name, canceledAtMillis = now)
-        }
+        }.also { SyncScheduler.scheduleImmediateSync(context) }
     }
 
     /**
@@ -150,6 +155,7 @@ class ShopRepository(context: Context) {
             val totalCdf = cartLines.sumOf { it.subtotalCdf }
             val totalUsd = cartLines.sumOf { it.subtotalUsd }
             val now = System.currentTimeMillis()
+            val cloudUuid = java.util.UUID.randomUUID().toString()
 
             val saleId = saleDao.insertSale(
                 Sale(
@@ -159,7 +165,8 @@ class ShopRepository(context: Context) {
                     totalCdf = totalCdf,
                     totalUsd = totalUsd,
                     currencyPaid = currencyPaid,
-                    exchangeRateUsed = exchangeRateUsed
+                    exchangeRateUsed = exchangeRateUsed,
+                    cloudUuid = cloudUuid
                 )
             )
 
@@ -199,8 +206,9 @@ class ShopRepository(context: Context) {
                 totalCdf = totalCdf,
                 totalUsd = totalUsd,
                 currencyPaid = currencyPaid,
-                exchangeRateUsed = exchangeRateUsed
+                exchangeRateUsed = exchangeRateUsed,
+                cloudUuid = cloudUuid
             )
-        }
+        }.also { SyncScheduler.scheduleImmediateSync(context) }
     }
 }

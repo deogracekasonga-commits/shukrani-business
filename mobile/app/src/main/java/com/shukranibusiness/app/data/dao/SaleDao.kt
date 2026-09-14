@@ -22,7 +22,7 @@ interface SaleDao {
 
     @Query(
         "UPDATE sales SET status = :status, canceledByEmployeeName = :canceledByEmployeeName, " +
-            "canceledAtMillis = :canceledAtMillis WHERE id = :saleId"
+            "canceledAtMillis = :canceledAtMillis, pendingSync = 1 WHERE id = :saleId"
     )
     suspend fun updateStatus(
         saleId: Long,
@@ -30,6 +30,12 @@ interface SaleDao {
         canceledByEmployeeName: String?,
         canceledAtMillis: Long?
     )
+
+    @Query("SELECT * FROM sales WHERE pendingSync = 1 ORDER BY dateTimeMillis ASC")
+    suspend fun getPendingSync(): List<Sale>
+
+    @Query("UPDATE sales SET pendingSync = 0 WHERE id = :saleId")
+    suspend fun markSynced(saleId: Long)
 
     @Query("SELECT * FROM sales WHERE dateTimeMillis BETWEEN :startMillis AND :endMillis ORDER BY dateTimeMillis DESC")
     fun observeSalesBetween(startMillis: Long, endMillis: Long): Flow<List<Sale>>

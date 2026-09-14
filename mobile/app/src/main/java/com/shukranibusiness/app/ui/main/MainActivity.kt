@@ -13,6 +13,8 @@ import com.shukranibusiness.app.data.ShopRepository
 import com.shukranibusiness.app.data.entities.Employee
 import com.shukranibusiness.app.data.entities.EmployeeRole
 import com.shukranibusiness.app.databinding.ActivityMainBinding
+import com.shukranibusiness.app.sync.SyncScheduler
+import com.shukranibusiness.app.ui.dashboard.DashboardFragment
 import com.shukranibusiness.app.ui.login.LoginActivity
 import com.shukranibusiness.app.ui.pos.PosFragment
 import com.shukranibusiness.app.ui.reports.ReportsFragment
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         repository = ShopRepository(this)
         prefs = Prefs(this)
+        SyncScheduler.schedulePeriodicSafetyNet(this)
 
         val employeeId = prefs.loggedInEmployeeId
         if (employeeId == -1L) {
@@ -62,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             binding.bottomNav.visibility = android.view.View.VISIBLE
             binding.bottomNav.setOnItemSelectedListener { item ->
                 when (item.itemId) {
+                    R.id.nav_dashboard -> showFragment(DashboardFragment())
                     R.id.nav_pos -> showFragment(PosFragment())
                     R.id.nav_stock -> showFragment(StockFragment())
                     R.id.nav_reports -> showFragment(ReportsFragment())
@@ -69,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 true
             }
-            showFragment(PosFragment())
+            showFragment(DashboardFragment())
         }
     }
 

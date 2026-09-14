@@ -14,10 +14,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.Prefs
 import com.shukranibusiness.app.databinding.FragmentSettingsBinding
+import com.shukranibusiness.app.sync.SupabaseSyncClient
 import com.shukranibusiness.app.ui.employees.EmployeesActivity
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
 
@@ -62,6 +65,60 @@ class SettingsFragment : Fragment() {
         binding.choosePrinterButton.setOnClickListener { onChoosePrinterClicked() }
         binding.manageEmployeesButton.setOnClickListener {
             startActivity(Intent(requireContext(), EmployeesActivity::class.java))
+        }
+
+        updateSyncStatus()
+        binding.registerSyncButton.setOnClickListener { onRegisterSyncClicked() }
+        binding.resetSyncButton.setOnClickListener {
+            prefs.clearDeviceRegistration()
+            updateSyncStatus()
+        }
+    }
+
+    private fun onRegisterSyncClicked() {
+        val setupKey = binding.setupKeyInput.text.toString().trim()
+        if (setupKey.isEmpty()) {
+            Toast.makeText(requireContext(), getString(R.string.error_setup_key_required), Toast.LENGTH_SHORT).show()
+            return
+        }
+        val role = if (binding.syncRoleManagerRadio.isChecked) "manager" else "shop"
+        val shopName = binding.shopNameInput.text.toString().trim().ifEmpty { prefs.shopName }
+
+        binding.registerSyncButton.isEnabled = false
+        lifecycleScope.launch {
+            try {
+                val result = SupabaseSyncClient.registerDevice(setupKey, shopName, role)
+                prefs.deviceToken = result.deviceToken
+                prefs.deviceId = result.deviceId
+                prefs.deviceRole = role
+                prefs.shopName = shopName
+                Toast.makeText(requireContext(), getString(R.string.sync_registered_success), Toast.LENGTH_SHORT).show()
+                updateSyncStatus()
+            } catch (e: Exception) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.error_sync_registration_failed, e.message ?: ""),
+                    Toast.LENGTH_LONG
+                ).show()
+            } finally {
+                binding.registerSyncButton.isEnabled = true
+            }
+        }
+    }
+
+    private fun updateSyncStatus() {
+        if (prefs.isRemoteSyncConfigured) {
+            binding.syncSetupGroup.visibility = View.GONE
+            binding.resetSyncButton.visibility = View.VISIBLE
+            binding.syncStatusText.text = if (prefs.isManagerDevice) {
+                getString(R.string.sync_configured_manager, prefs.shopName)
+            } else {
+                getString(R.string.sync_configured_shop, prefs.shopName)
+            }
+        } else {
+            binding.syncSetupGroup.visibility = View.VISIBLE
+            binding.resetSyncButton.visibility = View.GONE
+            binding.syncStatusText.text = getString(R.string.sync_not_configured)
         }
     }
 

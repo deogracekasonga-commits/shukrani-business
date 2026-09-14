@@ -24,8 +24,33 @@ class Prefs(context: Context) {
         get() = prefs.getString(KEY_PRINTER_ADDRESS, null)
         set(value) = prefs.edit().putString(KEY_PRINTER_ADDRESS, value).apply()
 
+    /** Jeton secret reçu à l'enregistrement de cet appareil sur Supabase — null si non configuré. */
+    var deviceToken: String?
+        get() = prefs.getString(KEY_DEVICE_TOKEN, null)
+        set(value) = prefs.edit().putString(KEY_DEVICE_TOKEN, value).apply()
+
+    /** Identifiant (UUID) attribué à cet appareil à l'enregistrement — requis pour taguer les ventes. */
+    var deviceId: String?
+        get() = prefs.getString(KEY_DEVICE_ID, null)
+        set(value) = prefs.edit().putString(KEY_DEVICE_ID, value).apply()
+
+    /** "shop" (vendeur) ou "manager" (gérant à distance) — voir la table `devices` côté Supabase. */
+    var deviceRole: String?
+        get() = prefs.getString(KEY_DEVICE_ROLE, null)
+        set(value) = prefs.edit().putString(KEY_DEVICE_ROLE, value).apply()
+
+    val isRemoteSyncConfigured: Boolean
+        get() = !deviceToken.isNullOrBlank()
+
+    val isManagerDevice: Boolean
+        get() = deviceRole == "manager"
+
     fun clearSession() {
         prefs.edit().remove(KEY_SESSION_EMPLOYEE_ID).apply()
+    }
+
+    fun clearDeviceRegistration() {
+        prefs.edit().remove(KEY_DEVICE_TOKEN).remove(KEY_DEVICE_ID).remove(KEY_DEVICE_ROLE).apply()
     }
 
     companion object {
@@ -33,6 +58,9 @@ class Prefs(context: Context) {
         private const val KEY_EXCHANGE_RATE = "exchange_rate_cdf_per_usd"
         private const val KEY_SESSION_EMPLOYEE_ID = "session_employee_id"
         private const val KEY_PRINTER_ADDRESS = "printer_address"
+        private const val KEY_DEVICE_TOKEN = "sync_device_token"
+        private const val KEY_DEVICE_ID = "sync_device_id"
+        private const val KEY_DEVICE_ROLE = "sync_device_role"
 
         // Taux indicatif par défaut, à ajuster dans Réglages selon le taux du jour.
         private const val DEFAULT_EXCHANGE_RATE = 2800f

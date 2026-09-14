@@ -17,7 +17,7 @@ import com.shukranibusiness.app.data.entities.StockMovement
 
 @Database(
     entities = [Employee::class, Product::class, Sale::class, SaleItem::class, StockMovement::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -38,7 +38,11 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "shukrani_business.db"
-                ).build().also { INSTANCE = it }
+                )
+                    // Encore en développement (avant tout déploiement réel) : une évolution de
+                    // schéma recrée simplement la base plutôt que d'écrire une migration.
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
         }
     }

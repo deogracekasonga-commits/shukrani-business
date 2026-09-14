@@ -17,6 +17,9 @@ imprimante Bluetooth.
 
 - **Connexion par PIN** : chaque employé a son propre code, avec un rôle
   Gérant (accès complet) ou Vendeur (accès à la vente uniquement).
+- **Accueil** (gérant) : ventes du jour (total CDF/USD, nombre de ventes),
+  alertes stock bas, et — si la synchronisation à distance est activée en
+  tant que gérant — les ventes des autres appareils/boutiques connectés.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
   choix de la devise (CDF ou USD), décrément du stock à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
@@ -32,6 +35,10 @@ imprimante Bluetooth.
   l'imprimante Bluetooth.
 - **Reçu Bluetooth** : impression automatique après chaque vente si une
   imprimante thermique (ESC/POS, profil SPP) est configurée.
+- **Synchronisation à distance** (optionnelle) : chaque appareil peut envoyer
+  ses ventes vers une base Supabase partagée, pour qu'un gérant à distance
+  les consulte depuis son propre téléphone — voir la section dédiée
+  plus bas.
 
 ## Architecture
 
@@ -51,7 +58,15 @@ mobile/app/src/main/java/com/shukranibusiness/app/
     stock/              écran stock (liste, édition, réapprovisionnement)
     reports/            historique des ventes + export
     employees/          gestion des employés (gérant)
-    settings/            taux de change, boutique, imprimante Bluetooth
+    settings/            taux de change, boutique, imprimante Bluetooth,
+                         activation de la synchronisation à distance
+    dashboard/           écran Accueil (résumé + ventes distantes)
+  sync/
+    SupabaseConfig.kt        URL + clé publique du projet Supabase
+    SupabaseSyncClient.kt    appels REST (enregistrement, push, lecture)
+    SyncWorker.kt             pousse les ventes en attente (WorkManager)
+    SyncScheduler.kt          déclenche la sync (immédiat + filet périodique)
+    RemoteSale.kt             modèle de lecture des ventes distantes
   util/
     CurrencyFormatter, CsvExporter, PdfExporter, FileSharer,
     EscPosPrinter, ReceiptPrinter, PinHasher
@@ -120,13 +135,40 @@ produit existant pour ajouter des quantités reçues.
 3. Uploader le fichier `.aab` généré dans une piste de test interne
    (recommandé avant une release publique).
 
-## Limites connues / prochaines étapes suggérées
+## Synchronisation multi-appareils (cloud)
 
-- Un seul appareil pris en charge pour l'instant : pas de synchronisation
-  multi-appareils en temps réel (chaque appareil aurait sa propre base
-  locale). À ajouter plus tard si plusieurs caisses doivent partager le même
-  stock en direct (nécessiterait un backend, ex. Supabase déjà utilisé côté
-  `dashboard/`).
+Chaque appareil reste **hors-ligne d'abord** : une vente est toujours
+enregistrée localement, jamais bloquée par le réseau. Si la synchronisation
+est activée, l'app tente ensuite d'envoyer la vente vers Supabase dès qu'il y
+a du réseau (immédiatement après la vente, puis réessais automatiques ; un
+filet de sécurité relance une synchronisation toutes les 30 minutes au cas
+où l'app aurait été fermée).
+
+Projet Supabase dédié : **`shukra-pos`** (séparé du projet marketing/ebooks
+existant, pour ne pas mélanger les données). Schéma : `devices` (un jeton
+secret par appareil), `sales` / `sale_items` (miroir cloud des ventes),
+protégés par des politiques RLS strictes :
+- un appareil ne peut envoyer/relire **que ses propres ventes** ;
+- seul un appareil enregistré avec le rôle **« gérant »** peut lire les
+  ventes de **tous** les appareils.
+
+### Activer la synchronisation sur un appareil
+
+1. Onglet **Réglages** → section « Synchronisation à distance ».
+2. Entrer le **code de configuration** (secret, communiqué séparément —
+   nécessaire pour empêcher n'importe qui d'enregistrer un faux appareil
+   "gérant" et de tout lire).
+3. Choisir le rôle :
+   - **Vendeur** — cet appareil envoie ses propres ventes.
+   - **Gérant à distance** — cet appareil consulte les ventes de tous les
+     appareils enregistrés (visible dans l'onglet **Accueil**).
+4. « Activer la synchronisation ».
+
+⚠️ Le code de configuration ne doit être donné qu'aux personnes de
+confiance : régénérable via `update app_config set value = ... where key =
+'setup_key'` côté Supabase si besoin (ce qui invalide l'ancien code, sans
+affecter les appareils déjà enregistrés).
+
 - Pas de calcul de marge/bénéfice (prix d'achat non demandé) — à ajouter si
   besoin en ajoutant un champ `purchasePriceCdf`/`purchasePriceUsd` au
   produit.

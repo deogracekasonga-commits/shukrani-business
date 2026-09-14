@@ -2,6 +2,7 @@ package com.shukranibusiness.app.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(tableName = "sale_items")
 data class SaleItem(
@@ -14,5 +15,7 @@ data class SaleItem(
     val unitPriceUsd: Double,
     val quantity: Int,
     val subtotalCdf: Double,
-    val subtotalUsd: Double
+    val subtotalUsd: Double,
+    /** Identifiant stable utilisé pour la synchronisation cloud (upsert idempotent). */
+    val cloudUuid: String = UUID.randomUUID().toString()
 )
