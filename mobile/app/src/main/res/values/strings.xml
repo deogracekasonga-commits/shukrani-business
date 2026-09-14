@@ -92,6 +92,9 @@
     <string name="all_categories">Tous</string>
 
     <string name="hint_shop_name">Nom de la boutique</string>
+    <string name="hint_shop_address">Adresse de ce point de vente</string>
+    <string name="hint_tax_number">Numéro impôt (NIF)</string>
+    <string name="hint_rccm_number">Numéro RCCM</string>
     <string name="hint_exchange_rate">Taux de change (CDF pour 1 USD)</string>
     <string name="action_manage_employees">Gérer les employés</string>
     <string name="settings_saved">Réglages enregistrés</string>

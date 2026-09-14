@@ -52,12 +52,18 @@ class SettingsFragment : Fragment() {
         prefs = Prefs(requireContext())
 
         binding.shopNameInput.setText(prefs.shopName)
+        binding.shopAddressInput.setText(prefs.shopAddress)
+        binding.taxNumberInput.setText(prefs.taxNumber)
+        binding.rccmNumberInput.setText(prefs.rccmNumber)
         binding.exchangeRateInput.setText(prefs.exchangeRateCdfPerUsd.toString())
         updatePrinterStatus()
 
         binding.saveSettingsButton.setOnClickListener {
             val name = binding.shopNameInput.text.toString().trim()
             if (name.isNotEmpty()) prefs.shopName = name
+            prefs.shopAddress = binding.shopAddressInput.text.toString().trim()
+            prefs.taxNumber = binding.taxNumberInput.text.toString().trim()
+            prefs.rccmNumber = binding.rccmNumberInput.text.toString().trim()
             binding.exchangeRateInput.text.toString().toDoubleOrNull()?.let { prefs.exchangeRateCdfPerUsd = it }
             Toast.makeText(requireContext(), getString(R.string.settings_saved), Toast.LENGTH_SHORT).show()
         }

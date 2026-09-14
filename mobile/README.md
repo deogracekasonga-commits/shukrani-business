@@ -36,10 +36,14 @@ imprimante Bluetooth.
   et exclue des totaux.
 - **Employés** (gérant) : création/modification/désactivation des comptes,
   attribution du rôle.
-- **Réglages** : nom de la boutique, taux de change CDF ↔ USD, sélection de
-  l'imprimante Bluetooth.
+- **Réglages** : nom de la boutique, **adresse de ce point de vente**, numéro
+  **NIF** et **RCCM** (propres à chaque appareil — utile si vous avez
+  plusieurs points de vente, chacun avec sa propre adresse), taux de change
+  CDF ↔ USD, sélection de l'imprimante Bluetooth.
 - **Reçu Bluetooth** : impression automatique après chaque vente si une
-  imprimante thermique (ESC/POS, profil SPP) est configurée.
+  imprimante thermique (ESC/POS, profil SPP) est configurée — logo Shukra
+  POS, nom et adresse de la boutique, NIF/RCCM (si renseignés), date,
+  vendeur, détail des articles et total.
 - **Synchronisation à distance** (optionnelle) : chaque appareil peut envoyer
   ses ventes vers une base Supabase partagée, pour qu'un gérant à distance
   les consulte depuis son propre téléphone — voir la section dédiée
@@ -124,8 +128,13 @@ produit existant pour ajouter des quantités reçues.
    sélectionner l'appareil dans la liste des appareils appairés.
 3. Chaque vente validée envoie ensuite automatiquement un ticket ESC/POS à
    cette imprimante (protocole SPP, standard des imprimantes de reçus bon
-   marché). Si aucune imprimante n'est configurée, l'impression est
-   simplement ignorée.
+   marché), avec le logo en en-tête (converti en image noir et blanc,
+   384 points de large — format standard des rouleaux 58mm). Si aucune
+   imprimante n'est configurée, l'impression est simplement ignorée.
+4. Onglet **Réglages** → renseigner l'adresse du point de vente, le NIF et
+   le RCCM pour qu'ils apparaissent sur le reçu (chacun est propre à cet
+   appareil : utile si plusieurs boutiques utilisent l'app avec des
+   adresses différentes).
 
 ## Publier sur Google Play Console
 

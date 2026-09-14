@@ -11,6 +11,21 @@ class Prefs(context: Context) {
         get() = prefs.getString(KEY_SHOP_NAME, "Shukrani Business") ?: "Shukrani Business"
         set(value) = prefs.edit().putString(KEY_SHOP_NAME, value).apply()
 
+    /** Adresse de ce point de vente précis — propre à cet appareil (pas partagée entre boutiques). */
+    var shopAddress: String
+        get() = prefs.getString(KEY_SHOP_ADDRESS, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_SHOP_ADDRESS, value).apply()
+
+    /** Numéro d'identification fiscale (NIF) — affiché sur le reçu si renseigné. */
+    var taxNumber: String
+        get() = prefs.getString(KEY_TAX_NUMBER, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_TAX_NUMBER, value).apply()
+
+    /** Numéro RCCM (Registre du Commerce et du Crédit Mobilier) — affiché sur le reçu si renseigné. */
+    var rccmNumber: String
+        get() = prefs.getString(KEY_RCCM_NUMBER, "") ?: ""
+        set(value) = prefs.edit().putString(KEY_RCCM_NUMBER, value).apply()
+
     /** Nombre de francs congolais (CDF) pour 1 dollar américain (USD). */
     var exchangeRateCdfPerUsd: Double
         get() = prefs.getFloat(KEY_EXCHANGE_RATE, DEFAULT_EXCHANGE_RATE).toDouble()
@@ -55,6 +70,9 @@ class Prefs(context: Context) {
 
     companion object {
         private const val KEY_SHOP_NAME = "shop_name"
+        private const val KEY_SHOP_ADDRESS = "shop_address"
+        private const val KEY_TAX_NUMBER = "tax_number"
+        private const val KEY_RCCM_NUMBER = "rccm_number"
         private const val KEY_EXCHANGE_RATE = "exchange_rate_cdf_per_usd"
         private const val KEY_SESSION_EMPLOYEE_ID = "session_employee_id"
         private const val KEY_PRINTER_ADDRESS = "printer_address"

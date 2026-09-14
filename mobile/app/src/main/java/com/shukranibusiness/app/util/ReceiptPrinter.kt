@@ -1,7 +1,9 @@
 package com.shukranibusiness.app.util
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
+import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.CartLine
 import com.shukranibusiness.app.data.Prefs
 import com.shukranibusiness.app.data.entities.Sale
@@ -21,12 +23,18 @@ object ReceiptPrinter {
         lines: List<CartLine>,
         shopName: String
     ) {
-        val address = Prefs(context).printerAddress ?: return
-        val receiptLines = buildReceiptLines(shopName, sale, lines)
+        val prefs = Prefs(context)
+        val address = prefs.printerAddress ?: return
+        val receiptLines = buildReceiptLines(shopName, prefs, sale, lines)
 
         withContext(Dispatchers.IO) {
             try {
-                EscPosPrinter.printLines(address, receiptLines)
+                val logo = try {
+                    BitmapFactory.decodeResource(context.resources, R.drawable.logo_shukra_pos)
+                } catch (e: Exception) {
+                    null
+                }
+                EscPosPrinter.printReceipt(address, logo, receiptLines)
             } catch (e: Exception) {
                 // L'échec d'impression ne doit jamais annuler une vente déjà enregistrée.
                 Log.w(TAG, "Impression du reçu impossible : ${e.message}")
@@ -34,10 +42,13 @@ object ReceiptPrinter {
         }
     }
 
-    private fun buildReceiptLines(shopName: String, sale: Sale, lines: List<CartLine>): List<String> {
+    private fun buildReceiptLines(shopName: String, prefs: Prefs, sale: Sale, lines: List<CartLine>): List<String> {
         val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.FRANCE)
         val out = mutableListOf<String>()
         out += shopName
+        if (prefs.shopAddress.isNotBlank()) out += prefs.shopAddress
+        if (prefs.taxNumber.isNotBlank()) out += "NIF : ${prefs.taxNumber}"
+        if (prefs.rccmNumber.isNotBlank()) out += "RCCM : ${prefs.rccmNumber}"
         out += sdf.format(Date(sale.dateTimeMillis))
         out += "Vendeur : ${sale.employeeName}"
         out += "--------------------------------"

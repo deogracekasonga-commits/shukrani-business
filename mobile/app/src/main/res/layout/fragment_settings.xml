@@ -17,6 +17,27 @@
             android:inputType="text" />
 
         <EditText
+            android:id="@+id/shopAddressInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_shop_address"
+            android:inputType="textPostalAddress" />
+
+        <EditText
+            android:id="@+id/taxNumberInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_tax_number"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/rccmNumberInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_rccm_number"
+            android:inputType="text" />
+
+        <EditText
             android:id="@+id/exchangeRateInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
