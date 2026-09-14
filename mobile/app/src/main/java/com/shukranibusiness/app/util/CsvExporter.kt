@@ -19,11 +19,14 @@ object CsvExporter {
         file.bufferedWriter().use { writer ->
             writer.write(
                 "Date,Employé,Produit,Quantité,Prix unitaire CDF,Prix unitaire USD," +
-                    "Sous-total CDF,Sous-total USD,Devise payée,Statut\n"
+                    "Sous-total CDF,Sous-total USD,Devise payée,Statut,Marge CDF,Marge USD\n"
             )
             for (sale in sales) {
                 val statusLabel = if (sale.status == SaleStatus.CANCELED) "ANNULÉE" else "VALIDÉE"
                 for (item in itemsBySale[sale.id].orEmpty()) {
+                    val hasCost = item.unitCostCdf > 0 || item.unitCostUsd > 0
+                    val marginCdf = if (hasCost) (item.subtotalCdf - item.unitCostCdf * item.quantity).toString() else ""
+                    val marginUsd = if (hasCost) (item.subtotalUsd - item.unitCostUsd * item.quantity).toString() else ""
                     val row = listOf(
                         sdf.format(Date(sale.dateTimeMillis)),
                         sale.employeeName,
@@ -34,7 +37,9 @@ object CsvExporter {
                         item.subtotalCdf.toString(),
                         item.subtotalUsd.toString(),
                         sale.currencyPaid,
-                        statusLabel
+                        statusLabel,
+                        marginCdf,
+                        marginUsd
                     ).joinToString(",") { escape(it) }
                     writer.write(row)
                     writer.write("\n")

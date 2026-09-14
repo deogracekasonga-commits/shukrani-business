@@ -13,5 +13,8 @@ data class Product(
     val priceUsd: Double,
     val quantity: Int,
     val lowStockThreshold: Int = 5,
-    val active: Boolean = true
+    val active: Boolean = true,
+    /** Prix d'achat (coût) — optionnel (0 = non renseigné), sert au calcul de marge. */
+    val purchasePriceCdf: Double = 0.0,
+    val purchasePriceUsd: Double = 0.0
 )

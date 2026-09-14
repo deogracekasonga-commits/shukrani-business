@@ -89,10 +89,16 @@ class ShopRepository(private val context: Context) {
     fun observeSalesBetween(startMillis: Long, endMillis: Long): Flow<List<Sale>> =
         saleDao.observeSalesBetween(startMillis, endMillis)
 
+    suspend fun getSalesBetween(startMillis: Long, endMillis: Long): List<Sale> =
+        saleDao.getSalesBetween(startMillis, endMillis)
+
     suspend fun getSaleItems(saleId: Long): List<SaleItem> = saleDao.getItemsForSale(saleId)
 
     suspend fun getSaleItemsBetween(startMillis: Long, endMillis: Long): List<SaleItem> =
         saleDao.getItemsBetween(startMillis, endMillis)
+
+    suspend fun getTopProducts(startMillis: Long, endMillis: Long, limit: Int = 5) =
+        saleDao.getTopProducts(startMillis, endMillis, limit)
 
     suspend fun getSale(saleId: Long): Sale? = saleDao.getById(saleId)
 
@@ -180,7 +186,9 @@ class ShopRepository(private val context: Context) {
                         unitPriceUsd = line.product.priceUsd,
                         quantity = line.quantity,
                         subtotalCdf = line.subtotalCdf,
-                        subtotalUsd = line.subtotalUsd
+                        subtotalUsd = line.subtotalUsd,
+                        unitCostCdf = line.product.purchasePriceCdf,
+                        unitCostUsd = line.product.purchasePriceUsd
                     )
                 }
             )

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.Prefs
 import com.shukranibusiness.app.data.ShopRepository
+import com.shukranibusiness.app.data.dao.TopProductStat
 import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.databinding.FragmentDashboardBinding
 import com.shukranibusiness.app.sync.RemoteSale
@@ -80,6 +81,84 @@ class DashboardFragment : Fragment() {
             binding.refreshRemoteButton.setOnClickListener { loadRemoteSales() }
             loadRemoteSales()
         }
+
+        loadGrowth()
+        loadTopProducts()
+    }
+
+    private fun loadGrowth() {
+        lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            val todayStart = startOfToday()
+            val yesterdayStart = todayStart - ONE_DAY_MILLIS
+            val weekStart = now - 7 * ONE_DAY_MILLIS
+            val previousWeekStart = now - 14 * ONE_DAY_MILLIS
+
+            val todayTotal = completedTotalCdf(todayStart, now)
+            val yesterdayTotal = completedTotalCdf(yesterdayStart, todayStart - 1)
+            val weekTotal = completedTotalCdf(weekStart, now)
+            val previousWeekTotal = completedTotalCdf(previousWeekStart, weekStart - 1)
+
+            binding.growthTodayText.text = growthLabel(todayTotal, yesterdayTotal)
+            applyGrowthColor(binding.growthTodayText, todayTotal, yesterdayTotal)
+            binding.growthWeekText.text = growthLabel(weekTotal, previousWeekTotal)
+            applyGrowthColor(binding.growthWeekText, weekTotal, previousWeekTotal)
+        }
+    }
+
+    private suspend fun completedTotalCdf(startMillis: Long, endMillis: Long): Double {
+        if (endMillis < startMillis) return 0.0
+        return repository.getSalesBetween(startMillis, endMillis)
+            .filter { it.status == SaleStatus.COMPLETED }
+            .sumOf { it.totalCdf }
+    }
+
+    private fun growthLabel(current: Double, previous: Double): String {
+        val currentFormatted = CurrencyFormatter.formatCdf(current)
+        return when {
+            previous <= 0.0 && current <= 0.0 -> getString(R.string.dashboard_growth_no_data)
+            previous <= 0.0 -> "$currentFormatted (${getString(R.string.dashboard_growth_new)})"
+            else -> {
+                val percent = (current - previous) / previous * 100.0
+                val sign = if (percent >= 0) "+" else ""
+                "$currentFormatted ($sign${"%.0f".format(percent)}%)"
+            }
+        }
+    }
+
+    private fun applyGrowthColor(view: TextView, current: Double, previous: Double) {
+        view.setTextColor(
+            when {
+                previous <= 0.0 -> Color.parseColor("#182238")
+                current > previous -> Color.parseColor("#2E7D32")
+                current < previous -> Color.parseColor("#D32F2F")
+                else -> Color.parseColor("#182238")
+            }
+        )
+    }
+
+    private fun loadTopProducts() {
+        lifecycleScope.launch {
+            val start = System.currentTimeMillis() - 30 * ONE_DAY_MILLIS
+            val end = System.currentTimeMillis()
+            val stats = repository.getTopProducts(start, end)
+            binding.topProductsContainer.removeAllViews()
+            if (stats.isEmpty()) {
+                binding.topProductsContainer.addView(
+                    makeRow(getString(R.string.dashboard_top_products_empty), Color.parseColor("#666666"))
+                )
+            } else {
+                for ((index, stat) in stats.withIndex()) {
+                    binding.topProductsContainer.addView(topProductRow(index + 1, stat))
+                }
+            }
+        }
+    }
+
+    private fun topProductRow(rank: Int, stat: TopProductStat): TextView {
+        val text = "$rank. ${stat.productName} — ${stat.totalQuantity} vendu(s) — " +
+            CurrencyFormatter.formatBoth(stat.totalRevenueCdf, stat.totalRevenueUsd)
+        return makeRow(text, Color.parseColor("#182238"))
     }
 
     private fun loadRemoteSales() {
@@ -138,5 +217,9 @@ class DashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val ONE_DAY_MILLIS = 24L * 60L * 60L * 1000L
     }
 }

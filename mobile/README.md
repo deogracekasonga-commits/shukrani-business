@@ -18,17 +18,22 @@ imprimante Bluetooth.
 - **Connexion par PIN** : chaque employé a son propre code, avec un rôle
   Gérant (accès complet) ou Vendeur (accès à la vente uniquement).
 - **Accueil** (gérant) : ventes du jour (total CDF/USD, nombre de ventes),
-  alertes stock bas, et — si la synchronisation à distance est activée en
-  tant que gérant — les ventes des autres appareils/boutiques connectés.
+  alertes stock bas, **croissance** (variation % du chiffre d'affaires vs
+  hier et vs la semaine dernière), **produits les plus vendus** (30 jours),
+  et — si la synchronisation à distance est activée en tant que gérant —
+  les ventes des autres appareils/boutiques connectés.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
   choix de la devise (CDF ou USD), décrément du stock à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
-  modification/**suppression** de produit, réapprovisionnement journalisé.
+  modification/**suppression** de produit, réapprovisionnement journalisé,
+  **prix d'achat optionnel** (sert au calcul de marge).
 - **Rapports** : historique des ventes filtrable par période (jour/semaine/
-  mois/tout), totaux CDF et USD, export **CSV** (Excel) et **PDF**. Toucher
-  une vente ouvre son détail ; le **gérant** peut l'**annuler** (note de
-  crédit) — les articles sont remis en stock, la vente reste visible dans
-  l'historique mais marquée « annulée » et exclue des totaux.
+  mois/tout), totaux CDF et USD, **marge estimée** de la période (si un prix
+  d'achat a été renseigné), export **CSV** (Excel, avec marge par ligne) et
+  **PDF** (avec marge totale). Toucher une vente ouvre son détail ; le
+  **gérant** peut l'**annuler** (note de crédit) — les articles sont remis en
+  stock, la vente reste visible dans l'historique mais marquée « annulée »
+  et exclue des totaux.
 - **Employés** (gérant) : création/modification/désactivation des comptes,
   attribution du rôle.
 - **Réglages** : nom de la boutique, taux de change CDF ↔ USD, sélection de
@@ -169,9 +174,10 @@ confiance : régénérable via `update app_config set value = ... where key =
 'setup_key'` côté Supabase si besoin (ce qui invalide l'ancien code, sans
 affecter les appareils déjà enregistrés).
 
-- Pas de calcul de marge/bénéfice (prix d'achat non demandé) — à ajouter si
-  besoin en ajoutant un champ `purchasePriceCdf`/`purchasePriceUsd` au
-  produit.
+- Le prix d'achat (`purchasePriceCdf`/`purchasePriceUsd`) est optionnel sur
+  un produit : sans lui, aucune marge n'est affichée pour ce produit (la
+  marge affichée dans Rapports/exports ignore les lignes sans coût
+  renseigné, elle ne les compte pas comme marge nulle).
 - Le taux de change CDF/USD est saisi manuellement dans Réglages (pas de
   mise à jour automatique en ligne, cohérent avec le fonctionnement
   hors-ligne).

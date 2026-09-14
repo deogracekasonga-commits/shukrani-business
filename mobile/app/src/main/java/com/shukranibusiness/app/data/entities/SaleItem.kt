@@ -16,6 +16,9 @@ data class SaleItem(
     val quantity: Int,
     val subtotalCdf: Double,
     val subtotalUsd: Double,
+    /** Prix d'achat unitaire au moment de la vente (0 = non renseigné pour ce produit) — fige la marge dans le temps. */
+    val unitCostCdf: Double = 0.0,
+    val unitCostUsd: Double = 0.0,
     /** Identifiant stable utilisé pour la synchronisation cloud (upsert idempotent). */
     val cloudUuid: String = UUID.randomUUID().toString()
 )

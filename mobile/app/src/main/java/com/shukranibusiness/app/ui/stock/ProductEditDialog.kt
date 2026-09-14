@@ -21,6 +21,8 @@ class ProductEditDialog(
             binding.categoryInput.setText(product.category)
             binding.priceCdfInput.setText(product.priceCdf.toString())
             binding.priceUsdInput.setText(product.priceUsd.toString())
+            if (product.purchasePriceCdf > 0) binding.purchasePriceCdfInput.setText(product.purchasePriceCdf.toString())
+            if (product.purchasePriceUsd > 0) binding.purchasePriceUsdInput.setText(product.purchasePriceUsd.toString())
             binding.quantityInput.setText(product.quantity.toString())
             binding.thresholdInput.setText(product.lowStockThreshold.toString())
         }
@@ -41,6 +43,8 @@ class ProductEditDialog(
                     category = binding.categoryInput.text.toString().trim().ifEmpty { "Général" },
                     priceCdf = binding.priceCdfInput.text.toString().toDoubleOrNull() ?: 0.0,
                     priceUsd = binding.priceUsdInput.text.toString().toDoubleOrNull() ?: 0.0,
+                    purchasePriceCdf = binding.purchasePriceCdfInput.text.toString().toDoubleOrNull() ?: 0.0,
+                    purchasePriceUsd = binding.purchasePriceUsdInput.text.toString().toDoubleOrNull() ?: 0.0,
                     quantity = binding.quantityInput.text.toString().toIntOrNull() ?: 0,
                     lowStockThreshold = binding.thresholdInput.text.toString().toIntOrNull() ?: 5
                 )

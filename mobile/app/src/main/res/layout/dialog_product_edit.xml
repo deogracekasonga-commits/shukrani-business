@@ -37,6 +37,29 @@
             android:hint="@string/hint_price_usd"
             android:inputType="numberDecimal" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/label_purchase_price_section"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="#666666" />
+
+        <EditText
+            android:id="@+id/purchasePriceCdfInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_purchase_price_cdf"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/purchasePriceUsdInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_purchase_price_usd"
+            android:inputType="numberDecimal" />
+
         <EditText
             android:id="@+id/quantityInput"
             android:layout_width="match_parent"

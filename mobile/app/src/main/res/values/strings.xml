@@ -48,6 +48,9 @@
     <string name="hint_price_usd">Prix (USD)</string>
     <string name="hint_quantity">Quantité en stock</string>
     <string name="hint_low_stock_threshold">Seuil de stock bas</string>
+    <string name="label_purchase_price_section">Prix d\'achat (optionnel — pour calculer la marge)</string>
+    <string name="hint_purchase_price_cdf">Prix d\'achat (CDF)</string>
+    <string name="hint_purchase_price_usd">Prix d\'achat (USD)</string>
     <string name="action_save">Enregistrer</string>
     <string name="action_cancel">Annuler</string>
     <string name="action_delete">Supprimer</string>
@@ -121,4 +124,16 @@
     <string name="dashboard_remote_loading">Chargement…</string>
     <string name="dashboard_remote_empty">Aucune vente distante pour le moment.</string>
     <string name="error_remote_load_failed">Impossible de charger les ventes à distance (vérifiez la connexion).</string>
+
+    <string name="dashboard_growth_title">Croissance</string>
+    <string name="dashboard_growth_today">Aujourd\'hui vs hier</string>
+    <string name="dashboard_growth_week">Cette semaine vs semaine dernière</string>
+    <string name="dashboard_growth_new">Nouveau (aucune vente sur la période précédente)</string>
+    <string name="dashboard_growth_no_data">Pas encore de données</string>
+
+    <string name="dashboard_top_products_title">Produits les plus vendus (30 jours)</string>
+    <string name="dashboard_top_products_empty">Aucune vente sur les 30 derniers jours.</string>
+
+    <string name="label_margin">Marge estimée</string>
+    <string name="label_margin_hint">Basée sur le prix d\'achat renseigné pour chaque produit (ignore les produits sans coût renseigné).</string>
 </resources>

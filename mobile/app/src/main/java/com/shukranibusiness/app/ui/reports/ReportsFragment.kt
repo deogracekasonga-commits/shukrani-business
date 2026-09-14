@@ -96,6 +96,19 @@ class ReportsFragment : Fragment() {
                 val totalUsd = completed.sumOf { it.totalUsd }
                 binding.summaryTotal.text = CurrencyFormatter.formatBoth(totalCdf, totalUsd)
                 binding.summaryCount.text = getString(R.string.label_sales_count, completed.size)
+
+                val completedIds = completed.map { it.id }.toSet()
+                val items = repository.getSaleItemsBetween(periodStart, periodEnd)
+                    .filter { it.saleId in completedIds }
+                if (items.any { it.unitCostCdf > 0 || it.unitCostUsd > 0 }) {
+                    val marginCdf = items.sumOf { it.subtotalCdf - it.unitCostCdf * it.quantity }
+                    val marginUsd = items.sumOf { it.subtotalUsd - it.unitCostUsd * it.quantity }
+                    binding.summaryMargin.text =
+                        "${getString(R.string.label_margin)} : ${CurrencyFormatter.formatBoth(marginCdf, marginUsd)}"
+                    binding.summaryMargin.visibility = View.VISIBLE
+                } else {
+                    binding.summaryMargin.visibility = View.GONE
+                }
             }
         }
     }
@@ -122,8 +135,16 @@ class ReportsFragment : Fragment() {
         val totalCdf = completed.sumOf { it.totalCdf }
         val totalUsd = completed.sumOf { it.totalUsd }
         lifecycleScope.launch {
+            val completedIds = completed.map { it.id }.toSet()
+            val items = repository.getSaleItemsBetween(periodStart, periodEnd)
+                .filter { it.saleId in completedIds }
+            val hasCost = items.any { it.unitCostCdf > 0 || it.unitCostUsd > 0 }
+            val marginCdf = if (hasCost) items.sumOf { it.subtotalCdf - it.unitCostCdf * it.quantity } else null
+            val marginUsd = if (hasCost) items.sumOf { it.subtotalUsd - it.unitCostUsd * it.quantity } else null
+
             val file = PdfExporter.exportSalesSummary(
-                requireContext(), currentPeriodLabel, currentSales, totalCdf, totalUsd, prefs.shopName
+                requireContext(), currentPeriodLabel, currentSales, totalCdf, totalUsd, prefs.shopName,
+                marginCdf, marginUsd
             )
             FileSharer.share(requireContext(), file, "application/pdf")
         }

@@ -24,7 +24,9 @@ object PdfExporter {
         sales: List<Sale>,
         totalCdf: Double,
         totalUsd: Double,
-        shopName: String
+        shopName: String,
+        marginCdf: Double? = null,
+        marginUsd: Double? = null
     ): File {
         val document = PdfDocument()
         val titlePaint = Paint().apply { textSize = 18f; isFakeBoldText = true }
@@ -50,6 +52,16 @@ object PdfExporter {
             boldPaint
         )
         y += LINE_HEIGHT
+        if (marginCdf != null && marginUsd != null) {
+            canvas.drawText(
+                "Marge estimée : ${String.format(Locale.FRANCE, "%.0f", marginCdf)} CDF " +
+                    "(${String.format(Locale.FRANCE, "%.2f", marginUsd)} USD)",
+                MARGIN_LEFT,
+                y,
+                textPaint
+            )
+            y += LINE_HEIGHT
+        }
         val completedCount = sales.count { it.status == SaleStatus.COMPLETED }
         canvas.drawText(
             "Nombre de ventes validées : $completedCount" +
