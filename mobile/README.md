@@ -23,14 +23,17 @@ imprimante Bluetooth.
   et — si la synchronisation à distance est activée en tant que gérant —
   les ventes des autres appareils/boutiques connectés.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
-  choix de la devise (CDF ou USD), décrément du stock à la validation.
+  choix de la devise (CDF ou USD) et du **mode de paiement** (Cash, Mobile
+  Money — M-Pesa/Airtel Money/Orange Money, ou Carte), décrément du stock
+  à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
   modification/**suppression** de produit, réapprovisionnement journalisé,
   **prix d'achat optionnel** (sert au calcul de marge).
 - **Rapports** : historique des ventes filtrable par période (jour/semaine/
   mois/tout), totaux CDF et USD, **marge estimée** de la période (si un prix
-  d'achat a été renseigné), export **CSV** (Excel, avec marge par ligne) et
-  **PDF** (avec marge totale). Toucher une vente ouvre son détail ; le
+  d'achat a été renseigné), **répartition par mode de paiement**, export
+  **CSV** (Excel, avec marge et mode de paiement par ligne) et **PDF** (avec
+  marge totale). Toucher une vente ouvre son détail ; le
   **gérant** peut l'**annuler** (note de crédit) — les articles sont remis en
   stock, la vente reste visible dans l'historique mais marquée « annulée »
   et exclue des totaux.
@@ -43,7 +46,7 @@ imprimante Bluetooth.
 - **Reçu Bluetooth** : impression automatique après chaque vente si une
   imprimante thermique (ESC/POS, profil SPP) est configurée — logo Shukra
   POS, nom et adresse de la boutique, NIF/RCCM (si renseignés), date,
-  vendeur, détail des articles et total.
+  vendeur, détail des articles, total et mode de paiement.
 - **Synchronisation à distance** (optionnelle) : chaque appareil peut envoyer
   ses ventes vers une base Supabase partagée, pour qu'un gérant à distance
   les consulte depuis son propre téléphone — voir la section dédiée
@@ -183,6 +186,14 @@ confiance : régénérable via `update app_config set value = ... where key =
 'setup_key'` côté Supabase si besoin (ce qui invalide l'ancien code, sans
 affecter les appareils déjà enregistrés).
 
+- Le mode de paiement (Cash / Mobile Money / Carte) est un **simple
+  enregistrement manuel** choisi par le vendeur au moment de la vente — l'app
+  n'envoie aucune demande de paiement et ne vérifie pas la réception de
+  l'argent (le client paie comme d'habitude : espèces, transfert Mobile
+  Money vers votre numéro, ou terminal carte séparé). Une intégration avec
+  un vrai fournisseur de paiement (CinetPay, Flutterwave, ou directement
+  Vodacom/Airtel/Orange) est possible plus tard mais demande d'abord un
+  compte marchand chez ce fournisseur.
 - Le prix d'achat (`purchasePriceCdf`/`purchasePriceUsd`) est optionnel sur
   un produit : sans lui, aucune marge n'est affichée pour ce produit (la
   marge affichée dans Rapports/exports ignore les lignes sans coût

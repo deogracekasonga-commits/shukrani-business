@@ -17,7 +17,7 @@ import com.shukranibusiness.app.data.entities.StockMovement
 
 @Database(
     entities = [Employee::class, Product::class, Sale::class, SaleItem::class, StockMovement::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

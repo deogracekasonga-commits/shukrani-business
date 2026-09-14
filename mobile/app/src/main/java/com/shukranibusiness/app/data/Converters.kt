@@ -2,6 +2,7 @@ package com.shukranibusiness.app.data
 
 import androidx.room.TypeConverter
 import com.shukranibusiness.app.data.entities.EmployeeRole
+import com.shukranibusiness.app.data.entities.PaymentMethod
 import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.data.entities.StockMovementType
 
@@ -24,4 +25,10 @@ class Converters {
 
     @TypeConverter
     fun toSaleStatus(value: String): SaleStatus = SaleStatus.valueOf(value)
+
+    @TypeConverter
+    fun fromPaymentMethod(method: PaymentMethod): String = method.name
+
+    @TypeConverter
+    fun toPaymentMethod(value: String): PaymentMethod = PaymentMethod.valueOf(value)
 }

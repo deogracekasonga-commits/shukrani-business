@@ -78,6 +78,8 @@ object SupabaseSyncClient {
             put("currency_paid", sale.currencyPaid)
             put("exchange_rate_used", sale.exchangeRateUsed)
             put("status", sale.status.name)
+            put("payment_method", sale.paymentMethod.name)
+            put("mobile_money_provider", sale.mobileMoneyProvider)
             put("canceled_by_employee_name", sale.canceledByEmployeeName)
             put("canceled_at_millis", sale.canceledAtMillis)
         }

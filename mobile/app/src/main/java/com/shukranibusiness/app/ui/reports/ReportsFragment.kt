@@ -19,6 +19,7 @@ import com.shukranibusiness.app.databinding.FragmentReportsBinding
 import com.shukranibusiness.app.util.CsvExporter
 import com.shukranibusiness.app.util.CurrencyFormatter
 import com.shukranibusiness.app.util.FileSharer
+import com.shukranibusiness.app.util.PaymentMethodFormatter
 import com.shukranibusiness.app.util.PdfExporter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -96,6 +97,16 @@ class ReportsFragment : Fragment() {
                 val totalUsd = completed.sumOf { it.totalUsd }
                 binding.summaryTotal.text = CurrencyFormatter.formatBoth(totalCdf, totalUsd)
                 binding.summaryCount.text = getString(R.string.label_sales_count, completed.size)
+
+                if (completed.isEmpty()) {
+                    binding.summaryPaymentBreakdown.visibility = View.GONE
+                } else {
+                    binding.summaryPaymentBreakdown.text = completed.groupBy { it.paymentMethod }
+                        .entries.joinToString("   ") { (method, salesForMethod) ->
+                            "${PaymentMethodFormatter.label(method, null)} : ${salesForMethod.size}"
+                        }
+                    binding.summaryPaymentBreakdown.visibility = View.VISIBLE
+                }
 
                 val completedIds = completed.map { it.id }.toSet()
                 val items = repository.getSaleItemsBetween(periodStart, periodEnd)

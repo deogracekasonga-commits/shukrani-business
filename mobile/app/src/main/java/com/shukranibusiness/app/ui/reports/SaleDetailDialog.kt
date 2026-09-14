@@ -12,6 +12,7 @@ import com.shukranibusiness.app.data.entities.SaleItem
 import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.databinding.DialogSaleDetailBinding
 import com.shukranibusiness.app.util.CurrencyFormatter
+import com.shukranibusiness.app.util.PaymentMethodFormatter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,7 +41,8 @@ class SaleDetailDialog(
 
         binding.totalText.text = "${getString(R.string.label_total)} : " +
             CurrencyFormatter.formatBoth(sale.totalCdf, sale.totalUsd) +
-            " — ${sale.employeeName}, ${sdf.format(Date(sale.dateTimeMillis))}"
+            " — ${sale.employeeName}, ${sdf.format(Date(sale.dateTimeMillis))}\n" +
+            "${getString(R.string.label_payment_method)} : ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
 
         if (sale.status == SaleStatus.CANCELED) {
             val canceledAt = sale.canceledAtMillis?.let { sdf.format(Date(it)) } ?: ""

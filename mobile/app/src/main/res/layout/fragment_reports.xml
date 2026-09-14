@@ -68,6 +68,16 @@
         android:textColor="#2E7D32"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/summaryPaymentBreakdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="#999999"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="8dp"
         android:visibility="gone" />
 

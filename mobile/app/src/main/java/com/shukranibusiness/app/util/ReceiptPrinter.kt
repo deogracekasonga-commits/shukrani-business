@@ -59,7 +59,7 @@ object ReceiptPrinter {
         }
         out += "--------------------------------"
         out += "TOTAL : ${CurrencyFormatter.formatBoth(sale.totalCdf, sale.totalUsd)}"
-        out += "Payé en ${sale.currencyPaid}"
+        out += "Payé en ${sale.currencyPaid} — ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
         out += ""
         out += "Merci pour votre achat !"
         return out

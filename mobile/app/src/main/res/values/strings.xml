@@ -35,6 +35,16 @@
     <string name="label_currency_cdf">CDF</string>
     <string name="label_currency_usd">USD</string>
 
+    <string name="payment_method_cash">Cash</string>
+    <string name="payment_method_mobile_money">Mobile Money</string>
+    <string name="payment_method_card">Carte</string>
+    <string-array name="mobile_money_providers">
+        <item>M-Pesa</item>
+        <item>Airtel Money</item>
+        <item>Orange Money</item>
+    </string-array>
+    <string name="label_payment_method">Paiement</string>
+
     <string name="action_add_product">Ajouter un produit</string>
     <string name="action_restock">Réapprovisionner</string>
     <string name="action_edit">Modifier</string>

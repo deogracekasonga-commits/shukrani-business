@@ -23,6 +23,9 @@ data class Sale(
     val status: SaleStatus = SaleStatus.COMPLETED,
     val canceledByEmployeeName: String? = null,
     val canceledAtMillis: Long? = null,
+    val paymentMethod: PaymentMethod = PaymentMethod.CASH,
+    /** Nom de l'opérateur (ex. "M-Pesa", "Airtel Money", "Orange Money") — renseigné seulement si paymentMethod = MOBILE_MONEY. */
+    val mobileMoneyProvider: String? = null,
     /** Identifiant stable utilisé pour la synchronisation cloud (indépendant de [id] local). */
     val cloudUuid: String = UUID.randomUUID().toString(),
     /** true tant que l'état actuel de cette vente n'a pas encore été poussé vers le cloud. */

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +16,7 @@ import com.shukranibusiness.app.data.InsufficientStockException
 import com.shukranibusiness.app.data.Prefs
 import com.shukranibusiness.app.data.ShopRepository
 import com.shukranibusiness.app.data.entities.Employee
+import com.shukranibusiness.app.data.entities.PaymentMethod
 import com.shukranibusiness.app.data.entities.Product
 import com.shukranibusiness.app.databinding.FragmentPosBinding
 import com.shukranibusiness.app.util.CurrencyFormatter
@@ -72,6 +74,16 @@ class PosFragment : Fragment() {
 
         binding.currencyGroup.setOnCheckedChangeListener { _, _ -> refreshCartUi() }
         binding.checkoutButton.setOnClickListener { checkout() }
+
+        binding.mobileMoneyProviderSpinner.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            resources.getStringArray(R.array.mobile_money_providers)
+        )
+        binding.paymentMethodGroup.setOnCheckedChangeListener { _, checkedId ->
+            binding.mobileMoneyProviderSpinner.visibility =
+                if (checkedId == R.id.paymentMobileMoneyRadio) View.VISIBLE else View.GONE
+        }
 
         lifecycleScope.launch {
             val employeeId = prefs.loggedInEmployeeId
@@ -161,10 +173,22 @@ class PosFragment : Fragment() {
 
         val currency = if (binding.usdRadio.isChecked) "USD" else "CDF"
         val exchangeRate = prefs.exchangeRateCdfPerUsd
+        val paymentMethod = when (binding.paymentMethodGroup.checkedRadioButtonId) {
+            R.id.paymentMobileMoneyRadio -> PaymentMethod.MOBILE_MONEY
+            R.id.paymentCardRadio -> PaymentMethod.CARD
+            else -> PaymentMethod.CASH
+        }
+        val mobileMoneyProvider = if (paymentMethod == PaymentMethod.MOBILE_MONEY) {
+            binding.mobileMoneyProviderSpinner.selectedItem as? String
+        } else {
+            null
+        }
 
         lifecycleScope.launch {
             try {
-                val sale = repository.recordSale(employee, lines, currency, exchangeRate)
+                val sale = repository.recordSale(
+                    employee, lines, currency, exchangeRate, paymentMethod, mobileMoneyProvider
+                )
                 cart.clear()
                 refreshCartUi()
                 Toast.makeText(requireContext(), getString(R.string.sale_recorded), Toast.LENGTH_SHORT).show()

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.withTransaction
 import com.shukranibusiness.app.data.entities.Employee
 import com.shukranibusiness.app.data.entities.EmployeeRole
+import com.shukranibusiness.app.data.entities.PaymentMethod
 import com.shukranibusiness.app.data.entities.Product
 import com.shukranibusiness.app.data.entities.Sale
 import com.shukranibusiness.app.data.entities.SaleItem
@@ -145,7 +146,9 @@ class ShopRepository(private val context: Context) {
         employee: Employee,
         cartLines: List<CartLine>,
         currencyPaid: String,
-        exchangeRateUsed: Double
+        exchangeRateUsed: Double,
+        paymentMethod: PaymentMethod = PaymentMethod.CASH,
+        mobileMoneyProvider: String? = null
     ): Sale {
         require(cartLines.isNotEmpty()) { "Le panier est vide" }
 
@@ -172,6 +175,8 @@ class ShopRepository(private val context: Context) {
                     totalUsd = totalUsd,
                     currencyPaid = currencyPaid,
                     exchangeRateUsed = exchangeRateUsed,
+                    paymentMethod = paymentMethod,
+                    mobileMoneyProvider = mobileMoneyProvider,
                     cloudUuid = cloudUuid
                 )
             )
@@ -215,6 +220,8 @@ class ShopRepository(private val context: Context) {
                 totalUsd = totalUsd,
                 currencyPaid = currencyPaid,
                 exchangeRateUsed = exchangeRateUsed,
+                paymentMethod = paymentMethod,
+                mobileMoneyProvider = mobileMoneyProvider,
                 cloudUuid = cloudUuid
             )
         }.also { SyncScheduler.scheduleImmediateSync(context) }
