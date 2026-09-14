@@ -20,6 +20,7 @@ import com.shukranibusiness.app.ui.pos.PosFragment
 import com.shukranibusiness.app.ui.reports.ReportsFragment
 import com.shukranibusiness.app.ui.settings.SettingsFragment
 import com.shukranibusiness.app.ui.stock.StockFragment
+import com.shukranibusiness.app.util.SloganRotator
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var repository: ShopRepository
     private lateinit var prefs: Prefs
     private var currentEmployee: Employee? = null
+    private var sloganRotator: SloganRotator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,11 @@ class MainActivity : AppCompatActivity() {
         repository = ShopRepository(this)
         prefs = Prefs(this)
         SyncScheduler.schedulePeriodicSafetyNet(this)
+
+        sloganRotator = SloganRotator(
+            binding.sloganBanner,
+            resources.getStringArray(R.array.rotating_slogans).toList()
+        ).also { it.start() }
 
         val employeeId = prefs.loggedInEmployeeId
         if (employeeId == -1L) {
@@ -100,5 +107,10 @@ class MainActivity : AppCompatActivity() {
     private fun goToLogin() {
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
+    }
+
+    override fun onDestroy() {
+        sloganRotator?.stop()
+        super.onDestroy()
     }
 }

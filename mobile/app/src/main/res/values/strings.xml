@@ -3,6 +3,12 @@
     <string name="app_pos_label">POS</string>
 
     <string name="login_subtitle">Simplifiez vos ventes, maîtrisez vos stocks.</string>
+
+    <string-array name="rotating_slogans">
+        <item>Simplifiez vos ventes, maîtrisez vos stocks.</item>
+        <item>La gestion intelligente pour votre business.</item>
+        <item>Rapide, fiable, connecté.</item>
+    </string-array>
     <string name="first_run_title">Créez le compte du gérant pour commencer</string>
     <string name="hint_manager_name">Nom du gérant</string>
     <string name="hint_pin">Code PIN (4 à 6 chiffres)</string>
