@@ -147,6 +147,17 @@
     <string name="dashboard_top_products_title">Produits les plus vendus (30 jours)</string>
     <string name="dashboard_top_products_empty">Aucune vente sur les 30 derniers jours.</string>
 
+    <string name="dashboard_overview_title">Aperçu</string>
+    <string name="dashboard_overview_period_hint">Sur les 30 derniers jours</string>
+    <string name="dashboard_total_invoices">Total factures</string>
+    <string name="dashboard_avg_invoice_value">Valeur moyenne / facture</string>
+    <string name="dashboard_active_products">Produits actifs</string>
+    <string name="dashboard_avg_daily_sales">Vente moyenne / jour</string>
+    <string name="dashboard_out_of_stock">Ruptures de stock</string>
+    <string name="dashboard_out_of_stock_empty">Aucune rupture de stock.</string>
+    <string name="dashboard_sales_by_employee_title">Ventes par vendeur (30 jours)</string>
+    <string name="dashboard_sales_by_employee_empty">Aucune vente sur les 30 derniers jours.</string>
+
     <string name="label_margin">Marge estimée</string>
     <string name="label_margin_hint">Basée sur le prix d\'achat renseigné pour chaque produit (ignore les produits sans coût renseigné).</string>
 </resources>

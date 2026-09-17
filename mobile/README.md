@@ -18,10 +18,13 @@ imprimante Bluetooth.
 - **Connexion par PIN** : chaque employé a son propre code, avec un rôle
   Gérant (accès complet) ou Vendeur (accès à la vente uniquement).
 - **Accueil** (gérant) : ventes du jour (total CDF/USD, nombre de ventes),
-  alertes stock bas, **croissance** (variation % du chiffre d'affaires vs
-  hier et vs la semaine dernière), **produits les plus vendus** (30 jours),
-  et — si la synchronisation à distance est activée en tant que gérant —
-  les ventes des autres appareils/boutiques connectés.
+  **aperçu 30 jours** (total factures, valeur moyenne par facture, produits
+  actifs, vente moyenne par jour), alertes **stock bas** et **ruptures de
+  stock** (quantité à zéro), **croissance** (variation % du chiffre
+  d'affaires vs hier et vs la semaine dernière), **produits les plus
+  vendus** (30 jours), **ventes par vendeur** (30 jours), et — si la
+  synchronisation à distance est activée en tant que gérant — les ventes
+  des autres appareils/boutiques connectés.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
   choix de la devise (CDF ou USD) et du **mode de paiement** (Cash, Mobile
   Money — M-Pesa/Airtel Money/Orange Money, ou Carte), décrément du stock

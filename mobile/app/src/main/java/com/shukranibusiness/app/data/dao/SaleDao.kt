@@ -17,6 +17,13 @@ data class TopProductStat(
     val totalCostUsd: Double
 )
 
+data class EmployeeSalesStat(
+    val employeeName: String,
+    val saleCount: Int,
+    val totalRevenueCdf: Double,
+    val totalRevenueUsd: Double
+)
+
 @Dao
 interface SaleDao {
 
@@ -70,4 +77,12 @@ interface SaleDao {
             "GROUP BY si.productName ORDER BY totalQuantity DESC LIMIT :limit"
     )
     suspend fun getTopProducts(startMillis: Long, endMillis: Long, limit: Int): List<TopProductStat>
+
+    @Query(
+        "SELECT employeeName as employeeName, COUNT(*) as saleCount, " +
+            "SUM(totalCdf) as totalRevenueCdf, SUM(totalUsd) as totalRevenueUsd " +
+            "FROM sales WHERE status = 'COMPLETED' AND dateTimeMillis BETWEEN :startMillis AND :endMillis " +
+            "GROUP BY employeeName ORDER BY totalRevenueCdf DESC"
+    )
+    suspend fun getEmployeeSalesStats(startMillis: Long, endMillis: Long): List<EmployeeSalesStat>
 }

@@ -55,6 +55,10 @@ class ShopRepository(private val context: Context) {
 
     fun observeLowStockProducts(): Flow<List<Product>> = productDao.observeLowStock()
 
+    fun observeOutOfStockProducts(): Flow<List<Product>> = productDao.observeOutOfStock()
+
+    fun observeActiveProductCount(): Flow<Int> = productDao.observeActiveCount()
+
     fun observeCategories(): Flow<List<String>> = productDao.observeCategories()
 
     suspend fun saveProduct(product: Product): Long {
@@ -100,6 +104,9 @@ class ShopRepository(private val context: Context) {
 
     suspend fun getTopProducts(startMillis: Long, endMillis: Long, limit: Int = 5) =
         saleDao.getTopProducts(startMillis, endMillis, limit)
+
+    suspend fun getEmployeeSalesStats(startMillis: Long, endMillis: Long) =
+        saleDao.getEmployeeSalesStats(startMillis, endMillis)
 
     suspend fun getSale(saleId: Long): Sale? = saleDao.getById(saleId)
 

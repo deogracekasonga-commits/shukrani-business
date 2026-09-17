@@ -26,6 +26,12 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE active = 1 AND quantity <= lowStockThreshold ORDER BY quantity ASC")
     fun observeLowStock(): Flow<List<Product>>
 
+    @Query("SELECT * FROM products WHERE active = 1 AND quantity = 0 ORDER BY name ASC")
+    fun observeOutOfStock(): Flow<List<Product>>
+
+    @Query("SELECT COUNT(*) FROM products WHERE active = 1")
+    fun observeActiveCount(): Flow<Int>
+
     @Query("SELECT * FROM products WHERE id = :productId LIMIT 1")
     suspend fun getById(productId: Long): Product?
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.Prefs
 import com.shukranibusiness.app.data.ShopRepository
+import com.shukranibusiness.app.data.dao.EmployeeSalesStat
 import com.shukranibusiness.app.data.dao.TopProductStat
 import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.databinding.FragmentDashboardBinding
@@ -76,6 +77,29 @@ class DashboardFragment : Fragment() {
             }
         }
 
+        lifecycleScope.launch {
+            repository.observeOutOfStockProducts().collect { products ->
+                binding.outOfStockContainer.removeAllViews()
+                if (products.isEmpty()) {
+                    binding.outOfStockContainer.addView(
+                        makeRow(getString(R.string.dashboard_out_of_stock_empty), Color.parseColor("#666666"))
+                    )
+                } else {
+                    for (product in products) {
+                        binding.outOfStockContainer.addView(
+                            makeRow(product.name, Color.parseColor("#D32F2F"))
+                        )
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repository.observeActiveProductCount().collect { count ->
+                binding.activeProductsText.text = count.toString()
+            }
+        }
+
         if (prefs.isRemoteSyncConfigured && prefs.isManagerDevice) {
             binding.remoteSalesCard.visibility = View.VISIBLE
             binding.refreshRemoteButton.setOnClickListener { loadRemoteSales() }
@@ -84,6 +108,51 @@ class DashboardFragment : Fragment() {
 
         loadGrowth()
         loadTopProducts()
+        loadOverview()
+        loadSalesByEmployee()
+    }
+
+    private fun loadOverview() {
+        lifecycleScope.launch {
+            val end = System.currentTimeMillis()
+            val start = end - 30 * ONE_DAY_MILLIS
+            val completed = repository.getSalesBetween(start, end).filter { it.status == SaleStatus.COMPLETED }
+
+            binding.totalInvoicesText.text = completed.size.toString()
+
+            val totalCdf = completed.sumOf { it.totalCdf }
+            val totalUsd = completed.sumOf { it.totalUsd }
+            binding.avgInvoiceValueText.text = if (completed.isEmpty()) {
+                CurrencyFormatter.formatCdf(0.0)
+            } else {
+                CurrencyFormatter.formatCdf(totalCdf / completed.size)
+            }
+            binding.avgDailySalesText.text = CurrencyFormatter.formatCdf(totalCdf / 30.0)
+        }
+    }
+
+    private fun loadSalesByEmployee() {
+        lifecycleScope.launch {
+            val end = System.currentTimeMillis()
+            val start = end - 30 * ONE_DAY_MILLIS
+            val stats = repository.getEmployeeSalesStats(start, end)
+            binding.salesByEmployeeContainer.removeAllViews()
+            if (stats.isEmpty()) {
+                binding.salesByEmployeeContainer.addView(
+                    makeRow(getString(R.string.dashboard_sales_by_employee_empty), Color.parseColor("#666666"))
+                )
+            } else {
+                for (stat in stats) {
+                    binding.salesByEmployeeContainer.addView(employeeSalesRow(stat))
+                }
+            }
+        }
+    }
+
+    private fun employeeSalesRow(stat: EmployeeSalesStat): TextView {
+        val text = "${stat.employeeName} — ${stat.saleCount} vente(s) — " +
+            CurrencyFormatter.formatBoth(stat.totalRevenueCdf, stat.totalRevenueUsd)
+        return makeRow(text, Color.parseColor("#182238"))
     }
 
     private fun loadGrowth() {
