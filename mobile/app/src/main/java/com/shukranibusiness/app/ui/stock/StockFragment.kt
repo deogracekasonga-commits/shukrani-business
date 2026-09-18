@@ -1,9 +1,12 @@
 package com.shukranibusiness.app.ui.stock
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +16,7 @@ import com.shukranibusiness.app.data.ShopRepository
 import com.shukranibusiness.app.data.entities.Product
 import com.shukranibusiness.app.databinding.DialogRestockBinding
 import com.shukranibusiness.app.databinding.FragmentStockBinding
+import com.shukranibusiness.app.util.CsvImporter
 import kotlinx.coroutines.launch
 
 class StockFragment : Fragment() {
@@ -22,6 +26,10 @@ class StockFragment : Fragment() {
 
     private lateinit var repository: ShopRepository
     private lateinit var adapter: StockAdapter
+
+    private val pickCsvFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { importCsv(it) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +53,7 @@ class StockFragment : Fragment() {
         binding.stockList.adapter = adapter
 
         binding.addProductButton.setOnClickListener { showProductDialog(null) }
+        binding.importCsvButton.setOnClickListener { showImportExplanation() }
 
         lifecycleScope.launch {
             repository.observeActiveProducts().collect { products -> adapter.submit(products) }
@@ -71,6 +80,40 @@ class StockFragment : Fragment() {
             }
             .setNegativeButton(R.string.action_cancel, null)
             .show()
+    }
+
+    private fun showImportExplanation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.action_import_csv)
+            .setMessage(R.string.import_csv_explanation)
+            .setPositiveButton(R.string.action_choose_file) { _, _ -> pickCsvFile.launch("*/*") }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    private fun importCsv(uri: Uri) {
+        lifecycleScope.launch {
+            try {
+                val text = requireContext().contentResolver.openInputStream(uri)
+                    ?.bufferedReader()
+                    ?.use { it.readText() }
+                    .orEmpty()
+                val result = CsvImporter.parse(text)
+                if (result.parsed.isEmpty()) {
+                    Toast.makeText(requireContext(), getString(R.string.import_no_products), Toast.LENGTH_LONG).show()
+                    return@launch
+                }
+                val count = repository.importProducts(result.parsed)
+                val message = if (result.skippedLines > 0) {
+                    getString(R.string.import_success_with_skipped, count, result.skippedLines)
+                } else {
+                    getString(R.string.import_success, count)
+                }
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), getString(R.string.import_error, e.message ?: ""), Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun confirmDelete(product: Product) {

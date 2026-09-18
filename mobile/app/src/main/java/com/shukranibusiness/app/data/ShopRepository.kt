@@ -12,6 +12,7 @@ import com.shukranibusiness.app.data.entities.SaleStatus
 import com.shukranibusiness.app.data.entities.StockMovement
 import com.shukranibusiness.app.data.entities.StockMovementType
 import com.shukranibusiness.app.sync.SyncScheduler
+import com.shukranibusiness.app.util.CsvImporter
 import com.shukranibusiness.app.util.PinHasher
 import kotlinx.coroutines.flow.Flow
 
@@ -69,6 +70,32 @@ class ShopRepository(private val context: Context) {
     }
 
     suspend fun deactivateProduct(productId: Long) = productDao.deactivate(productId)
+
+    /**
+     * Importe une liste de produits (typiquement depuis un fichier CSV) : un produit dont le nom
+     * correspond déjà à un produit actif est mis à jour, sinon un nouveau produit est créé.
+     * @return le nombre de produits importés (créés ou mis à jour).
+     */
+    suspend fun importProducts(products: List<CsvImporter.ParsedProduct>): Int {
+        return db.withTransaction {
+            for (parsed in products) {
+                val existing = productDao.findByName(parsed.name)
+                val product = Product(
+                    id = existing?.id ?: 0L,
+                    name = parsed.name,
+                    category = parsed.category,
+                    priceCdf = parsed.priceCdf,
+                    priceUsd = parsed.priceUsd,
+                    quantity = parsed.quantity,
+                    lowStockThreshold = parsed.lowStockThreshold,
+                    purchasePriceCdf = parsed.purchasePriceCdf,
+                    purchasePriceUsd = parsed.purchasePriceUsd
+                )
+                if (existing != null) productDao.update(product) else productDao.insert(product)
+            }
+            products.size
+        }
+    }
 
     suspend fun restock(productId: Long, addQuantity: Int, note: String? = null) {
         db.withTransaction {

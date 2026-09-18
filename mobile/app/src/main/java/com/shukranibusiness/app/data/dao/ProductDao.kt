@@ -35,6 +35,9 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE id = :productId LIMIT 1")
     suspend fun getById(productId: Long): Product?
 
+    @Query("SELECT * FROM products WHERE active = 1 AND name = :name COLLATE NOCASE LIMIT 1")
+    suspend fun findByName(name: String): Product?
+
     @Query("UPDATE products SET quantity = quantity + :delta WHERE id = :productId")
     suspend fun adjustQuantity(productId: Long, delta: Int)
 

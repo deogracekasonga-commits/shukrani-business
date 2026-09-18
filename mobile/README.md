@@ -31,7 +31,9 @@ imprimante Bluetooth.
   à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
   modification/**suppression** de produit, réapprovisionnement journalisé,
-  **prix d'achat optionnel** (sert au calcul de marge).
+  **prix d'achat optionnel** (sert au calcul de marge), et **import en masse
+  depuis un fichier CSV** (utile pour démarrer avec un grand catalogue sans
+  tout saisir à la main).
 - **Rapports** : historique des ventes filtrable par période (jour/semaine/
   mois/tout), totaux CDF et USD, **marge estimée** de la période (si un prix
   d'achat a été renseigné), **répartition par mode de paiement**, export
@@ -125,6 +127,16 @@ Depuis l'onglet **Stock** (visible uniquement pour le gérant) : bouton
 « Ajouter un produit » pour créer un article (nom, catégorie, prix en CDF
 **et** en USD, quantité, seuil d'alerte), ou « Réapprovisionner » sur un
 produit existant pour ajouter des quantités reçues.
+
+### Importer un catalogue en masse (CSV)
+
+Bouton « Importer un catalogue (CSV) » dans l'onglet Stock : choisissez un
+fichier CSV avec une ligne d'en-tête suivie des produits, colonnes dans cet
+ordre : `Nom, Catégorie, Prix CDF, Prix USD, Quantité, Seuil stock bas, Prix
+d'achat CDF (optionnel), Prix d'achat USD (optionnel)`. Un produit dont le
+nom correspond déjà à un produit actif est **mis à jour** ; sinon il est
+créé. Pratique pour préparer le catalogue dans Excel/Google Sheets
+(exporté ensuite en CSV) plutôt que de tout saisir manuellement dans l'app.
 
 ## Imprimante de reçu Bluetooth
 

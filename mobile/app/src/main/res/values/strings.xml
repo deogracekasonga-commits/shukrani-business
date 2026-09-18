@@ -79,6 +79,14 @@
     <string name="error_last_manager">Impossible : il doit rester au moins un gérant actif</string>
     <string name="confirm_delete_product">Supprimer ce produit ? Il n\'apparaîtra plus dans la vente ni le stock, mais les ventes déjà enregistrées le concernant restent conservées.</string>
 
+    <string name="action_import_csv">Importer un catalogue (CSV)</string>
+    <string name="import_csv_explanation">Choisissez un fichier CSV avec les colonnes, dans l\'ordre : Nom, Catégorie, Prix CDF, Prix USD, Quantité, Seuil stock bas, Prix d\'achat CDF (optionnel), Prix d\'achat USD (optionnel).\n\nUn produit dont le nom existe déjà sera mis à jour ; sinon il sera créé.</string>
+    <string name="action_choose_file">Choisir le fichier</string>
+    <string name="import_success">%d produit(s) importé(s) ou mis à jour.</string>
+    <string name="import_success_with_skipped">%1$d produit(s) importé(s) ou mis à jour, %2$d ligne(s) ignorée(s) (nom manquant).</string>
+    <string name="import_no_products">Aucun produit valide trouvé dans ce fichier. Vérifiez qu\'il contient bien une ligne d\'en-tête suivie des produits.</string>
+    <string name="import_error">Erreur lors de l\'import : %s</string>
+
     <string name="period_today">Aujourd\'hui</string>
     <string name="period_week">7 jours</string>
     <string name="period_month">30 jours</string>
