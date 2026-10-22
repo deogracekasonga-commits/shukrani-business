@@ -27,8 +27,8 @@ imprimante Bluetooth.
   des autres appareils/boutiques connectés.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
   choix de la devise (CDF ou USD) et du **mode de paiement** (Cash, Mobile
-  Money — M-Pesa/Airtel Money/Orange Money, ou Carte), décrément du stock
-  à la validation.
+  Money — M-Pesa/Airtel Money/Orange Money, ou Carte), **remise optionnelle**
+  (en % ou en montant fixe CDF), décrément du stock à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
   modification/**suppression** de produit, réapprovisionnement journalisé,
   **prix d'achat optionnel** (sert au calcul de marge), et **import en masse

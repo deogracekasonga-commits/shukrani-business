@@ -91,45 +91,99 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/discountInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_discount"
+                android:inputType="numberDecimal" />
+
+            <RadioGroup
+                android:id="@+id/discountModeGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="8dp">
+
+                <RadioButton
+                    android:id="@+id/discountPercentRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/label_discount_percent" />
+
+                <RadioButton
+                    android:id="@+id/discountAmountRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/label_discount_amount_cdf" />
+            </RadioGroup>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:padding="12dp">
 
-        <RadioGroup
-            android:id="@+id/currencyGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/cdfRadio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/label_currency_cdf" />
-
-            <RadioButton
-                android:id="@+id/usdRadio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/label_currency_usd" />
-        </RadioGroup>
-
         <TextView
-            android:id="@+id/totalText"
-            android:layout_width="0dp"
+            android:id="@+id/subtotalText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="end"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:paddingEnd="8dp" />
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <RadioGroup
+                android:id="@+id/currencyGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/cdfRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/label_currency_cdf" />
+
+                <RadioButton
+                    android:id="@+id/usdRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/label_currency_usd" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/totalText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:paddingEnd="8dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <Button

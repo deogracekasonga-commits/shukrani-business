@@ -147,6 +147,10 @@ object BackupManager {
         put("dateTimeMillis", dateTimeMillis)
         put("totalCdf", totalCdf)
         put("totalUsd", totalUsd)
+        put("subtotalCdf", subtotalCdf)
+        put("subtotalUsd", subtotalUsd)
+        put("discountCdf", discountCdf)
+        put("discountUsd", discountUsd)
         put("currencyPaid", currencyPaid)
         put("exchangeRateUsed", exchangeRateUsed)
         put("status", status.name)
@@ -165,6 +169,10 @@ object BackupManager {
         dateTimeMillis = getLong("dateTimeMillis"),
         totalCdf = getDouble("totalCdf"),
         totalUsd = getDouble("totalUsd"),
+        subtotalCdf = optDouble("subtotalCdf", 0.0),
+        subtotalUsd = optDouble("subtotalUsd", 0.0),
+        discountCdf = optDouble("discountCdf", 0.0),
+        discountUsd = optDouble("discountUsd", 0.0),
         currencyPaid = getString("currencyPaid"),
         exchangeRateUsed = getDouble("exchangeRateUsed"),
         status = SaleStatus.valueOf(optString("status", "COMPLETED")),

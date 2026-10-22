@@ -39,10 +39,17 @@ class SaleDetailDialog(
             binding.itemsContainer.addView(row)
         }
 
+        val discountLine = if (sale.discountCdf > 0.0 || sale.discountUsd > 0.0) {
+            "\n${getString(R.string.label_subtotal)} : ${CurrencyFormatter.formatBoth(sale.subtotalCdf, sale.subtotalUsd)}" +
+                " — ${getString(R.string.label_discount)} : -${CurrencyFormatter.formatBoth(sale.discountCdf, sale.discountUsd)}"
+        } else {
+            ""
+        }
         binding.totalText.text = "${getString(R.string.label_total)} : " +
             CurrencyFormatter.formatBoth(sale.totalCdf, sale.totalUsd) +
-            " — ${sale.employeeName}, ${sdf.format(Date(sale.dateTimeMillis))}\n" +
-            "${getString(R.string.label_payment_method)} : ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
+            " — ${sale.employeeName}, ${sdf.format(Date(sale.dateTimeMillis))}" +
+            discountLine +
+            "\n${getString(R.string.label_payment_method)} : ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
 
         if (sale.status == SaleStatus.CANCELED) {
             val canceledAt = sale.canceledAtMillis?.let { sdf.format(Date(it)) } ?: ""

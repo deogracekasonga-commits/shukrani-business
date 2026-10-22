@@ -1,6 +1,8 @@
 package com.shukranibusiness.app.ui.pos
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,6 +87,13 @@ class PosFragment : Fragment() {
                 if (checkedId == R.id.paymentMobileMoneyRadio) View.VISIBLE else View.GONE
         }
 
+        binding.discountModeGroup.setOnCheckedChangeListener { _, _ -> refreshCartUi() }
+        binding.discountInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) = refreshCartUi()
+        })
+
         lifecycleScope.launch {
             val employeeId = prefs.loggedInEmployeeId
             currentEmployee = if (employeeId != -1L) repository.getEmployee(employeeId) else null
@@ -156,14 +165,43 @@ class PosFragment : Fragment() {
         cartAdapter.submit(lines)
         binding.cartEmptyLabel.visibility = if (lines.isEmpty()) View.VISIBLE else View.GONE
 
-        val totalCdf = lines.sumOf { it.subtotalCdf }
-        val totalUsd = lines.sumOf { it.subtotalUsd }
+        val subtotalCdf = lines.sumOf { it.subtotalCdf }
+        val subtotalUsd = lines.sumOf { it.subtotalUsd }
+        val (discountCdf, discountUsd) = computeDiscount(subtotalCdf, subtotalUsd)
+        val totalCdf = subtotalCdf - discountCdf
+        val totalUsd = subtotalUsd - discountUsd
+
+        if (discountCdf > 0.0 || discountUsd > 0.0) {
+            binding.subtotalText.text = "${getString(R.string.label_subtotal)} : " +
+                CurrencyFormatter.formatBoth(subtotalCdf, subtotalUsd) +
+                "  —  ${getString(R.string.label_discount)} : " +
+                CurrencyFormatter.formatBoth(discountCdf, discountUsd)
+            binding.subtotalText.visibility = View.VISIBLE
+        } else {
+            binding.subtotalText.visibility = View.GONE
+        }
+
         binding.totalText.text = if (binding.usdRadio.isChecked) {
             CurrencyFormatter.formatUsd(totalUsd)
         } else {
             CurrencyFormatter.formatCdf(totalCdf)
         }
         binding.checkoutButton.isEnabled = lines.isNotEmpty()
+    }
+
+    /** Calcule la remise (en CDF et USD) à partir de la saisie et du mode choisi (% ou montant CDF). */
+    private fun computeDiscount(subtotalCdf: Double, subtotalUsd: Double): Pair<Double, Double> {
+        val rawInput = binding.discountInput.text.toString().toDoubleOrNull() ?: return 0.0 to 0.0
+        if (rawInput <= 0.0) return 0.0 to 0.0
+
+        val discountCdf = if (binding.discountPercentRadio.isChecked) {
+            subtotalCdf * (rawInput.coerceIn(0.0, 100.0) / 100.0)
+        } else {
+            rawInput
+        }.coerceIn(0.0, subtotalCdf)
+
+        val discountUsd = if (subtotalCdf > 0.0) subtotalUsd * (discountCdf / subtotalCdf) else 0.0
+        return discountCdf to discountUsd.coerceIn(0.0, subtotalUsd)
     }
 
     private fun checkout() {
@@ -183,13 +221,18 @@ class PosFragment : Fragment() {
         } else {
             null
         }
+        val subtotalCdf = lines.sumOf { it.subtotalCdf }
+        val subtotalUsd = lines.sumOf { it.subtotalUsd }
+        val (discountCdf, discountUsd) = computeDiscount(subtotalCdf, subtotalUsd)
 
         lifecycleScope.launch {
             try {
                 val sale = repository.recordSale(
-                    employee, lines, currency, exchangeRate, paymentMethod, mobileMoneyProvider
+                    employee, lines, currency, exchangeRate, paymentMethod, mobileMoneyProvider,
+                    discountCdf, discountUsd
                 )
                 cart.clear()
+                binding.discountInput.text?.clear()
                 refreshCartUi()
                 Toast.makeText(requireContext(), getString(R.string.sale_recorded), Toast.LENGTH_SHORT).show()
                 ReceiptPrinter.printReceiptIfConfigured(requireContext(), sale, lines, prefs.shopName)

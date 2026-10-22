@@ -231,7 +231,9 @@ class ShopRepository(private val context: Context) {
         currencyPaid: String,
         exchangeRateUsed: Double,
         paymentMethod: PaymentMethod = PaymentMethod.CASH,
-        mobileMoneyProvider: String? = null
+        mobileMoneyProvider: String? = null,
+        discountCdf: Double = 0.0,
+        discountUsd: Double = 0.0
     ): Sale {
         require(cartLines.isNotEmpty()) { "Le panier est vide" }
 
@@ -244,8 +246,12 @@ class ShopRepository(private val context: Context) {
                 }
             }
 
-            val totalCdf = cartLines.sumOf { it.subtotalCdf }
-            val totalUsd = cartLines.sumOf { it.subtotalUsd }
+            val subtotalCdf = cartLines.sumOf { it.subtotalCdf }
+            val subtotalUsd = cartLines.sumOf { it.subtotalUsd }
+            val appliedDiscountCdf = discountCdf.coerceIn(0.0, subtotalCdf)
+            val appliedDiscountUsd = discountUsd.coerceIn(0.0, subtotalUsd)
+            val totalCdf = subtotalCdf - appliedDiscountCdf
+            val totalUsd = subtotalUsd - appliedDiscountUsd
             val now = System.currentTimeMillis()
             val cloudUuid = java.util.UUID.randomUUID().toString()
 
@@ -256,6 +262,10 @@ class ShopRepository(private val context: Context) {
                     dateTimeMillis = now,
                     totalCdf = totalCdf,
                     totalUsd = totalUsd,
+                    subtotalCdf = subtotalCdf,
+                    subtotalUsd = subtotalUsd,
+                    discountCdf = appliedDiscountCdf,
+                    discountUsd = appliedDiscountUsd,
                     currencyPaid = currencyPaid,
                     exchangeRateUsed = exchangeRateUsed,
                     paymentMethod = paymentMethod,
@@ -301,6 +311,10 @@ class ShopRepository(private val context: Context) {
                 dateTimeMillis = now,
                 totalCdf = totalCdf,
                 totalUsd = totalUsd,
+                subtotalCdf = subtotalCdf,
+                subtotalUsd = subtotalUsd,
+                discountCdf = appliedDiscountCdf,
+                discountUsd = appliedDiscountUsd,
                 currencyPaid = currencyPaid,
                 exchangeRateUsed = exchangeRateUsed,
                 paymentMethod = paymentMethod,

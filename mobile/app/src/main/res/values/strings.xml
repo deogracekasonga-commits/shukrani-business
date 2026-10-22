@@ -45,6 +45,11 @@
         <item>Orange Money</item>
     </string-array>
     <string name="label_payment_method">Paiement</string>
+    <string name="hint_discount">Remise (optionnel)</string>
+    <string name="label_discount_percent">%</string>
+    <string name="label_discount_amount_cdf">CDF</string>
+    <string name="label_subtotal">Sous-total</string>
+    <string name="label_discount">Remise</string>
 
     <string name="action_add_product">Ajouter un produit</string>
     <string name="action_restock">Réapprovisionner</string>

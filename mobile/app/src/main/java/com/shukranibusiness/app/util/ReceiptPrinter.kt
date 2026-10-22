@@ -58,6 +58,10 @@ object ReceiptPrinter {
             out += "  = ${CurrencyFormatter.formatBoth(line.subtotalCdf, line.subtotalUsd)}"
         }
         out += "--------------------------------"
+        if (sale.discountCdf > 0.0 || sale.discountUsd > 0.0) {
+            out += "Sous-total : ${CurrencyFormatter.formatBoth(sale.subtotalCdf, sale.subtotalUsd)}"
+            out += "Remise : -${CurrencyFormatter.formatBoth(sale.discountCdf, sale.discountUsd)}"
+        }
         out += "TOTAL : ${CurrencyFormatter.formatBoth(sale.totalCdf, sale.totalUsd)}"
         out += "Payé en ${sale.currencyPaid} — ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
         out += ""

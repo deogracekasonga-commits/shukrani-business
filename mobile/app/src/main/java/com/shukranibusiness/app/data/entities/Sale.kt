@@ -18,6 +18,11 @@ data class Sale(
     val dateTimeMillis: Long,
     val totalCdf: Double,
     val totalUsd: Double,
+    /** Sous-total avant remise (0 si aucune remise n'a jamais été saisie sur cette vente). */
+    val subtotalCdf: Double = 0.0,
+    val subtotalUsd: Double = 0.0,
+    val discountCdf: Double = 0.0,
+    val discountUsd: Double = 0.0,
     val currencyPaid: String,
     val exchangeRateUsed: Double,
     val status: SaleStatus = SaleStatus.COMPLETED,
