@@ -234,6 +234,10 @@ affecter les appareils déjà enregistrés).
   sel aléatoire propre à chaque employé — jamais stockés en clair. Les PIN
   créés avant ce renforcement sont migrés automatiquement et
   silencieusement vers le nouveau format à la prochaine connexion réussie.
+- **Verrouillage après échecs répétés** : après 5 PIN incorrects d'affilée
+  pour un même employé, la connexion est bloquée un court moment (30s, puis
+  doublé à chaque nouvel échec jusqu'à 5 min max) — empêche d'essayer des
+  centaines de codes à la suite. Remis à zéro après une connexion réussie.
 - **Pas de sauvegarde automatique Android** (`android:allowBackup="false"`) :
   la base de données locale (ventes, PIN hachés, réglages) n'est jamais
   incluse dans une sauvegarde Google/adb en dehors de l'app elle-même.

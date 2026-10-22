@@ -20,6 +20,7 @@
     <string name="error_pin_mismatch">Les PIN ne correspondent pas</string>
     <string name="error_pin_too_short">Le PIN doit contenir au moins 4 chiffres</string>
     <string name="error_invalid_pin">PIN incorrect</string>
+    <string name="error_pin_locked">Trop de tentatives — réessayez dans %d secondes</string>
     <string name="error_select_employee">Sélectionnez un employé</string>
 
     <string name="nav_pos">Vente</string>

@@ -68,6 +68,32 @@ class Prefs(context: Context) {
         prefs.edit().remove(KEY_DEVICE_TOKEN).remove(KEY_DEVICE_ID).remove(KEY_DEVICE_ROLE).apply()
     }
 
+    /** Nombre d'échecs de PIN consécutifs pour cet employé (remis à zéro après une connexion réussie). */
+    fun getPinFailCount(employeeId: Long): Int = prefs.getInt(keyPinFailCount(employeeId), 0)
+
+    fun recordPinFailure(employeeId: Long): Int {
+        val count = getPinFailCount(employeeId) + 1
+        prefs.edit().putInt(keyPinFailCount(employeeId), count).apply()
+        return count
+    }
+
+    fun resetPinFailures(employeeId: Long) {
+        prefs.edit()
+            .remove(keyPinFailCount(employeeId))
+            .remove(keyPinLockoutUntil(employeeId))
+            .apply()
+    }
+
+    /** Timestamp (ms) jusqu'auquel la connexion de cet employé est bloquée — 0 si pas de blocage. */
+    fun getPinLockoutUntil(employeeId: Long): Long = prefs.getLong(keyPinLockoutUntil(employeeId), 0L)
+
+    fun setPinLockoutUntil(employeeId: Long, untilMillis: Long) {
+        prefs.edit().putLong(keyPinLockoutUntil(employeeId), untilMillis).apply()
+    }
+
+    private fun keyPinFailCount(employeeId: Long) = "pin_fail_count_$employeeId"
+    private fun keyPinLockoutUntil(employeeId: Long) = "pin_lockout_until_$employeeId"
+
     companion object {
         private const val KEY_SHOP_NAME = "shop_name"
         private const val KEY_SHOP_ADDRESS = "shop_address"

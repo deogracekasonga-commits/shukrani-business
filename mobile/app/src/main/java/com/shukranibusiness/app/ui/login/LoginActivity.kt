@@ -98,14 +98,36 @@ class LoginActivity : AppCompatActivity() {
         val pin = binding.pinLoginInput.text.toString()
         val employee = employees[position]
 
+        val now = System.currentTimeMillis()
+        val lockoutUntil = prefs.getPinLockoutUntil(employee.id)
+        if (now < lockoutUntil) {
+            val secondsLeft = ((lockoutUntil - now) / 1000L + 1L).toInt()
+            showError(getString(R.string.error_pin_locked, secondsLeft))
+            return
+        }
+
         lifecycleScope.launch {
             val authenticated = repository.authenticate(employee.id, pin)
             if (authenticated != null) {
+                prefs.resetPinFailures(employee.id)
                 onLoginSuccess(authenticated.id)
             } else {
-                showError(getString(R.string.error_invalid_pin))
+                val attempts = prefs.recordPinFailure(employee.id)
+                if (attempts >= LOCKOUT_THRESHOLD) {
+                    val delaySeconds = lockoutDelaySeconds(attempts)
+                    prefs.setPinLockoutUntil(employee.id, System.currentTimeMillis() + delaySeconds * 1000L)
+                    showError(getString(R.string.error_pin_locked, delaySeconds))
+                } else {
+                    showError(getString(R.string.error_invalid_pin))
+                }
             }
         }
+    }
+
+    /** 30s, 60s, 120s, 240s, puis plafonné à 300s (5 min). */
+    private fun lockoutDelaySeconds(attempts: Int): Int {
+        val step = (attempts - LOCKOUT_THRESHOLD).coerceIn(0, 4)
+        return (30 shl step).coerceAtMost(300)
     }
 
     private fun onLoginSuccess(employeeId: Long) {
@@ -117,5 +139,9 @@ class LoginActivity : AppCompatActivity() {
     private fun showError(message: String) {
         binding.errorText.text = message
         binding.errorText.visibility = android.view.View.VISIBLE
+    }
+
+    companion object {
+        private const val LOCKOUT_THRESHOLD = 5
     }
 }
