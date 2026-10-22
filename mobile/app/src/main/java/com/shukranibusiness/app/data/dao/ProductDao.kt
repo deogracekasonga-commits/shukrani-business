@@ -32,6 +32,9 @@ interface ProductDao {
     @Query("SELECT COUNT(*) FROM products WHERE active = 1")
     fun observeActiveCount(): Flow<Int>
 
+    @Query("DELETE FROM products")
+    suspend fun deleteAll(): Int
+
     @Query("SELECT * FROM products WHERE id = :productId LIMIT 1")
     suspend fun getById(productId: Long): Product?
 

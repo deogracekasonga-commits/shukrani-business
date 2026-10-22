@@ -71,6 +71,9 @@ class ShopRepository(private val context: Context) {
 
     suspend fun deactivateProduct(productId: Long) = productDao.deactivate(productId)
 
+    /** Supprime tous les produits — utile pour nettoyer un import raté (ex. fichier non converti en CSV). */
+    suspend fun deleteAllProducts(): Int = productDao.deleteAll()
+
     /**
      * Importe une liste de produits (typiquement depuis un fichier CSV) : un produit dont le nom
      * correspond déjà à un produit actif est mis à jour, sinon un nouveau produit est créé.

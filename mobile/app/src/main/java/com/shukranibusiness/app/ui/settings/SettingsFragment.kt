@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.Prefs
+import com.shukranibusiness.app.data.ShopRepository
 import com.shukranibusiness.app.databinding.FragmentSettingsBinding
 import com.shukranibusiness.app.sync.SupabaseSyncClient
 import com.shukranibusiness.app.ui.employees.EmployeesActivity
@@ -27,6 +28,7 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var repository: ShopRepository
     private lateinit var prefs: Prefs
 
     private val requestBluetoothPermission =
@@ -49,6 +51,7 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        repository = ShopRepository(requireContext())
         prefs = Prefs(requireContext())
 
         binding.shopNameInput.setText(prefs.shopName)
@@ -72,6 +75,7 @@ class SettingsFragment : Fragment() {
         binding.manageEmployeesButton.setOnClickListener {
             startActivity(Intent(requireContext(), EmployeesActivity::class.java))
         }
+        binding.clearCatalogButton.setOnClickListener { confirmClearCatalog() }
 
         updateSyncStatus()
         binding.registerSyncButton.setOnClickListener { onRegisterSyncClicked() }
@@ -79,6 +83,24 @@ class SettingsFragment : Fragment() {
             prefs.clearDeviceRegistration()
             updateSyncStatus()
         }
+    }
+
+    private fun confirmClearCatalog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.action_clear_catalog)
+            .setMessage(R.string.confirm_clear_catalog)
+            .setPositiveButton(R.string.action_delete) { _, _ ->
+                lifecycleScope.launch {
+                    val count = repository.deleteAllProducts()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.catalog_cleared_confirmation, count),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
     }
 
     private fun onRegisterSyncClicked() {

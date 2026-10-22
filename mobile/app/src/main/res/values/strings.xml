@@ -87,6 +87,10 @@
     <string name="import_no_products">Aucun produit valide trouvé dans ce fichier. Vérifiez qu\'il contient bien une ligne d\'en-tête suivie des produits.</string>
     <string name="import_error">Erreur lors de l\'import : %s</string>
 
+    <string name="action_clear_catalog">Vider le catalogue de produits</string>
+    <string name="confirm_clear_catalog">Supprimer TOUS les produits ? Action irréversible — utile seulement pour nettoyer un import raté (ex. fichier .xlsx importé par erreur au lieu d\'un CSV). Les ventes déjà enregistrées ne sont pas affectées.</string>
+    <string name="catalog_cleared_confirmation">Catalogue vidé — %d produit(s) supprimé(s).</string>
+
     <string name="period_today">Aujourd\'hui</string>
     <string name="period_week">7 jours</string>
     <string name="period_month">30 jours</string>

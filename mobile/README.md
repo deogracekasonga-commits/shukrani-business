@@ -47,7 +47,8 @@ imprimante Bluetooth.
 - **Réglages** : nom de la boutique, **adresse de ce point de vente**, numéro
   **NIF** et **RCCM** (propres à chaque appareil — utile si vous avez
   plusieurs points de vente, chacun avec sa propre adresse), taux de change
-  CDF ↔ USD, sélection de l'imprimante Bluetooth.
+  CDF ↔ USD, sélection de l'imprimante Bluetooth, **vider le catalogue de
+  produits** (récupération après un import raté).
 - **Reçu Bluetooth** : impression automatique après chaque vente si une
   imprimante thermique (ESC/POS, profil SPP) est configurée — logo Shukra
   POS, nom et adresse de la boutique, NIF/RCCM (si renseignés), date,
@@ -137,6 +138,13 @@ d'achat CDF (optionnel), Prix d'achat USD (optionnel)`. Un produit dont le
 nom correspond déjà à un produit actif est **mis à jour** ; sinon il est
 créé. Pratique pour préparer le catalogue dans Excel/Google Sheets
 (exporté ensuite en CSV) plutôt que de tout saisir manuellement dans l'app.
+
+⚠️ Le fichier doit être **enregistré au format CSV**, pas un `.xlsx`/`.docx`
+brut — l'app détecte un fichier non-texte et refuse l'import avec un
+message clair plutôt que de créer des produits avec un contenu illisible.
+Si un import raté a déjà pollué votre catalogue, utilisez **Réglages →
+« Vider le catalogue de produits »** pour tout remettre à zéro (les ventes
+déjà enregistrées ne sont pas affectées), puis réimportez le bon fichier CSV.
 
 ## Imprimante de reçu Bluetooth
 
