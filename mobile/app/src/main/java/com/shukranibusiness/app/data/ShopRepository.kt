@@ -32,7 +32,15 @@ class ShopRepository(private val context: Context) {
 
     suspend fun authenticate(employeeId: Long, pin: String): Employee? {
         val employee = employeeDao.getById(employeeId) ?: return null
-        return if (employee.active && PinHasher.matches(pin, employee.pinHash)) employee else null
+        if (!employee.active || !PinHasher.matches(pin, employee.pinHash)) return null
+        if (PinHasher.isLegacyFormat(employee.pinHash)) {
+            // Migration silencieuse vers le nouveau hachage (PBKDF2 + sel par employé) : aucune
+            // action requise de l'employé, son PIN reste le même.
+            val upgraded = employee.copy(pinHash = PinHasher.hash(pin))
+            employeeDao.update(upgraded)
+            return upgraded
+        }
+        return employee
     }
 
     suspend fun getEmployee(employeeId: Long): Employee? = employeeDao.getById(employeeId)

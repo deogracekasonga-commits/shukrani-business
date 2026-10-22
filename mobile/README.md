@@ -228,6 +228,27 @@ affecter les appareils déjà enregistrés).
   `ic_settings`) restent des vecteurs placeholder simples ; à harmoniser
   avec le style du logo si besoin.
 
+## Sécurité
+
+- **PIN employés** : hachés avec PBKDF2 (HmacSHA256, 10 000 itérations) et un
+  sel aléatoire propre à chaque employé — jamais stockés en clair. Les PIN
+  créés avant ce renforcement sont migrés automatiquement et
+  silencieusement vers le nouveau format à la prochaine connexion réussie.
+- **Pas de sauvegarde automatique Android** (`android:allowBackup="false"`) :
+  la base de données locale (ventes, PIN hachés, réglages) n'est jamais
+  incluse dans une sauvegarde Google/adb en dehors de l'app elle-même.
+- **Hors-ligne par défaut** : aucune donnée ne quitte l'appareil sauf
+  activation volontaire de la synchronisation à distance (voir plus haut),
+  elle-même protégée par des jetons par appareil et des politiques RLS
+  côté Supabase (HTTPS pour tous les échanges).
+- **Aucun tiers** : pas de SDK publicitaire, pas de traqueur/analytics
+  tiers, aucune donnée vendue ou partagée.
+- **À prévoir avant la publication grand public** : activer la
+  minification/obfuscation du code (R8/ProGuard) sur le build de release —
+  non activée pour l'instant car elle n'a pas pu être testée dans cet
+  environnement de développement (voir avertissement plus haut), à activer
+  et tester soigneusement avant la publication en production.
+
 ## Identité visuelle
 
 Logo officiel conçu avec Canva (design : https://www.canva.com/d/agCwOqCegcpt50Z) :
