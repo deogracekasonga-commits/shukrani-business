@@ -4,6 +4,7 @@ import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,6 +22,9 @@ import com.shukranibusiness.app.data.ShopRepository
 import com.shukranibusiness.app.databinding.FragmentSettingsBinding
 import com.shukranibusiness.app.sync.SupabaseSyncClient
 import com.shukranibusiness.app.ui.employees.EmployeesActivity
+import com.shukranibusiness.app.ui.login.LoginActivity
+import com.shukranibusiness.app.util.BackupManager
+import com.shukranibusiness.app.util.FileSharer
 import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
@@ -39,6 +43,10 @@ class SettingsFragment : Fragment() {
                 Toast.makeText(requireContext(), getString(R.string.error_bluetooth_permission), Toast.LENGTH_SHORT).show()
             }
         }
+
+    private val pickBackupFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { confirmRestore(it) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,12 +84,56 @@ class SettingsFragment : Fragment() {
             startActivity(Intent(requireContext(), EmployeesActivity::class.java))
         }
         binding.clearCatalogButton.setOnClickListener { confirmClearCatalog() }
+        binding.backupButton.setOnClickListener { onBackupClicked() }
+        binding.restoreButton.setOnClickListener { pickBackupFile.launch("*/*") }
 
         updateSyncStatus()
         binding.registerSyncButton.setOnClickListener { onRegisterSyncClicked() }
         binding.resetSyncButton.setOnClickListener {
             prefs.clearDeviceRegistration()
             updateSyncStatus()
+        }
+    }
+
+    private fun onBackupClicked() {
+        lifecycleScope.launch {
+            try {
+                val file = BackupManager.export(requireContext(), repository, prefs)
+                FileSharer.share(requireContext(), file, "application/json")
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), getString(R.string.backup_export_error, e.message ?: ""), Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun confirmRestore(uri: Uri) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.action_restore_backup)
+            .setMessage(R.string.confirm_restore_backup)
+            .setPositiveButton(R.string.action_restore) { _, _ -> performRestore(uri) }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
+    }
+
+    private fun performRestore(uri: Uri) {
+        lifecycleScope.launch {
+            try {
+                val text = requireContext().contentResolver.openInputStream(uri)
+                    ?.bufferedReader()
+                    ?.use { it.readText() }
+                    .orEmpty()
+                val summary = BackupManager.restore(text, repository, prefs)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.restore_success, summary.employees, summary.products, summary.sales),
+                    Toast.LENGTH_LONG
+                ).show()
+                prefs.clearSession()
+                startActivity(Intent(requireContext(), LoginActivity::class.java))
+                requireActivity().finish()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), getString(R.string.restore_error, e.message ?: ""), Toast.LENGTH_LONG).show()
+            }
         }
     }
 

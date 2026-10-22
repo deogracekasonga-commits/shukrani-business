@@ -14,6 +14,9 @@ interface EmployeeDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(employee: Employee): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(employees: List<Employee>)
+
     @Update
     suspend fun update(employee: Employee)
 
@@ -22,6 +25,12 @@ interface EmployeeDao {
 
     @Query("SELECT * FROM employees WHERE active = 1 ORDER BY name ASC")
     fun observeActive(): Flow<List<Employee>>
+
+    @Query("SELECT * FROM employees")
+    suspend fun getAll(): List<Employee>
+
+    @Query("DELETE FROM employees")
+    suspend fun deleteAll()
 
     @Query("SELECT * FROM employees WHERE id = :employeeId LIMIT 1")
     suspend fun getById(employeeId: Long): Employee?

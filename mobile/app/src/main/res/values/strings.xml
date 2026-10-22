@@ -92,6 +92,16 @@
     <string name="confirm_clear_catalog">Supprimer TOUS les produits ? Action irréversible — utile seulement pour nettoyer un import raté (ex. fichier .xlsx importé par erreur au lieu d\'un CSV). Les ventes déjà enregistrées ne sont pas affectées.</string>
     <string name="catalog_cleared_confirmation">Catalogue vidé — %d produit(s) supprimé(s).</string>
 
+    <string name="title_backup">Sauvegarde des données</string>
+    <string name="backup_hint">Exportez un fichier contenant toutes vos données (employés, produits, ventes) à garder en lieu sûr (Drive, email…), pour les restaurer en cas de perte ou de changement de téléphone.</string>
+    <string name="action_backup">Sauvegarder mes données</string>
+    <string name="action_restore_backup">Restaurer une sauvegarde</string>
+    <string name="backup_export_error">Erreur lors de la sauvegarde : %s</string>
+    <string name="confirm_restore_backup">Restaurer cette sauvegarde ? Toutes les données actuelles (employés, produits, ventes) seront remplacées par celles du fichier. Cette action est irréversible.</string>
+    <string name="action_restore">Restaurer</string>
+    <string name="restore_success">Sauvegarde restaurée : %1$d employé(s), %2$d produit(s), %3$d vente(s).</string>
+    <string name="restore_error">Erreur lors de la restauration : %s</string>
+
     <string name="period_today">Aujourd\'hui</string>
     <string name="period_week">7 jours</string>
     <string name="period_month">30 jours</string>

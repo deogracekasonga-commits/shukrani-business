@@ -14,6 +14,9 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(product: Product): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(products: List<Product>)
+
     @Update
     suspend fun update(product: Product)
 
@@ -22,6 +25,9 @@ interface ProductDao {
 
     @Query("SELECT * FROM products WHERE active = 1 ORDER BY category ASC, name ASC")
     fun observeActive(): Flow<List<Product>>
+
+    @Query("SELECT * FROM products")
+    suspend fun getAll(): List<Product>
 
     @Query("SELECT * FROM products WHERE active = 1 AND quantity <= lowStockThreshold ORDER BY quantity ASC")
     fun observeLowStock(): Flow<List<Product>>

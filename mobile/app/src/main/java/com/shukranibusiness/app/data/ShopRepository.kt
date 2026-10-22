@@ -82,6 +82,44 @@ class ShopRepository(private val context: Context) {
     /** Supprime tous les produits — utile pour nettoyer un import raté (ex. fichier non converti en CSV). */
     suspend fun deleteAllProducts(): Int = productDao.deleteAll()
 
+    // --- Sauvegarde / restauration complète ---
+
+    suspend fun getAllEmployees(): List<Employee> = employeeDao.getAll()
+
+    suspend fun getAllProductsIncludingInactive(): List<Product> = productDao.getAll()
+
+    suspend fun getAllSales(): List<Sale> = saleDao.getAllSales()
+
+    suspend fun getAllSaleItemsForBackup(): List<SaleItem> = saleDao.getAllSaleItems()
+
+    suspend fun getAllStockMovements(): List<StockMovement> = stockMovementDao.getAll()
+
+    /**
+     * Remplace toutes les données de l'app par celles fournies (restauration d'une sauvegarde).
+     * Les IDs sont préservés pour garder les liens entre ventes/produits/employés cohérents.
+     */
+    suspend fun restoreAll(
+        employees: List<Employee>,
+        products: List<Product>,
+        sales: List<Sale>,
+        saleItems: List<SaleItem>,
+        stockMovements: List<StockMovement>
+    ) {
+        db.withTransaction {
+            saleDao.deleteAllSaleItems()
+            saleDao.deleteAllSales()
+            stockMovementDao.deleteAll()
+            productDao.deleteAll()
+            employeeDao.deleteAll()
+
+            employeeDao.insertAll(employees)
+            productDao.insertAll(products)
+            saleDao.insertAllSales(sales)
+            saleDao.insertAllSaleItems(saleItems)
+            stockMovementDao.insertAll(stockMovements)
+        }
+    }
+
     /**
      * Importe une liste de produits (typiquement depuis un fichier CSV) : un produit dont le nom
      * correspond déjà à un produit actif est mis à jour, sinon un nouveau produit est créé.

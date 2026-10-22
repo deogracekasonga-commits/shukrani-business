@@ -48,7 +48,8 @@ imprimante Bluetooth.
   **NIF** et **RCCM** (propres à chaque appareil — utile si vous avez
   plusieurs points de vente, chacun avec sa propre adresse), taux de change
   CDF ↔ USD, sélection de l'imprimante Bluetooth, **vider le catalogue de
-  produits** (récupération après un import raté).
+  produits** (récupération après un import raté), **sauvegarder/restaurer
+  toutes les données** de l'app (fichier à garder en lieu sûr).
 - **Reçu Bluetooth** : impression automatique après chaque vente si une
   imprimante thermique (ESC/POS, profil SPP) est configurée — logo Shukra
   POS, nom et adresse de la boutique, NIF/RCCM (si renseignés), date,
@@ -144,6 +145,17 @@ message clair plutôt que de créer des produits avec un contenu illisible.
 Si un import raté a déjà pollué votre catalogue, utilisez **Réglages →
 « Vider le catalogue de produits »** pour tout remettre à zéro (les ventes
 déjà enregistrées ne sont pas affectées), puis réimportez le bon fichier CSV.
+
+### Sauvegarder et restaurer toutes les données
+
+Bouton « Sauvegarder mes données » dans Réglages : génère un fichier
+`.json` contenant employés, produits, ventes, mouvements de stock et
+réglages de la boutique, à partager/enregistrer où vous voulez (Google
+Drive, email, WhatsApp...). En cas de perte, casse, ou changement de
+téléphone : réinstallez l'app, puis **« Restaurer une sauvegarde »** →
+sélectionnez ce fichier. ⚠️ La restauration **remplace entièrement** les
+données actuelles de l'appareil — à utiliser sur un appareil neuf ou
+vidé, pas pour fusionner deux jeux de données.
 
 ## Imprimante de reçu Bluetooth
 

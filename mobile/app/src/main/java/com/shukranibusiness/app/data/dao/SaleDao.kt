@@ -2,6 +2,7 @@ package com.shukranibusiness.app.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.shukranibusiness.app.data.entities.Sale
 import com.shukranibusiness.app.data.entities.SaleItem
@@ -30,8 +31,26 @@ interface SaleDao {
     @Insert
     suspend fun insertSale(sale: Sale): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllSales(sales: List<Sale>)
+
     @Insert
     suspend fun insertSaleItems(items: List<SaleItem>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllSaleItems(items: List<SaleItem>)
+
+    @Query("SELECT * FROM sales")
+    suspend fun getAllSales(): List<Sale>
+
+    @Query("SELECT * FROM sale_items")
+    suspend fun getAllSaleItems(): List<SaleItem>
+
+    @Query("DELETE FROM sales")
+    suspend fun deleteAllSales()
+
+    @Query("DELETE FROM sale_items")
+    suspend fun deleteAllSaleItems()
 
     @Query("SELECT * FROM sales WHERE id = :saleId LIMIT 1")
     suspend fun getById(saleId: Long): Sale?
