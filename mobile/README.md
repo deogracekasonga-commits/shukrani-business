@@ -100,14 +100,13 @@ enregistrée.
 - `minSdk` 26 (Android 8.0+) / `compileSdk` & `targetSdk` 34
 - Kotlin 1.9.24, Android Gradle Plugin 8.5.2, Room 2.6.1
 
-## ⚠️ Non testé par compilation
+## Compilation et tests
 
-Ce code a été écrit dans un environnement sans SDK Android ni accès réseau
-vers les serveurs Google — **il n'a donc pas pu être compilé ni exécuté ici**.
-La structure, les types et les références de ressources ont été vérifiés
-manuellement avec soin, mais la **première compilation dans Android Studio**
-est nécessaire pour confirmer que tout s'assemble correctement (Room génère
-du code au moment de la compilation, les ViewBinding aussi).
+Ce code a été écrit dans un environnement sans SDK Android, puis
+**compilé et testé avec succès dans Android Studio sur deux ordinateurs**
+différents, avec installation et utilisation réelle sur un téléphone
+physique (Tecno Camon 50 Pro) — toutes les fonctionnalités listées
+ci-dessus ont été vérifiées en conditions réelles.
 
 ## Ouvrir le projet
 
@@ -249,9 +248,9 @@ affecter les appareils déjà enregistrés).
   tiers, aucune donnée vendue ou partagée.
 - **À prévoir avant la publication grand public** : activer la
   minification/obfuscation du code (R8/ProGuard) sur le build de release —
-  non activée pour l'instant car elle n'a pas pu être testée dans cet
-  environnement de développement (voir avertissement plus haut), à activer
-  et tester soigneusement avant la publication en production.
+  pas encore activée, à faire et tester soigneusement dans Android Studio
+  avant la publication en production (maintenant possible : le projet
+  compile et tourne, voir ci-dessous).
 
 ## Identité visuelle
 
