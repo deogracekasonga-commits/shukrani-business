@@ -70,6 +70,8 @@ class ShopRepository(private val context: Context) {
 
     fun observeCategories(): Flow<List<String>> = productDao.observeCategories()
 
+    suspend fun getProductByBarcode(barcode: String): Product? = productDao.findByBarcode(barcode)
+
     suspend fun saveProduct(product: Product): Long {
         return if (product.id == 0L) productDao.insert(product) else {
             productDao.update(product)
@@ -138,7 +140,8 @@ class ShopRepository(private val context: Context) {
                     quantity = parsed.quantity,
                     lowStockThreshold = parsed.lowStockThreshold,
                     purchasePriceCdf = parsed.purchasePriceCdf,
-                    purchasePriceUsd = parsed.purchasePriceUsd
+                    purchasePriceUsd = parsed.purchasePriceUsd,
+                    barcode = existing?.barcode
                 )
                 if (existing != null) productDao.update(product) else productDao.insert(product)
             }

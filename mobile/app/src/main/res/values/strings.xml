@@ -77,6 +77,12 @@
     <string name="label_purchase_price_section">Prix d\'achat (optionnel — pour calculer la marge)</string>
     <string name="hint_purchase_price_cdf">Prix d\'achat (CDF)</string>
     <string name="hint_purchase_price_usd">Prix d\'achat (USD)</string>
+    <string name="hint_barcode">Code-barres (optionnel)</string>
+
+    <string name="action_scan_barcode">Scanner un code-barres</string>
+    <string name="scan_prompt_message">Visez le code-barres du produit</string>
+    <string name="error_barcode_not_found">Aucun produit ne correspond à ce code-barres.</string>
+    <string name="error_barcode_already_used">Ce code-barres est déjà attribué à « %1$s ».</string>
     <string name="action_save">Enregistrer</string>
     <string name="action_cancel">Annuler</string>
     <string name="action_delete">Supprimer</string>

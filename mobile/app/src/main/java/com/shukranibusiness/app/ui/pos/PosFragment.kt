@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import com.shukranibusiness.app.R
 import com.shukranibusiness.app.data.CartLine
 import com.shukranibusiness.app.data.InsufficientStockException
@@ -42,6 +44,10 @@ class PosFragment : Fragment() {
     private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var productAdapter: ProductAdapter
     private lateinit var cartAdapter: CartAdapter
+
+    private val scanLauncher = registerForActivityResult(ScanContract()) { result ->
+        result.contents?.let { onBarcodeScanned(it) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,6 +82,12 @@ class PosFragment : Fragment() {
 
         binding.currencyGroup.setOnCheckedChangeListener { _, _ -> refreshCartUi() }
         binding.checkoutButton.setOnClickListener { checkout() }
+        binding.scanBarcodeButton.setOnClickListener {
+            scanLauncher.launch(
+                ScanOptions().setBeepEnabled(true).setOrientationLocked(false)
+                    .setPrompt(getString(R.string.scan_prompt_message))
+            )
+        }
 
         binding.mobileMoneyProviderSpinner.adapter = ArrayAdapter(
             requireContext(),
@@ -133,6 +145,17 @@ class PosFragment : Fragment() {
             allProducts.filter { it.category == selectedCategory }
         }
         productAdapter.submit(filtered)
+    }
+
+    private fun onBarcodeScanned(barcode: String) {
+        lifecycleScope.launch {
+            val product = repository.getProductByBarcode(barcode)
+            if (product != null) {
+                addToCart(product)
+            } else {
+                Toast.makeText(requireContext(), getString(R.string.error_barcode_not_found), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun addToCart(product: Product) {

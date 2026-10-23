@@ -62,7 +62,21 @@ class StockFragment : Fragment() {
 
     private fun showProductDialog(product: Product?) {
         ProductEditDialog(product) { updated ->
-            lifecycleScope.launch { repository.saveProduct(updated) }
+            lifecycleScope.launch {
+                val barcode = updated.barcode
+                if (barcode != null) {
+                    val existing = repository.getProductByBarcode(barcode)
+                    if (existing != null && existing.id != updated.id) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.error_barcode_already_used, existing.name),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return@launch
+                    }
+                }
+                repository.saveProduct(updated)
+            }
         }.show(childFragmentManager, "product_edit")
     }
 

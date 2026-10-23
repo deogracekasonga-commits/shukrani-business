@@ -26,16 +26,18 @@ imprimante Bluetooth.
   synchronisation à distance est activée en tant que gérant — les ventes
   des autres appareils/boutiques connectés.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
-  choix de la devise (CDF ou USD) et du **mode de paiement** (Cash, Mobile
-  Money — M-Pesa/Airtel Money/Orange Money, ou Carte), **remise optionnelle**
-  (en % ou en montant fixe CDF), **vente à crédit optionnelle** (paiement
-  partiel, avec référence client facultative — les ventes normales restent
-  anonymes), décrément du stock à la validation.
+  **scan de code-barres** (ajoute directement le produit correspondant au
+  panier), choix de la devise (CDF ou USD) et du **mode de paiement** (Cash,
+  Mobile Money — M-Pesa/Airtel Money/Orange Money, ou Carte), **remise
+  optionnelle** (en % ou en montant fixe CDF), **vente à crédit optionnelle**
+  (paiement partiel, avec référence client facultative — les ventes normales
+  restent anonymes), décrément du stock à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
-  modification/**suppression** de produit, réapprovisionnement journalisé,
-  **prix d'achat optionnel** (sert au calcul de marge), et **import en masse
-  depuis un fichier CSV** (utile pour démarrer avec un grand catalogue sans
-  tout saisir à la main).
+  modification/**suppression** de produit (avec **code-barres optionnel**,
+  saisi à la main ou scanné), réapprovisionnement journalisé, **prix d'achat
+  optionnel** (sert au calcul de marge), et **import en masse depuis un
+  fichier CSV** (utile pour démarrer avec un grand catalogue sans tout saisir
+  à la main).
 - **Rapports** : historique des ventes filtrable par période (jour/semaine/
   mois/tout), totaux CDF et USD, **marge estimée** de la période (si un prix
   d'achat a été renseigné), **répartition par mode de paiement**, export

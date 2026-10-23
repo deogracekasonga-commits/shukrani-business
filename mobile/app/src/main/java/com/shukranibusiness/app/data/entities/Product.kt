@@ -16,5 +16,7 @@ data class Product(
     val active: Boolean = true,
     /** Prix d'achat (coût) — optionnel (0 = non renseigné), sert au calcul de marge. */
     val purchasePriceCdf: Double = 0.0,
-    val purchasePriceUsd: Double = 0.0
+    val purchasePriceUsd: Double = 0.0,
+    /** Code-barres (EAN/UPC...) — optionnel, permet de retrouver le produit via le scanner. */
+    val barcode: String? = null
 )

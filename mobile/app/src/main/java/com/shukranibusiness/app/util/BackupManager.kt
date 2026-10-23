@@ -123,6 +123,7 @@ object BackupManager {
         put("active", active)
         put("purchasePriceCdf", purchasePriceCdf)
         put("purchasePriceUsd", purchasePriceUsd)
+        put("barcode", barcode)
     }
 
     private fun JSONObject.toProduct() = Product(
@@ -135,7 +136,8 @@ object BackupManager {
         lowStockThreshold = optInt("lowStockThreshold", 5),
         active = optBoolean("active", true),
         purchasePriceCdf = optDouble("purchasePriceCdf", 0.0),
-        purchasePriceUsd = optDouble("purchasePriceUsd", 0.0)
+        purchasePriceUsd = optDouble("purchasePriceUsd", 0.0),
+        barcode = if (isNull("barcode")) null else optString("barcode")
     )
 
     // --- Sale ---

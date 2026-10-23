@@ -4,13 +4,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/categoryList"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/categoryList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="8dp" />
+
+        <ImageButton
+            android:id="@+id/scanBarcodeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_scan_barcode"
+            android:src="@drawable/ic_barcode_scan" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productGrid"

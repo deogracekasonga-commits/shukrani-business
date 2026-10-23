@@ -73,5 +73,30 @@
             android:layout_height="wrap_content"
             android:hint="@string/hint_low_stock_threshold"
             android:inputType="number" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <EditText
+                android:id="@+id/barcodeInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/hint_barcode"
+                android:inputType="text" />
+
+            <ImageButton
+                android:id="@+id/scanBarcodeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_scan_barcode"
+                android:src="@drawable/ic_barcode_scan" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
