@@ -151,6 +151,9 @@ object BackupManager {
         put("subtotalUsd", subtotalUsd)
         put("discountCdf", discountCdf)
         put("discountUsd", discountUsd)
+        put("amountPaidCdf", amountPaidCdf)
+        put("amountPaidUsd", amountPaidUsd)
+        put("customerReference", customerReference)
         put("currencyPaid", currencyPaid)
         put("exchangeRateUsed", exchangeRateUsed)
         put("status", status.name)
@@ -173,6 +176,9 @@ object BackupManager {
         subtotalUsd = optDouble("subtotalUsd", 0.0),
         discountCdf = optDouble("discountCdf", 0.0),
         discountUsd = optDouble("discountUsd", 0.0),
+        amountPaidCdf = if (has("amountPaidCdf")) optDouble("amountPaidCdf") else getDouble("totalCdf"),
+        amountPaidUsd = if (has("amountPaidUsd")) optDouble("amountPaidUsd") else getDouble("totalUsd"),
+        customerReference = if (isNull("customerReference")) null else optString("customerReference"),
         currencyPaid = getString("currencyPaid"),
         exchangeRateUsed = getDouble("exchangeRateUsed"),
         status = SaleStatus.valueOf(optString("status", "COMPLETED")),

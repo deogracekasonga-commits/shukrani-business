@@ -51,6 +51,16 @@
     <string name="label_subtotal">Sous-total</string>
     <string name="label_discount">Remise</string>
 
+    <string name="label_credit_sale">Vente à crédit (paiement partiel)</string>
+    <string name="hint_customer_reference">Nom / téléphone du client</string>
+    <string name="hint_amount_paid_now">Montant payé maintenant</string>
+    <string name="label_amount_paid">Payé</string>
+    <string name="label_amount_due">Reste à payer</string>
+    <string name="action_record_payment">Enregistrer un paiement</string>
+    <string name="hint_payment_amount">Montant reçu</string>
+    <string name="payment_recorded_confirmation">Paiement enregistré.</string>
+    <string name="credit_fully_paid">Vente entièrement payée.</string>
+
     <string name="action_add_product">Ajouter un produit</string>
     <string name="action_restock">Réapprovisionner</string>
     <string name="action_edit">Modifier</string>

@@ -28,7 +28,9 @@ imprimante Bluetooth.
 - **Vente (POS)** : grille de produits par catégorie, panier avec quantités,
   choix de la devise (CDF ou USD) et du **mode de paiement** (Cash, Mobile
   Money — M-Pesa/Airtel Money/Orange Money, ou Carte), **remise optionnelle**
-  (en % ou en montant fixe CDF), décrément du stock à la validation.
+  (en % ou en montant fixe CDF), **vente à crédit optionnelle** (paiement
+  partiel, avec référence client facultative — les ventes normales restent
+  anonymes), décrément du stock à la validation.
 - **Stock** (gérant) : liste des produits avec alerte stock bas, ajout/
   modification/**suppression** de produit, réapprovisionnement journalisé,
   **prix d'achat optionnel** (sert au calcul de marge), et **import en masse
@@ -41,7 +43,10 @@ imprimante Bluetooth.
   marge totale). Toucher une vente ouvre son détail ; le
   **gérant** peut l'**annuler** (note de crédit) — les articles sont remis en
   stock, la vente reste visible dans l'historique mais marquée « annulée »
-  et exclue des totaux.
+  et exclue des totaux. Une vente à crédit partiellement payée est repérable
+  dans la liste (« — crédit ») et affiche le montant payé / restant dû ; un
+  bouton **« Enregistrer un paiement »** permet de solder la dette au fur et
+  à mesure.
 - **Employés** (gérant) : création/modification/désactivation des comptes,
   attribution du rôle.
 - **Réglages** : nom de la boutique, **adresse de ce point de vente**, numéro

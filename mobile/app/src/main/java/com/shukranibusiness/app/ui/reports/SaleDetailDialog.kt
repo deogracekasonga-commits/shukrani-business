@@ -3,6 +3,7 @@ package com.shukranibusiness.app.ui.reports
 import android.app.Dialog
 import android.os.Bundle
 import android.view.Gravity
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
@@ -21,7 +22,8 @@ class SaleDetailDialog(
     private val sale: Sale,
     private val items: List<SaleItem>,
     private val canCancel: Boolean,
-    private val onCancelConfirmed: (Sale) -> Unit
+    private val onCancelConfirmed: (Sale) -> Unit,
+    private val onPaymentRecorded: (Sale, Double, Double) -> Unit = { _, _, _ -> }
 ) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -51,6 +53,19 @@ class SaleDetailDialog(
             discountLine +
             "\n${getString(R.string.label_payment_method)} : ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
 
+        val dueCdf = sale.totalCdf - sale.amountPaidCdf
+        val dueUsd = sale.totalUsd - sale.amountPaidUsd
+        val isCredit = dueCdf > 0.0 || dueUsd > 0.0
+        if (isCredit) {
+            val customerLine = sale.customerReference?.let { "\n${getString(R.string.hint_customer_reference)} : $it" } ?: ""
+            binding.creditStatusText.text = "${getString(R.string.label_amount_paid)} : " +
+                CurrencyFormatter.formatBoth(sale.amountPaidCdf, sale.amountPaidUsd) +
+                "  —  ${getString(R.string.label_amount_due)} : " +
+                CurrencyFormatter.formatBoth(dueCdf, dueUsd) +
+                customerLine
+            binding.creditStatusText.visibility = android.view.View.VISIBLE
+        }
+
         if (sale.status == SaleStatus.CANCELED) {
             val canceledAt = sale.canceledAtMillis?.let { sdf.format(Date(it)) } ?: ""
             binding.statusText.text = getString(
@@ -70,7 +85,38 @@ class SaleDetailDialog(
             builder.setNegativeButton(R.string.action_cancel_sale) { _, _ -> confirmCancel() }
         }
 
+        if (isCredit && sale.status == SaleStatus.COMPLETED) {
+            builder.setNeutralButton(R.string.action_record_payment) { _, _ -> promptPayment(dueCdf, dueUsd) }
+        }
+
         return builder.create()
+    }
+
+    private fun promptPayment(dueCdf: Double, dueUsd: Double) {
+        val input = EditText(requireContext()).apply {
+            hint = getString(R.string.hint_payment_amount)
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setPadding(48, 24, 48, 24)
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.action_record_payment)
+            .setView(input)
+            .setPositiveButton(R.string.action_save) { _, _ ->
+                val raw = input.text.toString().toDoubleOrNull() ?: 0.0
+                if (raw <= 0.0) return@setPositiveButton
+                val (addCdf, addUsd) = if (sale.currencyPaid == "USD") {
+                    val usd = raw.coerceIn(0.0, dueUsd)
+                    val cdf = if (dueUsd > 0.0) dueCdf * (usd / dueUsd) else 0.0
+                    cdf to usd
+                } else {
+                    val cdf = raw.coerceIn(0.0, dueCdf)
+                    val usd = if (dueCdf > 0.0) dueUsd * (cdf / dueCdf) else 0.0
+                    cdf to usd
+                }
+                onPaymentRecorded(sale, addCdf, addUsd)
+            }
+            .setNegativeButton(R.string.action_cancel, null)
+            .show()
     }
 
     private fun confirmCancel() {

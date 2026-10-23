@@ -63,6 +63,12 @@ object ReceiptPrinter {
             out += "Remise : -${CurrencyFormatter.formatBoth(sale.discountCdf, sale.discountUsd)}"
         }
         out += "TOTAL : ${CurrencyFormatter.formatBoth(sale.totalCdf, sale.totalUsd)}"
+        val isCredit = sale.amountPaidCdf < sale.totalCdf || sale.amountPaidUsd < sale.totalUsd
+        if (isCredit) {
+            out += "Payé : ${CurrencyFormatter.formatBoth(sale.amountPaidCdf, sale.amountPaidUsd)}"
+            out += "Reste à payer : ${CurrencyFormatter.formatBoth(sale.totalCdf - sale.amountPaidCdf, sale.totalUsd - sale.amountPaidUsd)}"
+            sale.customerReference?.let { out += "Client : $it" }
+        }
         out += "Payé en ${sale.currencyPaid} — ${PaymentMethodFormatter.label(sale.paymentMethod, sale.mobileMoneyProvider)}"
         out += ""
         out += "Merci pour votre achat !"

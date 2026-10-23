@@ -81,6 +81,15 @@ interface SaleDao {
     @Query("SELECT * FROM sales ORDER BY dateTimeMillis DESC LIMIT 100")
     fun observeRecentSales(): Flow<List<Sale>>
 
+    @Query(
+        "SELECT * FROM sales WHERE status = 'COMPLETED' AND (amountPaidCdf < totalCdf OR amountPaidUsd < totalUsd) " +
+            "ORDER BY dateTimeMillis DESC"
+    )
+    fun observeOutstandingCreditSales(): Flow<List<Sale>>
+
+    @Query("UPDATE sales SET amountPaidCdf = :newPaidCdf, amountPaidUsd = :newPaidUsd, pendingSync = 1 WHERE id = :saleId")
+    suspend fun setAmountPaid(saleId: Long, newPaidCdf: Double, newPaidUsd: Double)
+
     @Query("SELECT * FROM sale_items WHERE saleId = :saleId")
     suspend fun getItemsForSale(saleId: Long): List<SaleItem>
 

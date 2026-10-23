@@ -23,6 +23,11 @@ data class Sale(
     val subtotalUsd: Double = 0.0,
     val discountCdf: Double = 0.0,
     val discountUsd: Double = 0.0,
+    /** Montant réellement payé au moment de la vente — égal au total si pas de crédit. */
+    val amountPaidCdf: Double = totalCdf,
+    val amountPaidUsd: Double = totalUsd,
+    /** Nom/téléphone du client, saisi seulement pour une vente à crédit (sinon vente anonyme). */
+    val customerReference: String? = null,
     val currencyPaid: String,
     val exchangeRateUsed: Double,
     val status: SaleStatus = SaleStatus.COMPLETED,

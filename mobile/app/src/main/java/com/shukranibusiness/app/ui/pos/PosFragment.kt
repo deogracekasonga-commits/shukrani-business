@@ -94,6 +94,10 @@ class PosFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) = refreshCartUi()
         })
 
+        binding.creditSaleCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            binding.creditSaleGroup.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
         lifecycleScope.launch {
             val employeeId = prefs.loggedInEmployeeId
             currentEmployee = if (employeeId != -1L) repository.getEmployee(employeeId) else null
@@ -224,15 +228,35 @@ class PosFragment : Fragment() {
         val subtotalCdf = lines.sumOf { it.subtotalCdf }
         val subtotalUsd = lines.sumOf { it.subtotalUsd }
         val (discountCdf, discountUsd) = computeDiscount(subtotalCdf, subtotalUsd)
+        val totalCdf = subtotalCdf - discountCdf
+        val totalUsd = subtotalUsd - discountUsd
+
+        var amountPaidCdf: Double? = null
+        var amountPaidUsd: Double? = null
+        var customerReference: String? = null
+        if (binding.creditSaleCheckbox.isChecked) {
+            customerReference = binding.customerReferenceInput.text.toString().trim().ifEmpty { null }
+            val rawPaid = binding.amountPaidInput.text.toString().toDoubleOrNull() ?: 0.0
+            if (binding.usdRadio.isChecked) {
+                amountPaidUsd = rawPaid.coerceIn(0.0, totalUsd)
+                amountPaidCdf = if (totalUsd > 0.0) totalCdf * (amountPaidUsd / totalUsd) else 0.0
+            } else {
+                amountPaidCdf = rawPaid.coerceIn(0.0, totalCdf)
+                amountPaidUsd = if (totalCdf > 0.0) totalUsd * (amountPaidCdf / totalCdf) else 0.0
+            }
+        }
 
         lifecycleScope.launch {
             try {
                 val sale = repository.recordSale(
                     employee, lines, currency, exchangeRate, paymentMethod, mobileMoneyProvider,
-                    discountCdf, discountUsd
+                    discountCdf, discountUsd, amountPaidCdf, amountPaidUsd, customerReference
                 )
                 cart.clear()
                 binding.discountInput.text?.clear()
+                binding.creditSaleCheckbox.isChecked = false
+                binding.customerReferenceInput.text?.clear()
+                binding.amountPaidInput.text?.clear()
                 refreshCartUi()
                 Toast.makeText(requireContext(), getString(R.string.sale_recorded), Toast.LENGTH_SHORT).show()
                 ReceiptPrinter.printReceiptIfConfigured(requireContext(), sale, lines, prefs.shopName)

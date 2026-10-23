@@ -33,11 +33,12 @@ class SaleAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val sale = sales[position]
         val canceled = sale.status == SaleStatus.CANCELED
+        val isCredit = sale.amountPaidCdf < sale.totalCdf || sale.amountPaidUsd < sale.totalUsd
 
-        holder.binding.saleDate.text = if (canceled) {
-            "${dateFormat.format(Date(sale.dateTimeMillis))} — annulée"
-        } else {
-            dateFormat.format(Date(sale.dateTimeMillis))
+        holder.binding.saleDate.text = when {
+            canceled -> "${dateFormat.format(Date(sale.dateTimeMillis))} — annulée"
+            isCredit -> "${dateFormat.format(Date(sale.dateTimeMillis))} — crédit"
+            else -> dateFormat.format(Date(sale.dateTimeMillis))
         }
         holder.binding.saleEmployee.text = sale.employeeName
         holder.binding.saleTotal.text = CurrencyFormatter.formatBoth(sale.totalCdf, sale.totalUsd)

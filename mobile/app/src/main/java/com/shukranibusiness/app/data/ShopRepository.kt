@@ -190,6 +190,19 @@ class ShopRepository(private val context: Context) {
 
     suspend fun markSynced(saleId: Long) = saleDao.markSynced(saleId)
 
+    fun observeOutstandingCreditSales(): Flow<List<Sale>> = saleDao.observeOutstandingCreditSales()
+
+    /** Enregistre un paiement complémentaire sur une vente à crédit (borné pour ne jamais dépasser le total). */
+    suspend fun recordCreditPayment(saleId: Long, addCdf: Double, addUsd: Double): Sale? {
+        return db.withTransaction {
+            val sale = saleDao.getById(saleId) ?: return@withTransaction null
+            val newPaidCdf = (sale.amountPaidCdf + addCdf).coerceIn(0.0, sale.totalCdf)
+            val newPaidUsd = (sale.amountPaidUsd + addUsd).coerceIn(0.0, sale.totalUsd)
+            saleDao.setAmountPaid(saleId, newPaidCdf, newPaidUsd)
+            sale.copy(amountPaidCdf = newPaidCdf, amountPaidUsd = newPaidUsd)
+        }.also { SyncScheduler.scheduleImmediateSync(context) }
+    }
+
     /**
      * Annule une vente (note de crédit) : remet les quantités vendues en stock, journalise
      * chaque remise en stock, et marque la vente "CANCELED" sans la supprimer (traçabilité).
@@ -233,7 +246,10 @@ class ShopRepository(private val context: Context) {
         paymentMethod: PaymentMethod = PaymentMethod.CASH,
         mobileMoneyProvider: String? = null,
         discountCdf: Double = 0.0,
-        discountUsd: Double = 0.0
+        discountUsd: Double = 0.0,
+        amountPaidCdf: Double? = null,
+        amountPaidUsd: Double? = null,
+        customerReference: String? = null
     ): Sale {
         require(cartLines.isNotEmpty()) { "Le panier est vide" }
 
@@ -252,6 +268,8 @@ class ShopRepository(private val context: Context) {
             val appliedDiscountUsd = discountUsd.coerceIn(0.0, subtotalUsd)
             val totalCdf = subtotalCdf - appliedDiscountCdf
             val totalUsd = subtotalUsd - appliedDiscountUsd
+            val paidCdf = (amountPaidCdf ?: totalCdf).coerceIn(0.0, totalCdf)
+            val paidUsd = (amountPaidUsd ?: totalUsd).coerceIn(0.0, totalUsd)
             val now = System.currentTimeMillis()
             val cloudUuid = java.util.UUID.randomUUID().toString()
 
@@ -266,6 +284,9 @@ class ShopRepository(private val context: Context) {
                     subtotalUsd = subtotalUsd,
                     discountCdf = appliedDiscountCdf,
                     discountUsd = appliedDiscountUsd,
+                    amountPaidCdf = paidCdf,
+                    amountPaidUsd = paidUsd,
+                    customerReference = customerReference,
                     currencyPaid = currencyPaid,
                     exchangeRateUsed = exchangeRateUsed,
                     paymentMethod = paymentMethod,
@@ -315,6 +336,9 @@ class ShopRepository(private val context: Context) {
                 subtotalUsd = subtotalUsd,
                 discountCdf = appliedDiscountCdf,
                 discountUsd = appliedDiscountUsd,
+                amountPaidCdf = paidCdf,
+                amountPaidUsd = paidUsd,
+                customerReference = customerReference,
                 currencyPaid = currencyPaid,
                 exchangeRateUsed = exchangeRateUsed,
                 paymentMethod = paymentMethod,

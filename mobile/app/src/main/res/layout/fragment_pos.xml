@@ -129,6 +129,35 @@
                     android:text="@string/label_discount_amount_cdf" />
             </RadioGroup>
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/creditSaleCheckbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/label_credit_sale" />
+
+        <LinearLayout
+            android:id="@+id/creditSaleGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/customerReferenceInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_customer_reference"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/amountPaidInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_amount_paid_now"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

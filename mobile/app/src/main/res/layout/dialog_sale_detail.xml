@@ -30,6 +30,15 @@
             android:textSize="15sp" />
 
         <TextView
+            android:id="@+id/creditStatusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="#2E6FF2"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/statusText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

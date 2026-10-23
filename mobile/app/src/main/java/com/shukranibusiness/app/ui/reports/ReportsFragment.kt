@@ -165,13 +165,29 @@ class ReportsFragment : Fragment() {
         lifecycleScope.launch {
             val items = repository.getSaleItems(sale.id)
             val canCancel = currentEmployee?.role == EmployeeRole.MANAGER
-            SaleDetailDialog(sale, items, canCancel) { toCancel ->
-                lifecycleScope.launch {
-                    val employee = currentEmployee ?: return@launch
-                    repository.cancelSale(toCancel.id, employee)
-                    Toast.makeText(requireContext(), getString(R.string.sale_canceled_confirmation), Toast.LENGTH_SHORT).show()
+            SaleDetailDialog(
+                sale,
+                items,
+                canCancel,
+                onCancelConfirmed = { toCancel ->
+                    lifecycleScope.launch {
+                        val employee = currentEmployee ?: return@launch
+                        repository.cancelSale(toCancel.id, employee)
+                        Toast.makeText(requireContext(), getString(R.string.sale_canceled_confirmation), Toast.LENGTH_SHORT).show()
+                    }
+                },
+                onPaymentRecorded = { toSettle, addCdf, addUsd ->
+                    lifecycleScope.launch {
+                        val updated = repository.recordCreditPayment(toSettle.id, addCdf, addUsd)
+                        val message = if (updated != null && updated.amountPaidCdf >= updated.totalCdf && updated.amountPaidUsd >= updated.totalUsd) {
+                            getString(R.string.credit_fully_paid)
+                        } else {
+                            getString(R.string.payment_recorded_confirmation)
+                        }
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }.show(childFragmentManager, "sale_detail")
+            ).show(childFragmentManager, "sale_detail")
         }
     }
 

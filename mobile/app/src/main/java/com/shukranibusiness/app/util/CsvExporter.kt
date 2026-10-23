@@ -20,6 +20,7 @@ object CsvExporter {
             writer.write(
                 "Date,Employé,Produit,Quantité,Prix unitaire CDF,Prix unitaire USD," +
                     "Sous-total CDF,Sous-total USD,Devise payée,Mode de paiement,Remise CDF,Remise USD," +
+                    "Payé CDF,Payé USD,Reste à payer CDF,Reste à payer USD,Client (crédit)," +
                     "Statut,Marge CDF,Marge USD\n"
             )
             for (sale in sales) {
@@ -42,6 +43,11 @@ object CsvExporter {
                         paymentLabel,
                         sale.discountCdf.toString(),
                         sale.discountUsd.toString(),
+                        sale.amountPaidCdf.toString(),
+                        sale.amountPaidUsd.toString(),
+                        (sale.totalCdf - sale.amountPaidCdf).toString(),
+                        (sale.totalUsd - sale.amountPaidUsd).toString(),
+                        sale.customerReference.orEmpty(),
                         statusLabel,
                         marginCdf,
                         marginUsd
