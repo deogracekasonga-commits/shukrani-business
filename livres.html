@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos livres numériques — Shukrani Business</title>
+<meta name="description" content="Ebooks PDF pratiques pour entrepreneurs : business avec l'IA, confiance en soi, informatique de base. Téléchargement instantané, dès 3 $US.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#1C1B3A;--plum:#3D1E52;--cream:#FFF8EC;--amber:#FFB238;--coral:#FF6153;--teal:#1FA98F;--paper:#FFFDF8;--soft:rgba(28,27,58,.66);--maxw:1100px}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Manrope',sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;margin:0}
+  p{line-height:1.65;margin:0}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .tag{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--coral)}
+  .btn{display:inline-block;padding:14px 26px;border-radius:100px;font-weight:700;font-size:.95rem;background:var(--amber);color:var(--ink);transition:transform .2s,box-shadow .2s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(255,178,56,.35)}
+
+  header.top{position:absolute;top:0;left:0;right:0;padding:22px 0}
+  header.top .wrap{display:flex;justify-content:space-between;align-items:center}
+  .logo{font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;color:var(--cream)}
+  .logo span{color:var(--amber)}
+  header.top a.back{color:var(--cream);font-weight:600;font-size:.92rem;opacity:.85}
+
+  .hero{background:radial-gradient(ellipse at 20% -10%,#2b2a56 0,var(--ink) 55%,var(--plum) 130%);color:var(--cream);padding:150px 0 90px;text-align:center}
+  .hero h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:14px auto 18px;max-width:780px}
+  .hero h1 em{color:var(--amber);font-style:italic;font-weight:500}
+  .hero p{max-width:600px;margin:0 auto 30px;opacity:.85;font-size:1.05rem}
+  .perks{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;margin-top:28px;font-size:.88rem;font-weight:600;opacity:.9}
+  .perks span::before{content:"✓ ";color:var(--amber)}
+
+  section{padding:80px 0}
+  .head{text-align:center;margin-bottom:46px}
+  .head h2{font-size:clamp(1.6rem,3.4vw,2.3rem);margin-top:10px}
+
+  .books{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:26px}
+  .book{background:#fff;border:1px solid rgba(28,27,58,.09);border-radius:20px;padding:30px;display:flex;flex-direction:column;box-shadow:0 8px 28px rgba(28,27,58,.06);transition:transform .25s,box-shadow .25s}
+  .book:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(28,27,58,.12)}
+  .cover{height:150px;border-radius:14px;margin-bottom:22px;display:flex;align-items:flex-end;padding:16px;color:var(--cream);font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;line-height:1.2}
+  .c1{background:linear-gradient(135deg,var(--ink),var(--plum))}
+  .c2{background:linear-gradient(135deg,var(--coral),#c43d6a)}
+  .c3{background:linear-gradient(135deg,var(--teal),#136b8a)}
+  .cat{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--coral)}
+  .book h3{font-size:1.25rem;margin:8px 0 10px}
+  .book p{color:var(--soft);font-size:.95rem;flex:1}
+  .book ul{margin:16px 0 0;padding:0;list-style:none;font-size:.9rem}
+  .book li{padding:3px 0}
+  .book li::before{content:"✓ ";color:var(--teal);font-weight:800}
+  .buy{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid rgba(28,27,58,.09)}
+  .price{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700}
+  .price small{font-family:'Manrope',sans-serif;font-size:.78rem;color:var(--soft);font-weight:600;display:block}
+
+  .how{background:var(--cream)}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;text-align:center}
+  .steps b{display:inline-flex;width:46px;height:46px;border-radius:50%;background:var(--amber);align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.2rem;margin-bottom:14px}
+  .steps h3{font-size:1.1rem;margin-bottom:6px}
+  .steps p{color:var(--soft);font-size:.93rem}
+
+  .faq{max-width:760px;margin:0 auto}
+  details{border-bottom:1px solid rgba(28,27,58,.12);padding:18px 0}
+  summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+  summary::after{content:"+";color:var(--coral);font-size:1.3rem;line-height:1}
+  details[open] summary::after{content:"−"}
+  details p{margin-top:10px;color:var(--soft)}
+
+  .final{background:var(--ink);color:var(--cream);text-align:center}
+  .final h2{font-size:clamp(1.6rem,3.4vw,2.3rem);margin-bottom:14px}
+  .final p{opacity:.8;max-width:520px;margin:0 auto 28px}
+  footer{padding:28px 0;text-align:center;font-size:.85rem;color:var(--soft)}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="logo" href="index.html">Shukrani <span>Business</span></a>
+  <a class="back" href="index.html">← Accueil</a>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <span class="tag" style="color:var(--amber)">Livres numériques · PDF</span>
+  <h1>Des livres pratiques pour <em>passer à l'action</em></h1>
+  <p>Business, confiance en soi, informatique : des guides courts, clairs et accessibles, que tu peux lire dès maintenant, à toute heure.</p>
+  <a href="#livres" class="btn">Voir les livres</a>
+  <div class="perks"><span>Téléchargement instantané</span><span>Dès 3 $US</span><span>Lisible sur téléphone</span></div>
+</div></div>
+
+<section id="livres"><div class="wrap">
+  <div class="head"><span class="tag">La collection</span><h2>Choisis ton prochain livre</h2></div>
+  <div class="books">
+
+    <article class="book">
+      <div class="cover c1">50 Opportunités de Business avec l'IA</div>
+      <span class="cat">Business &amp; Finance</span>
+      <h3>50 Opportunités de Business avec l'IA</h3>
+      <p>50 idées de business à lancer avec l'intelligence artificielle, avec budgets et exemples, pensées pour les entrepreneurs africains.</p>
+      <ul><li>50 idées détaillées</li><li>Budgets de départ et exemples</li><li>PDF · 20 pages</li></ul>
+      <div class="buy"><div class="price">8 $US<small>paiement unique</small></div>
+      <a class="btn" href="https://jjahbngp.mychariow.com/prd_sbz7v13l" target="_blank" rel="noopener">Acheter</a></div>
+    </article>
+
+    <article class="book">
+      <div class="cover c2">Construire une confiance solide</div>
+      <span class="cat">Développement personnel</span>
+      <h3>Construire une confiance solide</h3>
+      <p>Des exercices simples pour avancer sans attendre d'être « prêt ». Un petit guide à appliquer jour après jour.</p>
+      <ul><li>Exercices pratiques</li><li>Lecture rapide</li><li>PDF · 20 pages</li></ul>
+      <div class="buy"><div class="price">3 $US<small>paiement unique</small></div>
+      <a class="btn" href="https://jjahbngp.mychariow.com/prd_ifl6u6dj" target="_blank" rel="noopener">Acheter</a></div>
+    </article>
+
+    <article class="book">
+      <div class="cover c3">Initiation à l'informatique</div>
+      <span class="cat">Éducation &amp; Formation</span>
+      <h3>Initiation à l'informatique — Word, Excel, PowerPoint</h3>
+      <p>Les bases pour démarrer sereinement, avec un exercice pratique à la fin de chaque partie.</p>
+      <ul><li>Word, Excel et PowerPoint</li><li>Un exercice par partie</li><li>PDF · 13 pages</li></ul>
+      <div class="buy"><div class="price">6 $US<small>paiement unique</small></div>
+      <a class="btn" href="https://jjahbngp.mychariow.com/prd_nv8hwcvs" target="_blank" rel="noopener">Acheter</a></div>
+    </article>
+
+  </div>
+</div></section>
+
+<section class="how"><div class="wrap">
+  <div class="head"><span class="tag">Simple</span><h2>Comment ça marche</h2></div>
+  <div class="steps">
+    <div><b>1</b><h3>Choisis</h3><p>Sélectionne le livre qui répond à ton besoin.</p></div>
+    <div><b>2</b><h3>Paie en ligne</h3><p>Paiement sécurisé sur la page Chariow.</p></div>
+    <div><b>3</b><h3>Télécharge</h3><p>Reçois ton PDF tout de suite et lis-le où tu veux.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="head"><span class="tag">Questions</span><h2>Avant d'acheter</h2></div>
+  <div class="faq">
+    <details><summary>Comment je reçois mon livre ?</summary><p>Juste après le paiement, tu peux télécharger le PDF depuis la page Chariow.</p></details>
+    <details><summary>Je peux le lire sur mon téléphone ?</summary><p>Oui. Le PDF s'ouvre sur téléphone, tablette et ordinateur.</p></details>
+    <details><summary>Quels moyens de paiement ?</summary><p>Les moyens proposés sur la page de paiement Chariow au moment de l'achat.</p></details>
+    <details><summary>J'ai un souci avec ma commande.</summary><p>Contacte-nous depuis la page de contact de l'accueil et nous te répondons.</p></details>
+  </div>
+</div></section>
+
+<section class="final"><div class="wrap">
+  <h2>Commence à lire aujourd'hui</h2>
+  <p>Un petit prix, un guide concret, et tu avances dès ce soir.</p>
+  <a href="#livres" class="btn">Choisir mon livre</a>
+</div></section>
+
+<footer><div class="wrap">© Shukrani Business · Le savoir, disponible à toute heure</div></footer>
+
+</body>
+</html>
